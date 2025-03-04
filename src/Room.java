@@ -1,9 +1,9 @@
 import java.util.List;
-
+//represents the rooms of the game
 public class Room {
-    private final int index;
-    private final String name;
-    private final List<Integer> neighbors;
+    private final int index;// numeral id of the room
+    private final String name;// room name
+    private final List<Integer> neighbors;// List of the indexes of neighbor rooms
 
     public Room(int index, String name, List<Integer> neighbors) {
         this.index = index;

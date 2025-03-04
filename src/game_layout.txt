@@ -1,12 +1,12 @@
-0 enter_hall 1
-1 library 0 10 5
-2 living_room 0 3 6
-3 dining_room 2
-4 bathroom 5
-5 main_bedroom 1 4
-6 garden 2 7 8
-7 garden_house 6 
-8 caravan 6
-9 laboratory 11 10
-10 celery 1 9
-11 secret_chamber 9
+0 Enter_Hall 1 2
+1 Library 0 10 5
+2 Living_Room 0 3 6
+3 Dining_Room 2
+4 Bathroom 5
+5 Main_Bedroom 1 4
+6 Garden 2 7 8
+7 Garden_House 6
+8 Caravan 6
+9 Laboratory 11 10
+10 Celery 1 9
+11 Secret_Chamber 9
