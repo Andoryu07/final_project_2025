@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class Room {
     private final int index;
     private final String name;
