@@ -1,14 +1,16 @@
+import java.util.ArrayList;
 import java.util.List;
 //represents the rooms of the game
 public class Room {
     private final int index;// numeral id of the room
     private final String name;// room name
     private final List<Integer> neighbors;// List of the indexes of neighbor rooms
-
+    private List<Item> items;
     public Room(int index, String name, List<Integer> neighbors) {
         this.index = index;
         this.name = name;
         this.neighbors = neighbors;
+        this.items = new ArrayList<>();
     }
 
     public int getIndex() {
@@ -30,6 +32,13 @@ public class Room {
                 ", name='" + name + '\'' +
                 ", neighbors=" + neighbors +
                 '}';
+    }
+    public void removeItem(Item item) {
+        if (items.remove(item)) {
+            System.out.println("Předmět " + item.getName() + " byl odstraněn z místnosti " + name);
+        } else {
+            System.out.println("Předmět " + item.getName() + " se v této místnosti nenachází.");
+        }
     }
 }
 
