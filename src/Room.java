@@ -35,9 +35,9 @@ public class Room {
     }
     public void removeItem(Item item) {
         if (items.remove(item)) {
-            System.out.println("Předmět " + item.getName() + " byl odstraněn z místnosti " + name);
+            System.out.println("Item " + item.getName() + " has been removed from the room: " + name);
         } else {
-            System.out.println("Předmět " + item.getName() + " se v této místnosti nenachází.");
+            System.out.println("Item  " + item.getName() + " is not located in this room.");
         }
     }
 }
