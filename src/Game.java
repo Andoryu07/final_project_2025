@@ -93,6 +93,36 @@ public class Game {
                     System.out.println("Specify an enemy to attack.");
                 }
                 break;
+            case "talk":
+                if (argument != null) {
+                    Character npc = findCharacterInRoom(argument);
+                    if (npc != null) {
+                        new TalkCommand(player, npc).execute();
+                    } else {
+                        System.out.println("No such character here.");
+                    }
+                } else {
+                    System.out.println("Specify a character to talk to.");
+                }
+                break;
+            case "examine":
+                if (argument != null) {
+                    Item item = player.getInventory().findItem(argument);
+                    if (item != null) {
+                        new ExamineCommand(player, item).execute();
+                    } else {
+                        System.out.println("You don't have this item.");
+                    }
+                } else {
+                    System.out.println("Specify an item to examine.");
+                }
+                break;
+            case "inventory":
+                new InventoryCommand(player).execute();
+                break;
+            case "help":
+                new HelpCommand().execute();
+                break;
             case "exit":
                 System.out.println("Exiting game...");
                 return false;
@@ -101,6 +131,7 @@ public class Game {
         }
         return true;
     }
+
 
     private Item findItemInRoom(String itemName) {
         for (Item item : world.getCurrentRoom().getItems()) {
@@ -119,4 +150,13 @@ public class Game {
         }
         return null;
     }
+    private Character findCharacterInRoom(String name) {
+        for (Character character : world.getCurrentRoom().getCharacters()) {
+            if (character.getName().equalsIgnoreCase(name)) {
+                return character;
+            }
+        }
+        return null;
+    }
+
 }
