@@ -28,10 +28,24 @@ public class Player extends Character{
             System.out.println("Inventory is full! You can't pick up the item: " + item.getName());
         }
     }
+    public void dropItem(Item item) {
+        if (inventory.getItems().contains(item)) {
+            inventory.removeItem(item);
+            currentRoom.addItem(item); // Return of the item dropped to the current room(simulates dropping on the ground)
+            System.out.println("You dropped: " + item.getName());
+        } else {
+            System.out.println("You don't have this item.");
+        }
+    }
+
 
     public void equipWeapon(Weapon weapon) {
         this.equippedWeapon = weapon;
     }
+    public Inventory getInventory() {
+        return inventory;
+    }
+
 
     public Weapon getEquippedWeapon() { return equippedWeapon; }
 }

@@ -24,5 +24,16 @@ public class Inventory {
         }
     }
 
+    public List<Item> getItems() {
+        return items;
+    }
 
+    public Item findItem(String itemName) {
+        for (Item item : items) {
+            if (item.getName().equalsIgnoreCase(itemName)) {
+                return item;
+            }
+        }
+        return null;
+    }
 }

@@ -56,5 +56,8 @@ public class World {
         }
     }
 
+    public Room getCurrentRoom() {
+        return currentRoom;
+    }
 }
 
