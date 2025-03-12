@@ -7,7 +7,7 @@ public class Enemy extends Character {
     }
 
     public void attack(Player player) {
-        System.out.println(name + " zaútočil a způsobil " + damage + " poškození!");
+        System.out.println(name + " attacked and dealt " + damage + " damage!");
         player.takeDamage(damage);
     }
 
