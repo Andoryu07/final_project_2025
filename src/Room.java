@@ -8,13 +8,14 @@ public class Room {
     private final List<Integer> neighbors;// List of the indexes of neighbor rooms
     private List<Item> items;
     private List<Character> characters;
-
+    private List<SearchSpot> searchSpots;//Arraylist used to store already searched spots
     public Room(int index, String name, List<Integer> neighbors) {
         this.index = index;
         this.name = name;
         this.neighbors = neighbors;
         this.items = new ArrayList<>();
         this.characters = new ArrayList<>();
+        this.searchSpots = new ArrayList<>();
     }
 
     public int getIndex() {
@@ -57,5 +58,23 @@ public class Room {
         items.add(item);
         System.out.println("Item " + item.getName() + " has been added to the room: " + name);
     }
+    public void addSearchSpot(SearchSpot spot) {
+        searchSpots.add(spot);
+    }
+
+    public List<SearchSpot> getUnsearchedSpots() {
+        List<SearchSpot> unsearched = new ArrayList<>();
+        for (SearchSpot spot : searchSpots) {
+            if (!spot.isSearched()) {
+                unsearched.add(spot);
+            }
+        }
+        return unsearched;
+    }
+
+    public SearchSpot getSearchSpot(int index) {
+        return (index >= 0 && index < searchSpots.size()) ? searchSpots.get(index) : null;
+    }
 }
+
 

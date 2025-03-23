@@ -126,6 +126,9 @@ public class Game {
             case "exit":
                 System.out.println("Exiting game...");
                 return false;
+            case "search":
+                new SearchCommand(player).execute();
+                break;
             default:
                 System.out.println("Unknown command. Type 'help' for a list of commands.");
         }
