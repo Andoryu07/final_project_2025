@@ -1,11 +1,13 @@
+import java.util.List;
+
 public class SearchSpot {
     private String name;
     private boolean searched;
-    private Item hiddenItem;
+    private List<Item> hiddenItems;
 
-    public SearchSpot(String name, Item hiddenItem) {
+    public SearchSpot(String name, List<Item> hiddenItems) {
         this.name = name;
-        this.hiddenItem = hiddenItem;
+        this.hiddenItems = hiddenItems;
         this.searched = false;
     }
 
@@ -17,13 +19,14 @@ public class SearchSpot {
         return searched;
     }
 
-    public Item search() {
+    public List<Item> search() {
         if (!searched) {
             searched = true;
-            return hiddenItem;
+            return hiddenItems;
         }
         return null;
     }
 }
+
 
 

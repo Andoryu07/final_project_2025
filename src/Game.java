@@ -9,10 +9,13 @@ public class Game {
     private Map<String, Command> commands;
 
     public Game() {
-        this.world = new World();
+        this.world = new World(null);  // Create the world first (with no player initially)
         this.scanner = new Scanner(System.in);
-        world.loadFromFile("src/game_layout.txt");
-        this.player = new Player("Ethan", 100, world.getCurrentRoom());
+        world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
+
+        this.player = new Player("Ethan", 100, world.getCurrentRoom());  // Now create the player with the world’s starting room
+        world.setPlayer(player);  // Set the player in the world
+
         this.commands = new HashMap<>();
     }
 

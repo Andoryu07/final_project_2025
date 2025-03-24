@@ -12,6 +12,7 @@ public class HelpCommand implements Command {
             System.out.println("  inventory         - Show inventory");
             System.out.println("  help              - Show this help menu");
             System.out.println("  exit              - Exit the game");
+            System.out.println("  search            - Search the environment");
         }
 
 

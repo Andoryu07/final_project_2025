@@ -1,4 +1,4 @@
-public class Knife extends Weapon{
+public class Knife extends Weapon {
     public Knife() {
         super("Knife", "Weaker, but unlimited use", 10, -1);
     }

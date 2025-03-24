@@ -1,4 +1,4 @@
-0 Key_Table HINT#1,CASSETTE
+0 Key_Table HINT_1,CASSETTE
 0 Key_Table_Drawer Empty
 1 Shelf_1 Empty
 1 Shelf_2 Empty

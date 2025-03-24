@@ -23,11 +23,12 @@ public class Player extends Character{
     public void pickUpItem(Item item) {
         if (inventory.addItem(item)) {
             System.out.println("You've picked up: " + item.getName());
-            currentRoom.removeItem(item); // Removal of the item from the room
+            currentRoom.removeItem(item);
         } else {
             System.out.println("Inventory is full! You can't pick up the item: " + item.getName());
         }
     }
+
     public void dropItem(Item item) {
         if (inventory.getItems().contains(item)) {
             inventory.removeItem(item);

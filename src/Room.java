@@ -50,14 +50,17 @@ public class Room {
     public void removeItem(Item item) {
         if (items.remove(item)) {
             System.out.println("Item " + item.getName() + " has been removed from the room: " + name);
-        } else {
-            System.out.println("Item  " + item.getName() + " is not located in this room.");
         }
     }
     public void addItem(Item item) {
-        items.add(item);
-        System.out.println("Item " + item.getName() + " has been added to the room: " + name);
+        if (!items.contains(item)) {
+            items.add(item);
+            System.out.println("Item " + item.getName() + " has been added to the room: " + name);
+        } else {
+            System.out.println("The item " + item.getName() + " is already in the room.");
+        }
     }
+
     public void addSearchSpot(SearchSpot spot) {
         searchSpots.add(spot);
     }
@@ -69,8 +72,11 @@ public class Room {
                 unsearched.add(spot);
             }
         }
+
+        System.out.println("Unsearched spots in room " + this.getName() + ": " + unsearched.size());
         return unsearched;
     }
+
 
     public SearchSpot getSearchSpot(int index) {
         return (index >= 0 && index < searchSpots.size()) ? searchSpots.get(index) : null;

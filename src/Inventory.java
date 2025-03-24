@@ -12,9 +12,12 @@ public class Inventory {
         if (items.size() < capacity) {
             items.add(item);
             return true;
+        } else {
+            System.out.println("Inventory is full! Cannot add: " + item.getName());
+            return false;
         }
-        return false;
     }
+
     public void removeItem(Item item) {
         items.remove(item);
     }

@@ -1,4 +1,4 @@
-public class GearPiece extends Item{
+public class GearPiece extends Item {
     public GearPiece() {
         super("Gear piece", "Part used to repair a certain mechanism");
     }
