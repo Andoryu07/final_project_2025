@@ -15,7 +15,7 @@ public class Game {
 
         this.player = new Player("Ethan", 100, world.getCurrentRoom());  // Now create the player with the world’s starting room
         world.setPlayer(player);  // Set the player in the world
-
+        world.initializeGearLock();
         this.commands = new HashMap<>();
     }
 
@@ -36,6 +36,13 @@ public class Game {
         String argument = (parts.length > 1) ? parts[1] : null;
 
         switch (commandName) {
+            case "insert":
+                if (argument != null) {
+                    world.insertGearPiece(argument.toUpperCase(), player);
+                } else {
+                    System.out.println("Specify which gear piece to insert.");
+                }
+                break;
             case "go":
                 if (argument != null) {
                     try {
@@ -62,7 +69,7 @@ public class Game {
                 break;
             case "drop":
                 if (argument != null) {
-                    Item item = player.getInventory().findItem(argument);
+                    Item item = player.findItemInInventory(argument); // Updated this line
                     if (item != null) {
                         new DropCommand(player, item).execute();
                     } else {
@@ -74,7 +81,7 @@ public class Game {
                 break;
             case "use":
                 if (argument != null) {
-                    Item item = player.getInventory().findItem(argument);
+                    Item item = player.findItemInInventory(argument); // Updated this line
                     if (item != null) {
                         new UseCommand(player, item).execute();
                     } else {
@@ -110,7 +117,7 @@ public class Game {
                 break;
             case "examine":
                 if (argument != null) {
-                    Item item = player.getInventory().findItem(argument);
+                    Item item = player.findItemInInventory(argument); // Updated this line
                     if (item != null) {
                         new ExamineCommand(player, item).execute();
                     } else {

@@ -7,16 +7,56 @@ public class World {
     private final Map<Integer, Room> rooms = new HashMap<>();
     private Room currentRoom;
     private Player player;
+    private GearLock gearLock;
+    private final Room laboratory;
 
     public void loadFromFile(String roomFilePath, String searchSpotFilePath) {
         loadRooms(roomFilePath);
         loadSearchSpots(searchSpotFilePath);
     }
+
     public World(Player player) {
         this.player = player;
+        laboratory = new Room("Laboratory",true);
+
+
+
+
     }
+
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    public void initializeGearLock() {
+        Room cellar = findRoomByName("Celery");
+        Room laboratory = findRoomByName("Laboratory");
+
+        if (cellar != null && laboratory != null) {
+            gearLock = new GearLock(cellar, laboratory);
+            cellar.setGearLock(gearLock);
+
+        } else {
+            System.err.println("Error: Could not initialize GearLock, rooms not found.");
+        }
+    }
+
+    public void insertGearPiece(String gearName, Player player) {
+        System.out.println("Current room: " + player.getCurrentRoom().getName());
+        if (player.getCurrentRoom().getName().equalsIgnoreCase("Celery")) {
+            if (gearLock != null) {
+                gearLock.insertGear(gearName, player);
+            } else {
+                System.out.println("The gear mechanism seems broken...");
+            }
+        } else {
+            System.out.println("There is no gear mechanism here.");
+        }
+    }
+
+
+    private Room findRoomByName(String name) {
+        return rooms.values().stream().filter(room -> room.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
     private void loadRooms(String filePath) {
@@ -72,7 +112,6 @@ public class World {
                     SearchSpot spot = new SearchSpot(spotName, hiddenItems);
                     room.addSearchSpot(spot);
 
-                    System.out.println("Added search spot '" + spotName + "' to room: " + room.getName());
                 } catch (NumberFormatException e) {
                     System.err.println("Error parsing room index: " + parts[0]);
                 }
@@ -83,50 +122,103 @@ public class World {
     }
 
 
-
-
-
     private Item createItem(String itemName) {
         switch (itemName.toUpperCase()) {
-            case "KNIFE": return new Knife();
-            case "PISTOL": return new Pistol();
-            case "SHOTGUN": return new Shotgun();
-            case "PISTOL_AMMO": return new PistolAmmo(10);
-            case "SHOTGUN_AMMO": return new ShotgunShells(5);
-            case "BANDAGE": return new Bandage();
-            case "HEALING_SERUM": return new HealingSerum();
-            case "CASSETTE": return new KeyItem("Cassette", "A tape for saving the game.");
-            case "GEAR_PIECE_1": return new GearPiece();
-            case "GEAR_PIECE_2": return new GearPiece();
-            case "GEAR_PIECE_3": return new GearPiece();
-            case "GEAR_PIECE_4": return new GearPiece();
-            case "FLASHLIGHT": return new Flashlight();
-            case "BATTERIES": return new KeyItem("Batteries", "Used to recharge the flashlight.");
-            case "REPAIR_TOOL": return new KeyItem("Repair Tool", "A tool for fixing machines.");
-            case "HAMMER": return new KeyItem("Hammer", "Useful for breaking or fixing things.");
-            case "STALKERS_CLAW": return new KeyItem("Stalker's Claw", "A trophy from the final enemy.");
-            case "CURING_SERUM": return new KeyItem("Curing Serum", "A special serum with mysterious properties.");
-            case "HINT_1": return new Hint("Hint 1", "You need to wander into the basement. To do so, you need to find 4 gear pieces to unlock the door. The first one may be located somewhere outside...");
-            case "HINT_2": return new Hint("Hint 2", "The second gear piece might be somewhere in the garden house.");
-            case "HINT_3": return new Hint("Hint 3", "The third gear piece is probably located in the bathroom somewhere...you're gonna need a hammer.");
-            case "HINT_4": return new Hint("Hint 4", "The last gear piece is located somewhere in the lower floor.");
-            case "KEY_TO_DINING_ROOM_WARDROBE_2": return new KeyItem("Key to Dining Room Wardrobe 2", "A key. It seems to fit into a wardrobe in the dining room.");
-            case "KEY_TO_GARDEN_HOUSE": return new KeyItem("Key to Garden House", "A key used to access the garden house.");
-            default: return null;
+            case "KNIFE":
+                return new Knife();
+            case "PISTOL":
+                return new Pistol();
+            case "SHOTGUN":
+                return new Shotgun();
+            case "PISTOL_AMMO":
+                return new PistolAmmo(10);
+            case "SHOTGUN_AMMO":
+                return new ShotgunShells(5);
+            case "BANDAGE":
+                return new Bandage();
+            case "HEALING_SERUM":
+                return new HealingSerum();
+            case "CASSETTE":
+                return new KeyItem("Cassette", "A tape for saving the game.");
+            case "GEAR_PIECE_1":
+                return new GearPiece("GEAR_PIECE_1");
+            case "GEAR_PIECE_2":
+                return new GearPiece("GEAR_PIECE_2");
+            case "GEAR_PIECE_3":
+                return new GearPiece("GEAR_PIECE_3");
+            case "GEAR_PIECE_4":
+                return new GearPiece("GEAR_PIECE_4");
+            case "FLASHLIGHT":
+                return new Flashlight();
+            case "BATTERIES":
+                return new KeyItem("Batteries", "Used to recharge the flashlight.");
+            case "REPAIR_TOOL":
+                return new KeyItem("Repair Tool", "A tool for fixing machines.");
+            case "HAMMER":
+                return new KeyItem("Hammer", "Useful for breaking or fixing things.");
+            case "STALKERS_CLAW":
+                return new KeyItem("Stalker's Claw", "A trophy from the final enemy.");
+            case "CURING_SERUM":
+                return new KeyItem("Curing Serum", "A special serum with mysterious properties.");
+            case "HINT_1":
+                return new Hint("Hint 1", "You need to wander into the basement. To do so, you need to find 4 gear pieces to unlock the door. The first one may be located somewhere outside...");
+            case "HINT_2":
+                return new Hint("Hint 2", "The second gear piece might be somewhere in the garden house.");
+            case "HINT_3":
+                return new Hint("Hint 3", "The third gear piece is probably located in the bathroom somewhere...you're gonna need a hammer.");
+            case "HINT_4":
+                return new Hint("Hint 4", "The last gear piece is located somewhere in the lower floor.");
+            case "KEY_TO_DINING_ROOM_WARDROBE_2":
+                return new KeyItem("Key to Dining Room Wardrobe 2", "A key. It seems to fit into a wardrobe in the dining room.");
+            case "KEY_TO_GARDEN_HOUSE":
+                return new KeyItem("Key to Garden House", "A key used to access the garden house.");
+            default:
+                return null;
         }
     }
-
 
 
     public void moveToRoom(int index) {
-        if (currentRoom.getNeighbors().contains(index)) {
-            currentRoom = rooms.get(index);
-            player.setCurrentRoom(currentRoom);  // Update Player's current room
-            System.out.println("\nMoved to the room: " + currentRoom.getName());
-        } else {
-            System.out.println("\nCan't move to the room with the index " + index);
+        Room nextRoom = rooms.get(index);
+
+        if (nextRoom == null) {
+            System.out.println("\nInvalid index. This room does not exist.");
+            return;
+        }
+
+        if (!currentRoom.getNeighbors().contains(index)) {
+            System.out.println("\nInvalid move. You can't go there directly.");
+            return;
+        }
+
+        // Special check for Laboratory
+        if (nextRoom.getName().equalsIgnoreCase("Laboratory") &&
+                (gearLock == null || !gearLock.isUnlocked())) {
+            System.out.println("\nThe door to the Laboratory is locked. You need to insert all 4 gear pieces in the Celery first.");
+            return;
+        }
+
+        if (nextRoom.isLocked()) {
+            System.out.println("\nThis room is locked. Find a way to unlock it.");
+            return;
+        }
+
+        currentRoom = nextRoom;
+        player.setCurrentRoom(currentRoom);
+        System.out.println("\nMoved to the room: " + currentRoom.getName());
+
+        // Check for Secret Chamber
+        if (currentRoom.getName().equalsIgnoreCase("Secret_Chamber")) {
+            System.out.println("\n******************************************************************");
+            System.out.println("* You've found your sister! The nightmare is finally over...      *");
+            System.out.println("*                                                                *");
+            System.out.println("*                      T H E    E N D                            *");
+            System.out.println("******************************************************************");
+            System.exit(0); // Exit the game
         }
     }
+
+
 
     public void printCurrentRoom() {
         System.out.println("\n🔹 You're currently at the room: " + currentRoom.getName());

@@ -12,7 +12,6 @@ public class SearchCommand implements Command {
 
     public void execute() {
         Room currentRoom = player.getCurrentRoom();
-        System.out.println("Current room: " + currentRoom.getName());  //  debug statement
         List<SearchSpot> unsearchedSpots = currentRoom.getUnsearchedSpots();
 
         if (unsearchedSpots.isEmpty()) {
@@ -34,10 +33,7 @@ public class SearchCommand implements Command {
 
                 if (foundItems != null && !foundItems.isEmpty()) {
                     System.out.println("You found:");
-                    for (Item item : foundItems) {
-                        System.out.println("- " + item.getName());
-                        player.pickUpItem(item);
-                    }
+                    handleFoundItems(foundItems, currentRoom);
                 } else {
                     System.out.println("You found nothing.");
                 }
@@ -49,7 +45,16 @@ public class SearchCommand implements Command {
         }
     }
 
+    private void handleFoundItems(List<Item> foundItems, Room currentRoom) {
+        for (Item item : foundItems) {
+            if (player.getInventory().canAddItem()) {  // Check if inventory has space
+                player.getInventory().addItem(item);
+                System.out.println("- " + item.getName());
+                System.out.println("You've picked up: " + item.getName());
+            } else {
+                currentRoom.addItem(item);
+                System.out.println("- " + item.getName() + " (inventory full, item dropped to the ground)");
+            }
+        }
+    }
 }
-
-
-
