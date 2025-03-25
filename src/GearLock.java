@@ -14,26 +14,34 @@ public class GearLock {
     }
 
     public boolean insertGear(String gearName, Player player) {
-        // First check if the player has the item in their inventory
-        boolean hasItem = player.getInventory().getItems().stream()
-                .anyMatch(item -> item.getName().equalsIgnoreCase(gearName));
+        // First try to find by display name ("Gear Piece 1")
+        Item item = player.findItemInInventory(gearName);
 
-        if (!hasItem) {
+        // If not found, try to find by internal name ("GEAR_PIECE_1")
+        if (item == null) {
+            String internalName = gearName.toUpperCase().replace(" ", "_")
+                    .replace("GEAR", "GEAR")
+                    .replace("PIECE", "PIECE");
+            item = player.findItemInInventory(internalName);
+        }
+
+        if (item == null || !(item instanceof GearPiece)) {
             System.out.println("❌ You don't have " + gearName + " in your inventory!");
             return false;
         }
 
-        if (insertedGears.contains(gearName.toUpperCase())) {
-            System.out.println("🔩 " + gearName + " has already been inserted.");
+        GearPiece gear = (GearPiece) item;
+        String internalGearName = gear.getInternalName();
+
+        // Rest of the method uses internalGearName for logic
+        if (insertedGears.contains(internalGearName)) {
+            System.out.println("🔩 " + gear.getName() + " has already been inserted.");
             return false;
         }
 
-        // Remove the actual item from player's inventory
-        player.getInventory().getItems().removeIf(item ->
-                item.getName().equalsIgnoreCase(gearName));
-
-        insertedGears.add(gearName.toUpperCase());
-        System.out.println("✅ You inserted " + gearName + " into the mechanism.");
+        player.getInventory().removeItem(gear);
+        insertedGears.add(internalGearName);
+        System.out.println("✅ You inserted " + gear.getName() + " into the mechanism.");
 
         if (insertedGears.size() == REQUIRED_GEAR_COUNT) {
             unlockDoor();
@@ -43,12 +51,12 @@ public class GearLock {
         return true;
     }
 
-    private void unlockDoor() {
-        System.out.println("\n🚪 The mechanism clicks... The door to " + lockedRoom.getName() + " is now open!");
-        lockedRoom.unlock();
-    }
+        private void unlockDoor() {
+            System.out.println("\n🚪 The mechanism clicks... The door to " + lockedRoom.getName() + " is now open!");
+            lockedRoom.unlock();
+        }
 
-    public boolean isUnlocked() {
-        return insertedGears.size() == REQUIRED_GEAR_COUNT;
+        public boolean isUnlocked () {
+            return insertedGears.size() == REQUIRED_GEAR_COUNT;
+        }
     }
-}
