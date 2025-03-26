@@ -3,23 +3,12 @@ import java.util.List;
 
 //represents the rooms of the game
 public class Room {
-    private  int index;// numeral id of the room
+    private final int index;// numeral id of the room
     private final String name;// room name
-    public boolean isLocked;
-    private List<Integer> neighbors;// List of the indexes of neighbor rooms
+    private final List<Integer> neighbors;// List of the indexes of neighbor rooms
     private List<Item> items;
     private List<Character> characters;
     private List<SearchSpot> searchSpots;//Arraylist used to store already searched spots
-    private GearLock gearLock;
-
-    public void setGearLock(GearLock gearLock) {
-        this.gearLock = gearLock;
-    }
-
-    public Room(String name, boolean isLocked) {
-        this.name = name;
-        this.isLocked = isLocked;
-    }
     public Room(int index, String name, List<Integer> neighbors) {
         this.index = index;
         this.name = name;
@@ -27,15 +16,6 @@ public class Room {
         this.items = new ArrayList<>();
         this.characters = new ArrayList<>();
         this.searchSpots = new ArrayList<>();
-
-    }
-
-    public boolean isLocked() {
-        return isLocked;
-    }
-
-    public void unlock() {
-        this.isLocked = false;
     }
 
     public int getIndex() {

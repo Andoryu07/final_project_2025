@@ -7,7 +7,17 @@ public class MoveCommand implements Command {
     }
     @Override
     public void execute() {
-        world.moveToRoom(targetRoom);
+        if (targetRoom == 11){
+            Room currentRoom = world.getCurrentRoom();
+            if (currentRoom.getDoorMechanism() != null && !currentRoom.getDoorMechanism().isUnlocked()){
+                System.out.println("❌ The door to the Laboratory is locked. You must insert all gear pieces first.");
+
+            } else {
+                world.moveToRoom(targetRoom);
+            }
+        } else {
+            world.moveToRoom(targetRoom);
+        }
     }
 
 

@@ -12,7 +12,6 @@ public class Game {
         this.world = new World(null);  // Create the world first (with no player initially)
         this.scanner = new Scanner(System.in);
         world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
-
         this.player = new Player("Ethan", 100, world.getCurrentRoom());  // Now create the player with the world’s starting room
         world.setPlayer(player);  // Set the player in the world
         world.initializeGearLock();
@@ -23,12 +22,39 @@ public class Game {
         boolean running = true;
         while (running) {
             world.printCurrentRoom();
+
+            // Check if the player is in the Cellar
+            if (player.getCurrentRoom().getName().equalsIgnoreCase("Cellar")) {
+                checkCellarInteraction();
+            }
+
             System.out.print("\nEnter command: ");
             String input = scanner.nextLine();
             running = processInput(input);
         }
         scanner.close();
     }
+
+    private void checkCellarInteraction() {
+        System.out.println("\nYou see an old mechanical door with missing gears.");
+
+        // Check if the player has any Gear Pieces
+        boolean hasGearPiece = player.getInventory().hasItem("Gear Piece 1") ||
+                player.getInventory().hasItem("Gear Piece 2") ||
+                player.getInventory().hasItem("Gear Piece 3") ||
+                player.getInventory().hasItem("Gear Piece 4");
+
+        if (hasGearPiece) {
+            System.out.println("Do you want to insert a Gear Piece? (yes/no)");
+            String response = scanner.nextLine().trim().toLowerCase();
+            if (response.equals("yes")) {
+                new InsertGearCommand(player, world).execute();
+            }
+        } else {
+            System.out.println("You need to find all the missing Gear Pieces.");
+        }
+    }
+
 
     private boolean processInput(String input) {
         String[] parts = input.split(" ", 2);
