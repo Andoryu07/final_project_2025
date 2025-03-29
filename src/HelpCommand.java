@@ -5,6 +5,7 @@ public class HelpCommand implements Command {
             System.out.println("  go <room_index>   - Move to a different room");
             System.out.println("  take <item>       - Pick up an item");
             System.out.println("  drop <item>       - Drop an item");
+            System.out.println("  equip <weapon>    - Equip a weapon");
             System.out.println("  use <item>        - Use an item");
             System.out.println("  attack <enemy>    - Attack an enemy");
             System.out.println("  talk <NPC>        - Talk to a character");

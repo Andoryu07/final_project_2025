@@ -10,6 +10,10 @@ public class Inventory {
         this.capacity = capacity;
     }
 
+    public int getCapacity() {
+        return capacity;
+    }
+
     // Add this method to find an item by name
     public Item findItem(String itemName) {
         for (Item item : items) {

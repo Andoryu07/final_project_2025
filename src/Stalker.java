@@ -1,11 +1,12 @@
-public class Stalker extends Enemy{
+public class Stalker extends Enemy {
     public Stalker(Room startRoom) {
-        super("Stalker", 200, 30, startRoom);
+        super("Stalker", 120, startRoom);
+        this.distanceFromPlayer = 3;
     }
 
     @Override
-    public void attack(Player player) {
-        System.out.println(name + " has approached you and dealt MASSIVE damage!");
-        player.takeDamage(40);
+    protected void initializeAttacks() {
+        attacks.put("Claw Stab", 50);
+        attacks.put("Bite", 40);
     }
 }

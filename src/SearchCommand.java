@@ -27,8 +27,13 @@ public class SearchCommand implements Command {
         System.out.print("\nEnter the number of the spot you want to search: ");
         try {
             int choice = Integer.parseInt(scanner.nextLine()) - 1;
+
             if (choice >= 0 && choice < unsearchedSpots.size()) {
                 SearchSpot chosenSpot = unsearchedSpots.get(choice);
+                if (!currentRoom.canSearchSpot(chosenSpot.getName(), player, scanner)) {
+                    System.out.println("You cannot search this spot yet!");
+                    return;
+                }
                 List<Item> foundItems = chosenSpot.search();
 
                 if (foundItems != null && !foundItems.isEmpty()) {

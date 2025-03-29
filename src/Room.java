@@ -1,14 +1,44 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 //represents the rooms of the game
 public class Room {
-    private final int index;// numeral id of the room
+    private  int index;// numeral id of the room
     private final String name;// room name
-    private final List<Integer> neighbors;// List of the indexes of neighbor rooms
+    public boolean isLocked;
+    private List<Integer> neighbors;// List of the indexes of neighbor rooms
     private List<Item> items;
     private List<Character> characters;
     private List<SearchSpot> searchSpots;//Arraylist used to store already searched spots
+    private GearLock gearLock;
+    private Lock roomLock;
+    private Map<String,Lock> searchSpotLocks = new HashMap<>();
+
+    public void setGearLock(GearLock gearLock) {
+        this.gearLock = gearLock;
+    }
+    public void setLock(Lock lock) {
+        this.roomLock = lock;
+    }
+
+    public void addSearchSpotLock(String spotName, Lock lock) {
+        searchSpotLocks.put(spotName, lock);
+    }
+
+    public boolean canAccess(Player player, Scanner scanner) {
+        return roomLock == null || !roomLock.isLocked() ||
+                roomLock.attemptUnlock(player, scanner);
+    }
+
+    public boolean canSearchSpot(String spotName, Player player, Scanner scanner) {
+        Lock lock = searchSpotLocks.get(spotName);
+        return lock == null || !lock.isLocked() ||
+                lock.attemptUnlock(player, scanner);
+    }
+
+    public Room(String name, boolean isLocked) {
+        this.name = name;
+        this.isLocked = isLocked;
+    }
     public Room(int index, String name, List<Integer> neighbors) {
         this.index = index;
         this.name = name;
@@ -16,6 +46,15 @@ public class Room {
         this.items = new ArrayList<>();
         this.characters = new ArrayList<>();
         this.searchSpots = new ArrayList<>();
+
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void unlock() {
+        this.isLocked = false;
     }
 
     public int getIndex() {
@@ -34,9 +73,6 @@ public class Room {
         return items;
     }
 
-    public List<Character> getCharacters() {
-        return characters;
-    }
 
     @Override
     public String toString() {
@@ -75,6 +111,20 @@ public class Room {
 
         System.out.println("Unsearched spots in room " + this.getName() + ": " + unsearched.size());
         return unsearched;
+    }
+    public void addCharacter(Character character) {
+        characters.add(character);
+    }
+
+    public List<Character> getCharacters() {
+        return characters;
+    }
+
+    public List<Enemy> getEnemies() {
+        return characters.stream()
+                .filter(c -> c instanceof Enemy)
+                .map(c -> (Enemy)c)
+                .toList();
     }
 
 

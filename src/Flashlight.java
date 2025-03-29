@@ -25,4 +25,5 @@ public class Flashlight extends Item {
     public int getBatteryLevel() {
         return battery;
     }
+
 }

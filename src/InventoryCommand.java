@@ -6,8 +6,9 @@ public class InventoryCommand implements Command {
 
     @Override
     public void execute() {
-        System.out.println("\nYour inventory:");
-        player.getInventory().printInventory();
+        System.out.printf("Inventory: %d/%d slots used%n",
+                player.getInventory().getItems().size(),
+                player.getInventory().getCapacity());
     }
 }
 

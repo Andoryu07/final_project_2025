@@ -5,10 +5,7 @@ public class Shotgun extends Weapon {
 
     @Override
     public void use(Player player) {
-        if (hasAmmo()) {
-            System.out.println("You used the shotgun");
-        } else {
-            System.out.println("You have no ammo left");
-        }
+        super.use(player);
+        System.out.println("BOOM! Shotgun blast fired.");
     }
 }
