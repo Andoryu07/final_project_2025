@@ -30,15 +30,21 @@ public class SearchCommand implements Command {
 
             if (choice >= 0 && choice < unsearchedSpots.size()) {
                 SearchSpot chosenSpot = unsearchedSpots.get(choice);
-                if (!currentRoom.canSearchSpot(chosenSpot.getName(), player, scanner)) {
-                    System.out.println("You cannot search this spot yet!");
-                    return;
-                }
-                List<Item> foundItems = chosenSpot.search();
 
+                // First check if we can access this spot
+                if (!currentRoom.canSearchSpot(chosenSpot.getName(), player, scanner)) {
+                    return; // Lock check handles all messaging
+                }
+
+                // If we get here, the spot is accessible
+                List<Item> foundItems = chosenSpot.search();
                 if (foundItems != null && !foundItems.isEmpty()) {
                     System.out.println("You found:");
-                    handleFoundItems(foundItems, currentRoom);
+                    for (Item item : foundItems) {
+                        System.out.println("- " + item.getName());
+                        player.getInventory().addItem(item);
+                        System.out.println("You've picked up: " + item.getName());
+                    }
                 } else {
                     System.out.println("You found nothing.");
                 }
@@ -47,19 +53,6 @@ public class SearchCommand implements Command {
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a number.");
-        }
-    }
-
-    private void handleFoundItems(List<Item> foundItems, Room currentRoom) {
-        for (Item item : foundItems) {
-            if (player.getInventory().canAddItem()) {  // Check if inventory has space
-                player.getInventory().addItem(item);
-                System.out.println("- " + item.getName());
-                System.out.println("You've picked up: " + item.getName());
-            } else {
-                currentRoom.addItem(item);
-                System.out.println("- " + item.getName() + " (inventory full, item dropped to the ground)");
-            }
         }
     }
 }

@@ -9,12 +9,12 @@ public class DropCommand implements Command {
 
     @Override
     public void execute() {
-        if (player.getInventory().getItems().contains(item)) {
+        if (player.getInventory().getItems().contains(item) && !item.getName().equals("Knife")) {
             player.getInventory().removeItem(item);
             player.getCurrentRoom().addItem(item);
             System.out.println("You dropped " + item.getName() + " on the ground.");
         } else {
-            System.out.println("You don't have this item to drop.");
+            System.out.println("You don't have this item to drop or you can't drop this item.");
         }
     }
 }

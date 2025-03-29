@@ -18,8 +18,7 @@
 7 Wall_cabinet BANDAGE,HEALING_SERUM
 7 Wall REPAIR_TOOL
 7 Zombie_body GEAR_PIECE_2
-8 Desk GEAR_PIECE_1
-8 Desk KEY_TO_GARDEN_HOUSE
+8 Desk_1 GEAR_PIECE_1,KEY_TO_GARDEN_HOUSE
 8 Desk_wardrobe CASSETTE
 10 Under_desk_1 Empty
 10 Under_desk_2 Empty

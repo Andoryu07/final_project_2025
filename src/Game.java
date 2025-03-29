@@ -15,6 +15,7 @@ public class Game {
 
         this.player = new Player("Ethan", 100, world.getCurrentRoom());  // Now create the player with the world’s starting room
         world.setPlayer(player);  // Set the player in the world
+        world.initializeLocks();
         world.initializeGearLock();
         world.initializeEnemies();
         this.commands = new HashMap<>();
@@ -48,7 +49,7 @@ public class Game {
                 if (argument != null) {
                     try {
                         int roomIndex = Integer.parseInt(argument);
-                        new MoveCommand(world, roomIndex).execute();
+                        new MoveCommand(world, roomIndex,scanner).execute();
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid room number.");
                     }

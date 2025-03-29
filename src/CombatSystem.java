@@ -47,14 +47,14 @@ public class CombatSystem {
     private void printCombatOptions() {
         System.out.println("1. Attack with equipped weapon");
         System.out.println("2. Heal");
+        System.out.println("3. Block (reduce next damage by 50%)"); // New option
         if (player.getEquippedWeapon() != null && !player.getEquippedWeapon().isInfiniteUse()) {
-            System.out.println("3. Reload");
+            System.out.println("4. Reload");
         }
-        System.out.println("4. Equip weapon");
+        System.out.println("5. Equip weapon");
         if (player.hasItem("Flashlight") && turnsSinceLastFlashlightUse >= 3) {
-            System.out.println("5. Blind enemy with flashlight");
+            System.out.println("6. Blind enemy with flashlight");
         }
-
         System.out.println("0. Give up");
         System.out.print("Choose an action: ");
     }
@@ -67,7 +67,11 @@ public class CombatSystem {
             case "2":
                 useHealingItem();
                 break;
-            case "3": // Reload
+            case "3": // New block option
+                player.setBlocking(true);
+                System.out.println("You put up your defense, ready to block the next attack(Reduces damage by 50%)!");
+                break;
+            case "4": // Reload
                 if (player.getEquippedWeapon() != null &&
                         !player.getEquippedWeapon().isInfiniteUse()) {
                     reloadWeapon();
@@ -76,10 +80,10 @@ public class CombatSystem {
                     playerTurn();
                 }
                 break;
-            case "4": // Equip
+            case "5": // Equip
                 showEquipMenu();
                 break;
-             case "5":
+            case "6":
                 if (player.hasItem("Flashlight") && turnsSinceLastFlashlightUse >= 3) {
                     useFlashlight();
                 } else {
@@ -87,7 +91,7 @@ public class CombatSystem {
                     playerTurn();
                 }
                 break;
-            case "09": // Give up
+            case "0": // Give up
                 System.out.println("You surrender to the enemy...");
                 player.takeDamage(player.getHealth()); // Instant death
                 handleDefeat();
@@ -135,7 +139,6 @@ public class CombatSystem {
             int choice = Integer.parseInt(scanner.nextLine()) - 1;
             if (choice >= 0 && choice < weapons.size()) {
                 player.equipWeapon(weapons.get(choice));
-                System.out.println("Equipped " + weapons.get(choice).getName());
             } else {
                 System.out.println("Invalid choice!");
             }
@@ -235,7 +238,10 @@ public class CombatSystem {
             System.out.println(enemy.getName() + " is blinded and misses their turn!");
             turnsSinceLastFlashlightUse++;
         } else {
-            enemy.performRandomAttack(player);
+            AttackResult attack = enemy.performRandomAttack(); // Changed from Enemy.AttackResult
+            System.out.printf("%s uses %s for %d damage%n", enemy.getName(), attack.attackName, attack.damage);
+            //damage reduction will happen inside takeDamage() if blocking
+            player.takeDamage(attack.damage);
             turnsSinceLastFlashlightUse++;
         }
     }
@@ -243,7 +249,8 @@ public class CombatSystem {
     private void endCombat() {
         if (player.getHealth() <= 0) {
             System.out.println("You were defeated by " + enemy.getName() + "!");
-            // Handle game over
+            System.exit(0);
+            //TODO: Handle game over
         } else {
             System.out.println("You defeated " + enemy.getName() + "!");
             if (enemy instanceof Stalker) {

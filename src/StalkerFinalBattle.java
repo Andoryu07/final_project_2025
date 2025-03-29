@@ -6,7 +6,7 @@ public class StalkerFinalBattle extends Enemy {
 
     @Override
     protected void initializeAttacks() {
-        attacks.put("Claw Stab", 50);
-        attacks.put("Tail Slash", 70);
+        attacks.put("Claw Stab", 30);
+        attacks.put("Tail Slash", 50);
     }
 }

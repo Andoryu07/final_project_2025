@@ -26,43 +26,74 @@ public class World {
     public void initializeLocks() {
         // Celery requires charged flashlight
         Room celery = findRoomByName("Celery");
-        celery.setLock(new Lock(
-                "Flashlight",
-                "The basement is pitch black - you need a working flashlight to enter!",
-                "Your flashlight pierces the darkness..."
-        ));
+        celery.setLock(new Lock("Flashlight",
+                "\nThe doorway to the cellar is pitch black. You'd have no way to defend yourself against potential enemies!",
+                "\nYou switch on your flashlight, its beam cutting through the darkness...",false) {
+            @Override
+            public boolean attemptUnlock(Player player, Scanner scanner) {
+                String choice = showUnlockPrompt(player, scanner);
+                if (choice == null) return false;  // Player doesn't have item
+                if (choice.equals("1")) {
+                    Item flashlight = player.findItemInInventory("Flashlight");
+                    if (!((Flashlight)flashlight).isCharged()) {
+                        System.out.println("Your flashlight batteries are dead!");
+                        return false;
+                    }
+                    setLocked(false);
+                    System.out.println(getUnlockPrompt());
+                    return true;
+                }
+                return false;
+            }
+        });
 
         // Wardrobe_2 requires key
-        Room diningRoom = findRoomByName("Dining_Room");
+        Room diningRoom = findRoomByName("Living_Room");
         diningRoom.addSearchSpotLock("Wardrobe_2", new Lock(
                 "Key to Dining Room Wardrobe 2",
                 "The wardrobe is securely locked.",
-                "The key fits perfectly in the lock..."
-        ));
+                "The key fits perfectly in the lock...",true) {
+//            @Override
+//            public boolean attemptUnlock(Player player, Scanner scanner) {
+//                return handleStandardUnlock(player,scanner);
+//            }
+        });
 
         // Garden requires knife
         Room garden = findRoomByName("Garden");
         garden.setLock(new Lock(
                 "Knife",
                 "The garden door is taped shut from the outside.",
-                "You cut through the tape with your knife..."
-        ));
+                "You cut through the tape with your knife, unlocking the door, entering the garden...",false) {
+//            @Override
+//            public boolean attemptUnlock(Player player, Scanner scanner) {
+//               return handleStandardUnlock(player,scanner);
+//            }
+        });
 
         // Garden House requires key
         Room gardenHouse = findRoomByName("Garden_House");
         gardenHouse.setLock(new Lock(
                 "Key to Garden House",
                 "The garden house is securely locked.",
-                "The key turns smoothly in the lock..."
-        ));
+                "The key turns smoothly in the lock...",true) {
+//            @Override
+//            public boolean attemptUnlock(Player player, Scanner scanner) {
+//                return handleStandardUnlock(player,scanner);
+//            }
+        });
 
         // Wall safe requires hammer
         Room bathroom = findRoomByName("Bathroom");
         bathroom.addSearchSpotLock("Wall_safe", new Lock(
                 "Hammer",
                 "The safe is sealed behind a wooden panel.",
-                "You smash through the panel with your hammer..."
-        ));
+                "You smash through the panel with your hammer, revealing a hidden wall safe...",true) {
+//            @Override
+//            public boolean attemptUnlock(Player player, Scanner scanner) {
+//                return handleStandardUnlock(player,scanner);
+//            }
+        });
     }
     public void setPlayer(Player player) {
         this.player = player;
@@ -225,9 +256,10 @@ public class World {
             System.out.println("\nInvalid index. This room does not exist.");
             return;
            }
-        if (!nextRoom.canAccess(player, scanner)) {
-            System.out.println("You cannot enter this room yet!");
-            return;
+        if (nextRoom.getLock() != null && nextRoom.getLock().isLocked()) {
+            if (!nextRoom.canAccess(player, scanner)) {
+                return;
+            }
         }
         if (!currentRoom.getNeighbors().contains(index)) {
             System.out.println("\nInvalid move. You can't go there directly.");

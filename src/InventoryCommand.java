@@ -9,6 +9,9 @@ public class InventoryCommand implements Command {
         System.out.printf("Inventory: %d/%d slots used%n",
                 player.getInventory().getItems().size(),
                 player.getInventory().getCapacity());
+        for (Item item : player.getInventory().getItems()) {
+            System.out.println(item.getName());
+        }
     }
 }
 

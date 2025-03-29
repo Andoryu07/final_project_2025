@@ -5,11 +5,12 @@ public class Player extends Character {
     private Inventory inventory;
     private Weapon equippedWeapon;
     private int turnsSinceLastFlashlightUse = 3;
+    private boolean isBlocking = false;
 
 
     public Player(String name, int health, Room startRoom) {
         super(name, health, startRoom);
-        this.inventory = new Inventory(1);
+        this.inventory = new Inventory(10);
 
     }
     public void equipWeapon(Weapon weapon) {
@@ -73,6 +74,22 @@ public class Player extends Character {
         return inventory.getItems().stream()
                 .anyMatch(item -> item.getName().equalsIgnoreCase(itemName));
     }
+    public boolean removeItem(String itemName) {
+        Item item = findItemInInventory(itemName);
+        if (item != null) {
+            inventory.removeItem(item);
+            return true;
+        }
+        return false;
+    }
+    public void takeDamage(int damage) {
+        if (isBlocking) {
+            damage = (int) (damage * 0.5); // Reduce damage by 50%
+            isBlocking = false; // Block only lasts one turn
+        }
+        this.health -= damage;
+        if (this.health < 0) this.health = 0;
+    }
     public Weapon getEquippedWeapon() {
         return equippedWeapon;
     }
@@ -81,6 +98,13 @@ public class Player extends Character {
     }
     public Item findItemInInventory(String itemName) {
         return inventory.findItem(itemName);
+    }
+    public void setBlocking(boolean blocking) {
+        this.isBlocking = blocking;
+    }
+
+    public boolean isBlocking() {
+        return isBlocking;
     }
 }
 

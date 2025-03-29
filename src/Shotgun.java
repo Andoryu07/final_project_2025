@@ -1,6 +1,6 @@
 public class Shotgun extends Weapon {
     public Shotgun() {
-        super("Shotgun", "Strong, but slow", 50, 2);
+        super("Shotgun", "Strong, but slow", 45, 2);
     }
 
     @Override

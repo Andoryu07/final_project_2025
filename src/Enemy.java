@@ -12,19 +12,33 @@ public abstract class Enemy extends Character {
 
     protected abstract void initializeAttacks();
 
-    public void performRandomAttack(Player player) {
+    public AttackResult performRandomAttack() {
         if (attacks.isEmpty()) {
             System.out.println(name + " has no attacks!");
-            return;
+            return new AttackResult("misses", 0);
         }
         List<String> attackNames = new ArrayList<>(attacks.keySet());
         String randomAttack = attackNames.get(new Random().nextInt(attackNames.size()));
         int damage = attacks.get(randomAttack);
-
-        System.out.println(name + " uses " + randomAttack + " for " + damage + " damage!");
-        player.takeDamage(damage);
+        return new AttackResult(randomAttack, damage);
     }
 
+    private String getAttackNameForDamage(int damage) {
+        for (Map.Entry<String, Integer> entry : attacks.entrySet()) {
+            if (entry.getValue() == damage) {
+                return entry.getKey();
+            }
+        }
+        return "attack"; // Fallback if no matching attack name found
+    }
+    public int getAttackDamage() {
+        if (attacks.isEmpty()) {
+            return 0; // Default damage if no attacks exist
+        }
+        List<String> attackNames = new ArrayList<>(attacks.keySet());
+        String randomAttack = attackNames.get(new Random().nextInt(attackNames.size()));
+        return attacks.get(randomAttack);
+    }
     public void moveCloser() {
         if (distanceFromPlayer > 0) {
             distanceFromPlayer--;

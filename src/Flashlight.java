@@ -21,7 +21,9 @@ public class Flashlight extends Item {
         System.out.println("🔋 Flashlight fully recharged!");
     }
 
-
+    public boolean isCharged() {
+        return battery > 0;
+    }
     public int getBatteryLevel() {
         return battery;
     }

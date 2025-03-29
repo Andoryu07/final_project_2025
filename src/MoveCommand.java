@@ -5,7 +5,7 @@ public class MoveCommand implements Command {
     private int targetRoom;
     private Scanner scanner;
 
-    public MoveCommand(World world, int targetRoom) {
+    public MoveCommand(World world, int targetRoom,Scanner scanner) {
         this.world = world;
         this.targetRoom = targetRoom;
         this.scanner = scanner;

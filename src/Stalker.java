@@ -6,7 +6,7 @@ public class Stalker extends Enemy {
 
     @Override
     protected void initializeAttacks() {
-        attacks.put("Claw Stab", 50);
-        attacks.put("Bite", 40);
+        attacks.put("Claw Stab", 30);
+        attacks.put("Bite", 20);
     }
 }

@@ -31,10 +31,21 @@ public class Room {
 
     public boolean canSearchSpot(String spotName, Player player, Scanner scanner) {
         Lock lock = searchSpotLocks.get(spotName);
-        return lock == null || !lock.isLocked() ||
-                lock.attemptUnlock(player, scanner);
-    }
+        if (lock == null) return true; // No lock - always accessible
 
+        if (lock.isLocked()) {
+            System.out.println("\nThis spot is locked!");
+            boolean unlocked = lock.attemptUnlock(player, scanner);
+            if (!unlocked) {
+                System.out.println("The spot remains locked.");
+            }
+            return unlocked;
+        }
+        return true; // Already unlocked
+    }
+    public Lock getLock() {
+        return roomLock;
+    }
     public Room(String name, boolean isLocked) {
         this.name = name;
         this.isLocked = isLocked;
@@ -108,7 +119,6 @@ public class Room {
                 unsearched.add(spot);
             }
         }
-
         System.out.println("Unsearched spots in room " + this.getName() + ": " + unsearched.size());
         return unsearched;
     }
@@ -118,18 +128,6 @@ public class Room {
 
     public List<Character> getCharacters() {
         return characters;
-    }
-
-    public List<Enemy> getEnemies() {
-        return characters.stream()
-                .filter(c -> c instanceof Enemy)
-                .map(c -> (Enemy)c)
-                .toList();
-    }
-
-
-    public SearchSpot getSearchSpot(int index) {
-        return (index >= 0 && index < searchSpots.size()) ? searchSpots.get(index) : null;
     }
 }
 

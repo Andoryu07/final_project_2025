@@ -1,6 +1,6 @@
 public class Knife extends Weapon {
     public Knife() {
-        super("Knife", "Sharp blade for melee combat", 15, -1); // -1 = infinite use
+        super("Knife", "Sharp blade for melee combat", 25, -1); // -1 = infinite use
 
     }
 
