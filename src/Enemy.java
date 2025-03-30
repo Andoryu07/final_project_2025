@@ -51,5 +51,6 @@ public abstract class Enemy extends Character {
 
     public void retreat() {
         distanceFromPlayer = 3;
+        this.health = 120;
     }
 }

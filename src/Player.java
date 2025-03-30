@@ -6,6 +6,7 @@ public class Player extends Character {
     private Weapon equippedWeapon;
     private int turnsSinceLastFlashlightUse = 3;
     private boolean isBlocking = false;
+    private boolean isFighting = false;
 
 
     public Player(String name, int health, Room startRoom) {
@@ -13,6 +14,7 @@ public class Player extends Character {
         this.inventory = new Inventory(10);
 
     }
+
     public void equipWeapon(Weapon weapon) {
         this.equippedWeapon = weapon;
         System.out.println("Equipped " + weapon.getName());
@@ -101,6 +103,14 @@ public class Player extends Character {
     }
     public void setBlocking(boolean blocking) {
         this.isBlocking = blocking;
+    }
+
+    public void setFighting(boolean fighting) {
+        isFighting = fighting;
+    }
+
+    public boolean isFighting() {
+        return isFighting;
     }
 
     public boolean isBlocking() {

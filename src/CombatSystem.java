@@ -7,6 +7,7 @@ public class CombatSystem {
     private Scanner scanner;
     private int turnsSinceLastFlashlightUse = 3;
 
+
     public CombatSystem(Player player, Enemy enemy) {
         this.player = player;
         this.enemy = enemy;
@@ -14,6 +15,7 @@ public class CombatSystem {
     }
 
     public void startCombat() {
+        player.setFighting(true);
         System.out.println("\n⚔️ Combat started against " + enemy.getName() + "! ⚔️");
 
         while (player.getHealth() > 0 && enemy.getHealth() > 0) {
@@ -221,15 +223,16 @@ public class CombatSystem {
     }
 
     private void useFlashlight() {
-        Flashlight flashlight = (Flashlight) player.getInventory().findItem("Flashlight");
-        if (flashlight.getBatteryLevel() >= 20) {
-            flashlight.use(player);
+        Flashlight flashlight = (Flashlight)player.findItemInInventory("Flashlight");
+        if (flashlight == null) {
+            System.out.println("You don't have a flashlight!");
+            return;
+        }
+        // Lets the flashlight handle all logic including battery check
+        flashlight.use(player);
+        if (flashlight.isCharged()) {
             turnsSinceLastFlashlightUse = 0;
-            System.out.println("You blinded the enemy! They'll miss their next attack.");
-            playerTurn(); // Get another turn
-        } else {
-            System.out.println("Not enough battery!");
-            playerTurn();
+            System.out.println("Enemy is blinded for their next turn!");
         }
     }
 
@@ -249,9 +252,11 @@ public class CombatSystem {
     private void endCombat() {
         if (player.getHealth() <= 0) {
             System.out.println("You were defeated by " + enemy.getName() + "!");
+            player.setFighting(false);
             System.exit(0);
             //TODO: Handle game over
         } else {
+            player.setFighting(false);
             System.out.println("You defeated " + enemy.getName() + "!");
             if (enemy instanceof Stalker) {
                 ((Stalker) enemy).retreat();

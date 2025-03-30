@@ -46,17 +46,12 @@ public class World {
                 return false;
             }
         });
-
         // Wardrobe_2 requires key
         Room diningRoom = findRoomByName("Living_Room");
         diningRoom.addSearchSpotLock("Wardrobe_2", new Lock(
                 "Key to Dining Room Wardrobe 2",
                 "The wardrobe is securely locked.",
                 "The key fits perfectly in the lock...",true) {
-//            @Override
-//            public boolean attemptUnlock(Player player, Scanner scanner) {
-//                return handleStandardUnlock(player,scanner);
-//            }
         });
 
         // Garden requires knife
@@ -65,10 +60,6 @@ public class World {
                 "Knife",
                 "The garden door is taped shut from the outside.",
                 "You cut through the tape with your knife, unlocking the door, entering the garden...",false) {
-//            @Override
-//            public boolean attemptUnlock(Player player, Scanner scanner) {
-//               return handleStandardUnlock(player,scanner);
-//            }
         });
 
         // Garden House requires key
@@ -77,10 +68,6 @@ public class World {
                 "Key to Garden House",
                 "The garden house is securely locked.",
                 "The key turns smoothly in the lock...",true) {
-//            @Override
-//            public boolean attemptUnlock(Player player, Scanner scanner) {
-//                return handleStandardUnlock(player,scanner);
-//            }
         });
 
         // Wall safe requires hammer
@@ -89,10 +76,6 @@ public class World {
                 "Hammer",
                 "The safe is sealed behind a wooden panel.",
                 "You smash through the panel with your hammer, revealing a hidden wall safe...",true) {
-//            @Override
-//            public boolean attemptUnlock(Player player, Scanner scanner) {
-//                return handleStandardUnlock(player,scanner);
-//            }
         });
     }
     public void setPlayer(Player player) {
@@ -265,11 +248,16 @@ public class World {
             System.out.println("\nInvalid move. You can't go there directly.");
             return;
         }
+        // Special case for Celery
+        if (nextRoom.getName().equalsIgnoreCase("Celery")) {
+            Flashlight flashlight = (Flashlight)player.findItemInInventory("Flashlight");
+            if (flashlight == null || !flashlight.isCharged()) {
+                System.out.println("You need a working flashlight to enter the cellar!");
+                return;
+            }
 
-        // Special check for Laboratory
-        if (nextRoom.getName().equalsIgnoreCase("Laboratory") &&
-                (gearLock == null || !gearLock.isUnlocked())) {
-            System.out.println("\nThe door to the Laboratory is locked. You need to insert all 4 gear pieces in the Celery first.");
+            CeleryStealthSystem stealth = new CeleryStealthSystem(player);
+            stealth.startSequence(scanner);
             return;
         }
 
@@ -357,13 +345,6 @@ public class World {
                 rooms.get(7).addCharacter(new Zombie(rooms.get(7)));
             }
         }
-
-        if (rooms.containsKey(10)) { // Celery
-            for (int i = 0; i < 5; i++) {
-                rooms.get(10).addCharacter(new Zombie(rooms.get(10)));
-            }
-        }
-
         // Stalker
         if (rooms.containsKey(0)) { // Enter Hall
             rooms.get(0).addCharacter(new Stalker(rooms.get(0)));
