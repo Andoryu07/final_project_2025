@@ -34,6 +34,10 @@ public class CeleryStealthSystem {
             System.out.println("You enter the pitch black cellar. You'll need to navigate to the power box somewhere in the basement.");
             System.out.println("Commands: forward, back, left, right, quit");
             while (!lightsOn && player.getHealth() > 0) {
+                    // Check battery at start of each turn
+                    if (!handleBatteryDepletion()) {
+                        break;
+                    }
                 printCurrentPosition();
                 System.out.print("Choose direction: ");
                 String input = scanner.nextLine().trim().toLowerCase();
@@ -95,8 +99,26 @@ public class CeleryStealthSystem {
         playerY = newY;
         flashlight.useBattery(10); // Each move uses 5% battery
         System.out.println("Moved to position " + getPositionString());
-    }
 
+    }
+    private boolean handleBatteryDepletion() {
+        if (flashlight.getBatteryLevel() > 0) {
+            return true; // Still has battery
+        }
+        System.out.println("\n⚠️ Flashlight battery depleted!");
+        // Check for batteries in inventory
+        if (player.hasItem("Batteries")) {
+            System.out.println("Automatically replacing batteries...");
+            player.removeItem("Batteries");
+            flashlight.recharge();
+            return true;
+        } else {
+            System.out.println("No batteries left! You're plunged into darkness!");
+            System.out.println("The zombies find you in the dark...");
+            player.takeDamage(player.getHealth()); // Instant death
+            return false;
+        }
+    }
     private void attemptPowerBoxRepair(Scanner scanner) {
         if (player.hasItem("Repair Tool")) {
             System.out.println("You found the power box! Repair it? (yes/no)");
