@@ -204,18 +204,6 @@ public class Game {
                     System.out.println("Specify an item to use.");
                 }
                 break;
-            case "attack":
-                if (argument != null) {
-                    Enemy enemy = findEnemyInRoom(argument);
-                    if (enemy != null) {
-                        new AttackCommand(player, enemy).execute();
-                    } else {
-                        System.out.println("No such enemy here.");
-                    }
-                } else {
-                    System.out.println("Specify an enemy to attack.");
-                }
-                break;
             case "talk":
                 if (argument != null) {
                     Character npc = findCharacterInRoom(argument);

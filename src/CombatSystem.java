@@ -1,19 +1,41 @@
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Class used to implement the combat system of the game
+ */
 public class CombatSystem {
+    /**
+     * Instance of Player
+     */
     private Player player;
+    /**
+     * Instance of Enemy
+     */
     private Enemy enemy;
+    /**
+     * Scanner
+     */
     private Scanner scanner;
+    /**
+     * int value of how many player's turns had elapsed since the player had last used the 'Blind enemy' in combat
+     */
     private int turnsSinceLastFlashlightUse = 3;
 
-
+    /**
+     * Constructor
+     * @param player Specifies the player
+     * @param enemy Specifies the enemy
+     */
     public CombatSystem(Player player, Enemy enemy) {
         this.player = player;
         this.enemy = enemy;
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Method used to start combat, informing the player, and starting the fighting loop
+     */
     public void startCombat() {
         player.setFighting(true);
         System.out.println("\n⚔️ Combat started against " + enemy.getName() + "! ⚔️");
@@ -28,6 +50,9 @@ public class CombatSystem {
         endCombat();
     }
 
+    /**
+     * Method to simulate player's turn, giving him the health information and options to proceed with during combat
+     */
     private void playerTurn() {
         if (player.isDefeated()) return; // Skip if player already dead
 
@@ -45,7 +70,9 @@ public class CombatSystem {
         processPlayerChoice(scanner.nextLine());
     }
 
-
+    /**
+     * Method used to print player's choices during his turn
+     */
     private void printCombatOptions() {
         System.out.println("1. Attack with equipped weapon");
         System.out.println("2. Heal");
@@ -61,6 +88,10 @@ public class CombatSystem {
         System.out.print("Choose an action: ");
     }
 
+    /**
+     * Method used to register player's choice, and acting upon it
+     * @param choice Player's choice
+     */
     private void processPlayerChoice(String choice) {
         switch (choice) {
             case "1":
@@ -104,6 +135,9 @@ public class CombatSystem {
         }
     }
 
+    /**
+     * Used to handle the case of player being defeated in combat, giving him the choice to reload his last save(if one exists), or exit the game
+     */
     private void handleDefeat() {
         System.out.println("\n☠️ You were defeated! ☠️");
         System.out.println("1. Load last checkpoint");
@@ -117,6 +151,10 @@ public class CombatSystem {
         }
         System.exit(0); // Temporary until checkpoint system exists
     }
+
+    /**
+     * Method, which is called upon the player chooses 'Equip weapon', giving the player the choice to equip any weapon from his inventory, registering his choice
+     */
     private void showEquipMenu() {
         List<Weapon> weapons = player.getInventory().getItems().stream()
                 .filter(item -> item instanceof Weapon)
@@ -149,6 +187,10 @@ public class CombatSystem {
         }
         playerTurn();
     }
+
+    /**
+     * Simulates the 'Attack with weapon' choice, uses the player's equipped weapon and deals the damage to the enemy
+     */
     private void attackWithWeapon() {
         Weapon weapon = player.getEquippedWeapon();
         if (weapon == null) {
@@ -165,6 +207,9 @@ public class CombatSystem {
         }
     }
 
+    /**
+     * Simulates the 'Use Healing item' choice, allowing the player to use any healing item in his inventory, healing himself for a bit of health
+     */
     private void useHealingItem() {
         List<Item> healingItems = player.getInventory().getItems().stream()
                 .filter(item -> item instanceof HealingSerum || item instanceof Bandage)
@@ -197,6 +242,9 @@ public class CombatSystem {
         }
     }
 
+    /**
+     * Simulates the 'Reload weapon' option, allowing the player to reload his weapon, if possible
+     */
     private void reloadWeapon() {
         Weapon weapon = player.getEquippedWeapon();
         if (weapon == null) {
@@ -222,6 +270,9 @@ public class CombatSystem {
         System.out.println("Reloaded " + weapon.getName() + "!");
     }
 
+    /**
+     * Simulates the 'Blind enemy with flashlight' option, allowing the player to blind the enemy for 1 turn, if the requirements had been met
+     */
     private void useFlashlight() {
         Flashlight flashlight = (Flashlight)player.findItemInInventory("Flashlight");
         if (flashlight == null) {
@@ -236,6 +287,9 @@ public class CombatSystem {
         }
     }
 
+    /**
+     * Simulates the enemy's turn - performs a random attack, unless blinded, in which case skips turn
+     */
     private void enemyTurn() {
         if (turnsSinceLastFlashlightUse == 0) {
             System.out.println(enemy.getName() + " is blinded and misses their turn!");
@@ -249,6 +303,9 @@ public class CombatSystem {
         }
     }
 
+    /**
+     * Method used to end combat, handling the outcome depending on who had reached 0 health first
+     */
     private void endCombat() {
         if (player.getHealth() <= 0) {
             System.out.println("You were defeated by " + enemy.getName() + "!");
@@ -264,15 +321,5 @@ public class CombatSystem {
             // Handle loot/drops
         }
     }
-    public void restoreCombatState(boolean wasFighting, boolean wasBlocking, int flashlightCooldown) {
-        player.setFighting(wasFighting);
-        player.setBlocking(wasBlocking);
-        this.turnsSinceLastFlashlightUse = flashlightCooldown;
 
-        if (wasFighting) {
-            System.out.println("\n⚔️ Combat resumed! ⚔️");
-            System.out.println("Your health: " + player.getHealth());
-            System.out.println("Enemy health: " + enemy.getHealth());
-        }
-    }
 }

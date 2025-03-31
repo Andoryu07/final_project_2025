@@ -2,21 +2,52 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Class used to implement the stealth system in the celery, which is required to complete in order to finish the game
+ */
 public class CeleryStealthSystem {
+    /**
+     * Specifies the size of the grid, on which the player is going to be moving
+     */
     private static final int GRID_SIZE = 5;
+    /**
+     * int, containing the player's X coordinate location
+     */
     private int playerX = 0; // A=0, B=1, etc.
+    /**
+     * int, containing the player's Y coordinate location
+     */
     private int playerY = 4; // 1=0, 2=1, etc. (so 5A(starting location) is [0][4])
+    /**
+     * Boolean list, used to specify, on which coordinates [X][Y] the zombies will be located(If player occurs in any of these tiles, he will get eliminated instantly)
+     */
     private boolean[][] zombiePositions;
+    /**
+     * Instance of Player class
+     */
     private Player player;
+    /**
+     * Instance of Flashlight class
+     */
     private Flashlight flashlight;
+    /**
+     * Boolean used to save the state of whether the player had completed the Stealth sequence(Repairing the power box and turning the lights back on)
+     */
     private boolean lightsOn = false;
 
+    /**
+     * Constructor, initializes zombies' positions
+     * @param player Used to specify and access player's fields/items
+     */
     public CeleryStealthSystem(Player player) {
         this.player = player;
         this.flashlight = (Flashlight) player.findItemInInventory("Flashlight");
         initializeZombiePositions();
     }
 
+    /**
+     * Method used to put zombies into the map using the X and Y positions of the grid
+     */
     private void initializeZombiePositions() {
         zombiePositions = new boolean[GRID_SIZE][GRID_SIZE];
         // Mark zombie positions (x,y)
@@ -27,6 +58,10 @@ public class CeleryStealthSystem {
         zombiePositions[0][4] = true; // 5A (starting position is safe)
     }
 
+    /**
+     * Method controlling the run of the stealth sequence system, allowing player's movement, checking for their battery charge, handling game over
+     * @param scanner Scanner instance, to connect different classes' scanner to register player's inputs
+     */
     public void startSequence(Scanner scanner) {
         flashlight.setInCelery(true);
         try {
@@ -76,6 +111,11 @@ public class CeleryStealthSystem {
         }
     }
 
+    /**
+     * Moves the player's position based on his input, while also checking, if the new tile contains a zombie, or not
+     * @param dx how many tiles will the player move on the X coordinate
+     * @param dy how many tiles will the player move on the Y coordinate
+     */
     private void move(int dx, int dy) {
         int newX = playerX + dx;
         int newY = playerY + dy;
@@ -101,6 +141,11 @@ public class CeleryStealthSystem {
         System.out.println("Moved to position " + getPositionString());
 
     }
+
+    /**
+     * Handles the case, where player's battery depletes during the stealth sequence, recharging it automatically(if player owns Batteries) if possible, ending the game if not
+     * @return returns true/false value based on whether the player has battery charge available or not
+     */
     private boolean handleBatteryDepletion() {
         if (flashlight.getBatteryLevel() > 0) {
             return true; // Still has battery
@@ -119,6 +164,11 @@ public class CeleryStealthSystem {
             return false;
         }
     }
+
+    /**
+     * Handles the case, where player finds the power box, giving him the opportunity to fix it, if they own the right tools, if the repair is a success, zombies will attack the player
+     * @param scanner which Scanner to use for tracking player's inputs
+     */
     private void attemptPowerBoxRepair(Scanner scanner) {
         if (player.hasItem("Repair Tool")) {
             System.out.println("You found the power box! Repair it? (yes/no)");
@@ -137,6 +187,9 @@ public class CeleryStealthSystem {
         }
     }
 
+    /**
+     * Method activated upon the repair of the power box, operating the fight against zombies, 5 in a row
+     */
     private void startZombieCombat() {
         Room currentRoom = player.getCurrentRoom();
         List<Enemy> zombies = new ArrayList<>();
@@ -154,12 +207,19 @@ public class CeleryStealthSystem {
 
     }
 
+    /**
+     * Method used to get a better formulated X and Y position of the player
+     * @return the position of the player in a row(numbers) + column(characters) format
+     */
     private String getPositionString() {
         char col = (char) ('A' + playerX);
         int row = playerY + 1;
         return row + "" + col;
     }
 
+    /**
+     * Method used to print information about the player's state, including his position on the grid, his flashlight battery charge, and available directions he can move in
+     */
     private void printCurrentPosition() {
         printMap();
         System.out.println("\nCurrent position: " + getPositionString());
@@ -167,6 +227,10 @@ public class CeleryStealthSystem {
         System.out.println("Available directions: " + getAvailableDirections());
     }
 
+    /**
+     * Method used to figure out, which directions the player can move in
+     * @return Available directions("none" if directions is empty, list of directions if not)
+     */
     private String getAvailableDirections() {
         List<String> directions = new ArrayList<>();
 
@@ -178,6 +242,9 @@ public class CeleryStealthSystem {
         return directions.isEmpty() ? "none" : String.join(", ", directions);
     }
 
+    /**
+     * Method used to print the grid map, including a circle in the tile the player is currently located in
+     */
     private void printMap() {
         System.out.println("\n=== CELERY MAP ===");
 
