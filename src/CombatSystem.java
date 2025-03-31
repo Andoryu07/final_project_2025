@@ -264,4 +264,15 @@ public class CombatSystem {
             // Handle loot/drops
         }
     }
+    public void restoreCombatState(boolean wasFighting, boolean wasBlocking, int flashlightCooldown) {
+        player.setFighting(wasFighting);
+        player.setBlocking(wasBlocking);
+        this.turnsSinceLastFlashlightUse = flashlightCooldown;
+
+        if (wasFighting) {
+            System.out.println("\n⚔️ Combat resumed! ⚔️");
+            System.out.println("Your health: " + player.getHealth());
+            System.out.println("Enemy health: " + enemy.getHealth());
+        }
+    }
 }

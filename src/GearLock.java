@@ -1,7 +1,10 @@
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GearLock {
+public class GearLock implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final int REQUIRED_GEAR_COUNT = 4;
     private final Set<String> insertedGears = new HashSet<>();
     private final Room lockedRoom;
@@ -51,7 +54,7 @@ public class GearLock {
         return true;
     }
 
-        private void unlockDoor() {
+        public void unlockDoor() {
             System.out.println("\n🚪 The mechanism clicks... The door to " + lockedRoom.getName() + " is now open!");
             lockedRoom.unlock();
         }
@@ -59,4 +62,16 @@ public class GearLock {
         public boolean isUnlocked () {
             return insertedGears.size() == REQUIRED_GEAR_COUNT;
         }
+    public Set<String> getInsertedGears() {
+        return Collections.unmodifiableSet(insertedGears);
+    }
+
+    public void setInsertedGears(Set<String> gears) {
+        this.insertedGears.clear();
+        this.insertedGears.addAll(gears);
+
+        if (insertedGears.size() == REQUIRED_GEAR_COUNT) {
+            unlockDoor();
+        }
+    }
     }

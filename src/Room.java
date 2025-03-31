@@ -1,7 +1,9 @@
+import java.io.Serializable;
 import java.util.*;
 
 //represents the rooms of the game
-public class Room {
+public class Room implements Serializable {
+    private static final long serialVersionUID = 1L;
     private  int index;// numeral id of the room
     private final String name;// room name
     public boolean isLocked;
@@ -121,6 +123,13 @@ public class Room {
         }
         System.out.println("Unsearched spots in room " + this.getName() + ": " + unsearched.size());
         return unsearched;
+    }
+    public Map<String, Lock> getSearchSpotLocks() {
+        return Collections.unmodifiableMap(searchSpotLocks);
+    }
+
+    public Lock getSearchSpotLock(String spotName) {
+        return searchSpotLocks.get(spotName);
     }
     public void addCharacter(Character character) {
         characters.add(character);

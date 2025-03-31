@@ -1,4 +1,7 @@
-public class Flashlight extends Item {
+import java.io.Serializable;
+
+public class Flashlight extends Item implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int battery;
     private boolean isInCelery = false;
 
@@ -47,7 +50,12 @@ public class Flashlight extends Item {
         this.battery = 100;
         System.out.println("🔋 Flashlight fully recharged!");
     }
-
+    public void setBatteryLevel(int level) {
+        this.battery = Math.min(100, Math.max(0, level));
+    }
+    public boolean getIsInCelery() {
+        return isInCelery;
+    }
     public boolean isCharged() {
         return battery > 0;
     }

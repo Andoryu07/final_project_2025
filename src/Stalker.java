@@ -3,6 +3,9 @@ public class Stalker extends Enemy {
         super("Stalker", 120, startRoom);
         this.distanceFromPlayer = 3;
     }
+    public void setDistanceFromPlayer(int distance) {
+        this.distanceFromPlayer = distance;
+    }
 
     @Override
     protected void initializeAttacks() {

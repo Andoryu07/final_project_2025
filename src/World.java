@@ -1,9 +1,11 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
-public class World {
+public class World implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Map<Integer, Room> rooms = new HashMap<>();
     private Room currentRoom;
     private Player player;
@@ -109,7 +111,7 @@ public class World {
     }
 
 
-    private Room findRoomByName(String name) {
+    public Room findRoomByName(String name) {
         return rooms.values().stream().filter(room -> room.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
@@ -193,7 +195,7 @@ public class World {
             case "HEALING_SERUM":
                 return new HealingSerum();
             case "CASSETTE":
-                return new KeyItem("Cassette", "A tape for saving the game.");
+                return new Cassette(this);
             case "GEAR_PIECE_1":
                 return new GearPiece("GEAR_PIECE_1");
             case "GEAR_PIECE_2":
@@ -332,7 +334,20 @@ public class World {
                 .map(c -> (Enemy)c)
                 .toList();
     }
+    public int getStalkerDistance() {
+        Enemy stalker = findEnemyByName("Stalker");
+        if (stalker instanceof Stalker) {
+            return ((Stalker) stalker).distanceFromPlayer;
+        }
+        return -1; // or some default value
+    }
 
+    public void setStalkerDistance(int distance) {
+        Enemy stalker = findEnemyByName("Stalker");
+        if (stalker instanceof Stalker) {
+            ((Stalker) stalker).distanceFromPlayer = distance;
+        }
+    }
     public void initializeEnemies() {
         // Final boss
         if (rooms.containsKey(11)) {
@@ -363,6 +378,67 @@ public class World {
 
     public Room getCurrentRoom() {
         return currentRoom;
+    }
+    public Map<String, Boolean> getAllLockStates() {
+        Map<String, Boolean> lockStates = new HashMap<>();
+
+        // Room locks
+        for (Room room : rooms.values()) {
+            if (room.getLock() != null) {
+                lockStates.put(room.getName() + "_room", room.getLock().isLocked());
+            }
+        }
+
+        // Search spot locks
+        for (Room room : rooms.values()) {
+            for (Map.Entry<String, Lock> entry : room.getSearchSpotLocks().entrySet()) {
+                lockStates.put(room.getName() + "_" + entry.getKey(), entry.getValue().isLocked());
+            }
+        }
+
+        // Gear lock
+        if (gearLock != null) {
+            lockStates.put("gear_lock", gearLock.isUnlocked());
+        }
+
+        return lockStates;
+    }
+    public void restoreLockStates(Map<String, Boolean> lockStates) {
+        // Room locks
+        for (Room room : rooms.values()) {
+            if (room.getLock() != null) {
+                Boolean isLocked = lockStates.get(room.getName() + "_room");
+                if (isLocked != null) {
+                    room.getLock().setLocked(isLocked);
+                }
+            }
+        }
+
+        // Search spot locks
+        for (Room room : rooms.values()) {
+            for (Map.Entry<String, Lock> entry : room.getSearchSpotLocks().entrySet()) {
+                Boolean isLocked = lockStates.get(room.getName() + "_" + entry.getKey());
+                if (isLocked != null) {
+                    entry.getValue().setLocked(isLocked);
+                }
+            }
+        }
+
+        // Gear lock
+        if (gearLock != null) {
+            Boolean isUnlocked = lockStates.get("gear_lock");
+            if (isUnlocked != null && isUnlocked) {
+                gearLock.unlockDoor();
+            }
+        }
+    }
+
+    public GearLock getGearLock() {
+        return gearLock;
+    }
+
+    public void setCurrentRoom(Room currentRoom) {
+        this.currentRoom = currentRoom;
     }
 }
 

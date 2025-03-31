@@ -1,6 +1,8 @@
+import java.io.Serializable;
 import java.util.Scanner;
 
-public class Lock {
+public class Lock implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final String requiredItem;
     private final String lockedMessage;
     private final String unlockPrompt;

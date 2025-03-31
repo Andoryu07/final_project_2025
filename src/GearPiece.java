@@ -1,4 +1,9 @@
-public class GearPiece extends KeyItem {
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Set;
+
+public class GearPiece extends KeyItem implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final String internalName; // For game logic (GEAR_PIECE_1)
 
     public GearPiece(String internalName) {

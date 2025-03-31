@@ -1,4 +1,7 @@
-public abstract class Weapon extends Item {
+import java.io.Serializable;
+
+public abstract class Weapon extends Item implements Serializable {
+    private static final long serialVersionUID = 1L;
     protected int damage;
     protected int maxAmmo;
     protected int currentAmmo;

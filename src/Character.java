@@ -1,5 +1,7 @@
-public abstract class Character {
+import java.io.Serializable;
 
+public abstract class Character implements Serializable {
+    private static final long serialVersionUID = 1L;
     protected String name;
     protected int health;
     protected Room currentRoom;

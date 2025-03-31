@@ -1,6 +1,8 @@
+import java.io.Serializable;
 import java.util.*;
 
-public abstract class Enemy extends Character {
+public abstract class Enemy extends Character implements Serializable {
+    private static final long serialVersionUID = 1L;
     protected Map<String, Integer> attacks;
     protected int distanceFromPlayer;
 

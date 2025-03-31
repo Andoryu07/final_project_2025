@@ -1,7 +1,9 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Inventory {
+public class Inventory implements Serializable {
+    private static final long serialVersionUID = 1L;
     private List<Item> items;
     private int capacity;
 
@@ -23,7 +25,9 @@ public class Inventory {
         }
         return null;
     }
-
+    public void clear() {
+        items.clear();
+    }
     public boolean addItem(Item item) {
         if (items.size() < capacity) {
             items.add(item);
@@ -40,18 +44,5 @@ public class Inventory {
         return items;
     }
 
-    public boolean canAddItem() {
-        return items.size() < capacity;
-    }
 
-    public void printInventory() {
-        if (items.isEmpty()) {
-            System.out.println("Your inventory is empty.");
-        } else {
-            System.out.println("Inventory:");
-            for (Item item : items) {
-                System.out.println("- " + item.getName());
-            }
-        }
-    }
 }

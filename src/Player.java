@@ -1,7 +1,9 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player extends Character {
+public class Player extends Character implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Inventory inventory;
     private Weapon equippedWeapon;
     private int turnsSinceLastFlashlightUse = 3;
@@ -17,12 +19,16 @@ public class Player extends Character {
 
     public void equipWeapon(Weapon weapon) {
         this.equippedWeapon = weapon;
-        System.out.println("Equipped " + weapon.getName());
-        if (weapon.isInfiniteUse()) {
-            System.out.println("This weapon has unlimited uses");
+        if (weapon != null) {
+            System.out.println("Equipped " + weapon.getName());
+            if (weapon.isInfiniteUse()) {
+                System.out.println("This weapon has unlimited uses");
+            } else {
+                System.out.printf("Ammo: %d/%d%n",
+                        weapon.getCurrentAmmo(), weapon.getMaxAmmo());
+            }
         } else {
-            System.out.printf("Ammo: %d/%d%n",
-                    weapon.getCurrentAmmo(), weapon.getMaxAmmo());
+            System.out.println("No weapon equipped");
         }
     }
     public void attack(Enemy enemy) {
@@ -91,6 +97,9 @@ public class Player extends Character {
         }
         this.health -= damage;
         if (this.health < 0) this.health = 0;
+    }
+    public void setHealth(int health) {
+        this.health = Math.max(0, health); // Ensure health doesn't go negative
     }
     public Weapon getEquippedWeapon() {
         return equippedWeapon;

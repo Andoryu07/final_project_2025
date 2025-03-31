@@ -1,6 +1,7 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.util.*;
 
 public class Game {
     private World world;
@@ -19,8 +20,106 @@ public class Game {
         world.initializeGearLock();
         world.initializeEnemies();
         this.commands = new HashMap<>();
+        // Check for saved games
+        File saveDir = new File("saves/");
+        if (saveDir.exists() && saveDir.listFiles((dir, name) -> name.startsWith("save_")).length > 0) {
+            showLoadMenu();
+        } else {
+            initializeNewGame();
+        }
+    }
+    private void initializeNewGame() {
+        world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
+        this.player = new Player("Ethan", 100, world.getCurrentRoom());
+        world.setPlayer(player);
+        world.initializeLocks();
+        world.initializeGearLock();
+        world.initializeEnemies();
+        this.commands = new HashMap<>();
     }
 
+    private void showLoadMenu() {
+        System.out.println("╔════════════════════════════╗");
+        System.out.println("║       SAVED GAMES         ║");
+        System.out.println("╠════════════════════════════╣");
+
+        File[] saveFiles = new File("saves/").listFiles((dir, name) -> name.startsWith("save_"));
+        Arrays.sort(saveFiles, Comparator.comparingLong(File::lastModified).reversed());
+
+        for (int i = 0; i < saveFiles.length; i++) {
+            System.out.printf("║ %d. %-20s ║%n", i+1, saveFiles[i].getName());
+        }
+        System.out.println("║ " + (saveFiles.length+1) + ". New Game            ║");
+        System.out.println("╚════════════════════════════╝");
+        System.out.print("Choose an option: ");
+
+        try {
+            int choice = Integer.parseInt(scanner.nextLine());
+            if (choice > 0 && choice <= saveFiles.length) {
+                loadGame(saveFiles[choice-1]);
+            } else if (choice == saveFiles.length+1) {
+                initializeNewGame();
+            } else {
+                System.out.println("Invalid choice. Starting new game.");
+                initializeNewGame();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Starting new game.");
+            initializeNewGame();
+        }
+    }
+
+
+    private void loadGame(File saveFile) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFile))) {
+            GameState state = (GameState) in.readObject();
+            applyGameState(state);
+            System.out.println("✅ Game loaded successfully!");
+        } catch (Exception e) {
+            System.out.println("❌ Failed to load game: " + e.getMessage());
+            initializeNewGame();
+        }
+    }
+
+    private void applyGameState(GameState state) {
+        // Restore player state
+        player.setHealth(state.getPlayerHealth());
+        player.getInventory().clear();
+        for (Item item : state.getInventory()) {
+            player.getInventory().addItem(item);
+        }
+        Weapon weapon = state.getEquippedWeapon();
+        if (weapon != null) {
+            player.equipWeapon(weapon);
+        } else {
+            player.equipWeapon(null);
+        }
+
+        // Restore room
+        Room targetRoom = world.findRoomByName(state.getCurrentRoomName());
+        if (targetRoom != null) {
+            player.setCurrentRoom(targetRoom);
+            world.setCurrentRoom(targetRoom);
+        }
+
+        // Restore flashlight
+        Flashlight flashlight = (Flashlight) player.findItemInInventory("Flashlight");
+        if (flashlight != null) {
+            flashlight.setBatteryLevel(state.getFlashlightBattery());
+            flashlight.setInCelery(state.isFlashlightInCelery());
+        }
+
+        // Restore combat state
+        player.setFighting(state.isPlayerFighting());
+        player.setBlocking(state.isPlayerBlocking());
+
+        // Restore world state
+        world.getGearLock().setInsertedGears(state.getInsertedGears());
+        world.restoreLockStates(state.getLockStates());
+
+        // Restore stalker
+       world.setStalkerDistance(state.getStalkerDistance());
+    }
     public void start() {
         boolean running = true;
         while (running) {
