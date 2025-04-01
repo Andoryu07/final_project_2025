@@ -35,7 +35,8 @@ public class World implements Serializable {
 
     /**
      * Method used to load the rooms from the file
-     * @param roomFilePath file path of the file containing the room layouts
+     *
+     * @param roomFilePath       file path of the file containing the room layouts
      * @param searchSpotFilePath file path of the file containing the search spot layouts
      */
     public void loadFromFile(String roomFilePath, String searchSpotFilePath) {
@@ -45,11 +46,12 @@ public class World implements Serializable {
 
     /**
      * Constructor
+     *
      * @param player Specifies the player
      */
     public World(Player player) {
         this.player = player;
-        laboratory = new Room("Laboratory",true);
+        laboratory = new Room("Laboratory", true);
     }
 
     /**
@@ -60,14 +62,14 @@ public class World implements Serializable {
         Room celery = findRoomByName("Celery");
         celery.setLock(new Lock("Flashlight",
                 "\nThe doorway to the cellar is pitch black. You'd have no way to defend yourself against potential enemies!",
-                "\nYou switch on your flashlight, its beam cutting through the darkness...",false) {
+                "\nYou switch on your flashlight, its beam cutting through the darkness...", false) {
             @Override
             public boolean attemptUnlock(Player player, Scanner scanner) {
                 String choice = showUnlockPrompt(player, scanner);
                 if (choice == null) return false;  // Player doesn't have item
                 if (choice.equals("1")) {
                     Item flashlight = player.findItemInInventory("Flashlight");
-                    if (!((Flashlight)flashlight).isCharged()) {
+                    if (!((Flashlight) flashlight).isCharged()) {
                         System.out.println("Your flashlight batteries are dead!");
                         return false;
                     }
@@ -83,7 +85,7 @@ public class World implements Serializable {
         diningRoom.addSearchSpotLock("Wardrobe_2", new Lock(
                 "Key to Dining Room Wardrobe 2",
                 "The wardrobe is securely locked.",
-                "The key fits perfectly in the lock...",true) {
+                "The key fits perfectly in the lock...", true) {
         });
 
         // Garden requires knife
@@ -91,7 +93,7 @@ public class World implements Serializable {
         garden.setLock(new Lock(
                 "Knife",
                 "The garden door is taped shut from the outside.",
-                "You cut through the tape with your knife, unlocking the door, entering the garden...",false) {
+                "You cut through the tape with your knife, unlocking the door, entering the garden...", false) {
         });
 
         // Garden House requires key
@@ -99,7 +101,7 @@ public class World implements Serializable {
         gardenHouse.setLock(new Lock(
                 "Key to Garden House",
                 "The garden house is securely locked.",
-                "The key turns smoothly in the lock...",true) {
+                "The key turns smoothly in the lock...", true) {
         });
 
         // Wall safe requires hammer
@@ -107,12 +109,13 @@ public class World implements Serializable {
         bathroom.addSearchSpotLock("Wall_safe", new Lock(
                 "Hammer",
                 "The safe is sealed behind a wooden panel.",
-                "You smash through the panel with your hammer, revealing a hidden wall safe...",true) {
+                "You smash through the panel with your hammer, revealing a hidden wall safe...", true) {
         });
     }
 
     /**
      * Setter for 'player'
+     *
      * @param player Sets the value of 'player'
      */
     public void setPlayer(Player player) {
@@ -137,8 +140,9 @@ public class World implements Serializable {
 
     /**
      * Method used to insert a gear piece into the gear lock
+     *
      * @param gearName Name of the gear piece which the player is attempting to insert
-     * @param player who is trying to insert the gear piece
+     * @param player   who is trying to insert the gear piece
      */
     public void insertGearPiece(String gearName, Player player) {
         System.out.println("Current room: " + player.getCurrentRoom().getName());
@@ -155,6 +159,7 @@ public class World implements Serializable {
 
     /**
      * Method used to find a room based on the input given
+     *
      * @param name name of the room we're looking for
      * @return room based on the name given, null if no such room had been found
      */
@@ -164,6 +169,7 @@ public class World implements Serializable {
 
     /**
      * Method used to load rooms into the game from the file
+     *
      * @param filePath filepath of the file, from which we're going to load the rooms
      */
     private void loadRooms(String filePath) {
@@ -187,6 +193,7 @@ public class World implements Serializable {
 
     /**
      * Method used to load the search spots from a file
+     *
      * @param filePath of the file we're going to load the spots from
      */
     private void loadSearchSpots(String filePath) {
@@ -234,6 +241,7 @@ public class World implements Serializable {
 
     /**
      * Creates the items included in a file
+     *
      * @param itemName name of the item
      * @return the item based on the name given, null if no such item had been found
      */
@@ -294,16 +302,17 @@ public class World implements Serializable {
 
     /**
      * Method used to move the player into by him desired room, if possible
-     * @param index index of the room player wants to move into
+     *
+     * @param index   index of the room player wants to move into
      * @param scanner scanner used to register player's input
      */
-    public void moveToRoom(int index,Scanner scanner) {
+    public void moveToRoom(int index, Scanner scanner) {
         Room nextRoom = rooms.get(index);
 
         if (nextRoom == null) {
             System.out.println("\nInvalid index. This room does not exist.");
             return;
-           }
+        }
         if (nextRoom.getLock() != null && nextRoom.getLock().isLocked()) {
             if (!nextRoom.canAccess(player, scanner)) {
                 return;
@@ -315,7 +324,7 @@ public class World implements Serializable {
         }
         // Special case for Celery
         if (nextRoom.getName().equalsIgnoreCase("Celery")) {
-            Flashlight flashlight = (Flashlight)player.findItemInInventory("Flashlight");
+            Flashlight flashlight = (Flashlight) player.findItemInInventory("Flashlight");
             if (flashlight == null || !flashlight.isCharged()) {
                 System.out.println("You need a working flashlight to enter the cellar!");
                 return;
@@ -343,10 +352,10 @@ public class World implements Serializable {
         // Handle regular Stalker movement
         Enemy stalker = findEnemyByName("Stalker");
         if (stalker != null && player.hasItem("Knife")) {
-            ((Stalker)stalker).moveCloser();
-            System.out.println("[DEBUG] Stalker distance: " + ((Stalker)stalker).distanceFromPlayer);
+            ((Stalker) stalker).moveCloser();
+            System.out.println("[DEBUG] Stalker distance: " + ((Stalker) stalker).distanceFromPlayer);
 
-            if (((Stalker)stalker).isInCombatRange()) {
+            if (((Stalker) stalker).isInCombatRange()) {
                 System.out.println("The Stalker has caught up to you!");
                 startCombat(stalker);
             }
@@ -379,6 +388,7 @@ public class World implements Serializable {
 
     /**
      * Method used to start combat between player and an enemy
+     *
      * @param enemy which enemy is the player going to fight against
      */
     private void startCombat(Enemy enemy) {
@@ -387,6 +397,7 @@ public class World implements Serializable {
 
     /**
      * Method used to find an enemy by his name
+     *
      * @param name name of the enemy we're looking for
      * @return the enemy, or null if no such enemy had been found
      */
@@ -403,18 +414,20 @@ public class World implements Serializable {
 
     /**
      * Searches the room for any characters of the enemy type located in a certain room
+     *
      * @param room the room we're going to search
      * @return list of enemies located in the room given
      */
     private List<Enemy> getEnemiesInRoom(Room room) {
         return room.getCharacters().stream()
                 .filter(c -> c instanceof Enemy)
-                .map(c -> (Enemy)c)
+                .map(c -> (Enemy) c)
                 .toList();
     }
 
     /**
      * Method used to get the stalker's distance from player
+     *
      * @return distance of stalker from player, -1 if Stalker instance doesn't exist
      */
     public int getStalkerDistance() {
@@ -427,6 +440,7 @@ public class World implements Serializable {
 
     /**
      * Method used to set the stalker's distance
+     *
      * @param distance what are we going to set the distance to
      */
     public void setStalkerDistance(int distance) {
@@ -473,6 +487,7 @@ public class World implements Serializable {
 
     /**
      * Getter for 'currentRoom'
+     *
      * @return value of 'currentRoom'
      */
     public Room getCurrentRoom() {
@@ -481,6 +496,7 @@ public class World implements Serializable {
 
     /**
      * Method used to check and give states of all locks, containing room, search spot and gear locks
+     *
      * @return map of all the locks and their unlock states <Name,unlockedState>
      */
     public Map<String, Boolean> getAllLockStates() {
@@ -510,6 +526,7 @@ public class World implements Serializable {
 
     /**
      * Method used to efficiently lock up all the locks
+     *
      * @param lockStates which locks are we going to lock up
      */
     public void restoreLockStates(Map<String, Boolean> lockStates) {
@@ -544,6 +561,7 @@ public class World implements Serializable {
 
     /**
      * Getter for 'gearLock'
+     *
      * @return value of 'gearLock'
      */
     public GearLock getGearLock() {
@@ -552,10 +570,20 @@ public class World implements Serializable {
 
     /**
      * Setter for 'currentRoom'
+     *
      * @param currentRoom what to set the value of 'currentRoom' to
      */
     public void setCurrentRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
+    }
+
+    /**
+     * Getter for map 'rooms'
+     *
+     * @return map 'rooms
+     */
+    public Map<Integer, Room> getRooms() {
+        return rooms;
     }
 }
 

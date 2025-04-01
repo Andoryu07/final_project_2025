@@ -271,6 +271,22 @@ public class Room implements Serializable {
     public List<Character> getCharacters() {
         return characters;
     }
+
+    /**
+     * Setter for neighbors
+     * @param neighbors what to set the list to
+     */
+    public void setNeighbors(List<Integer> neighbors) {
+        this.neighbors = neighbors;
+    }
+
+    /**
+     * Getter for searchSpots
+     * @return list of searchSpots
+     */
+    public List<SearchSpot> getSearchSpots() {
+        return searchSpots;
+    }
 }
 
 

@@ -322,4 +322,27 @@ public class CombatSystem {
         }
     }
 
+    /**
+     * Setter for 'turnsSinceLastFlashlightUse'
+     * @param turns what to set the 'turnsSinceLastFlashlightUse' to
+     */
+    public void setTurnsSinceLastFlashlightUse(int turns) {
+        this.turnsSinceLastFlashlightUse = turns;
+    }
+
+    /**
+     * Setter for scanner, used for testing
+     * @param scanner which scanner to set
+     */
+    public void setScanner(Scanner scanner) {
+        this.scanner = scanner;
+    }
+
+    /**
+     * Getter for turnsSinceLastFlashlightUse
+     * @return value of turnsSinceLastFlashlightUse
+     */
+    public int getTurnsSinceLastFlashlightUse() {
+        return turnsSinceLastFlashlightUse;
+    }
 }
