@@ -1,15 +1,31 @@
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Class used to implement the search command
+ */
 public class SearchCommand implements Command {
+    /**
+     * Instance of Player
+     */
     private Player player;
+    /**
+     * Scanner
+     */
     private Scanner scanner;
 
+    /**
+     * Constructor
+     * @param player Specifies the player using the command
+     */
     public SearchCommand(Player player) {
         this.player = player;
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Method used to implement the search command, its behavior under certain circumstances, etc.(Prints out available search spots in the current room and handles player choice)
+     */
     public void execute() {
         Room currentRoom = player.getCurrentRoom();
         List<SearchSpot> unsearchedSpots = currentRoom.getUnsearchedSpots();
