@@ -3,12 +3,26 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.*;
 
+/**
+ * Class used to store the game main logic and important methods
+ */
 public class Game {
+    /**
+     * Instance of World class
+     */
     private World world;
+    /**
+     * Instance of Player class
+     */
     private Player player;
+    /**
+     * Scanner
+     */
     private Scanner scanner;
-    private Map<String, Command> commands;
 
+    /**
+     * Constructor, contains the initialization of locks, gear locks, enemies, player,etc.
+     */
     public Game() {
         this.world = new World(null);  // Create the world first (with no player initially)
         this.scanner = new Scanner(System.in);
@@ -19,7 +33,6 @@ public class Game {
         world.initializeLocks();
         world.initializeGearLock();
         world.initializeEnemies();
-        this.commands = new HashMap<>();
         // Check for saved games
         File saveDir = new File("saves/");
         if (saveDir.exists() && saveDir.listFiles((dir, name) -> name.startsWith("save_")).length > 0) {
@@ -28,6 +41,10 @@ public class Game {
             initializeNewGame();
         }
     }
+
+    /**
+     * Method used to start a new game
+     */
     private void initializeNewGame() {
         world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
         this.player = new Player("Ethan", 100, world.getCurrentRoom());
@@ -35,9 +52,12 @@ public class Game {
         world.initializeLocks();
         world.initializeGearLock();
         world.initializeEnemies();
-        this.commands = new HashMap<>();
+
     }
 
+    /**
+     * Method used to show the load menu, after the player had previously made saves, and attempts to run the program again
+     */
     private void showLoadMenu() {
         System.out.println("╔════════════════════════════╗");
         System.out.println("║       SAVED GAMES         ║");
@@ -69,7 +89,10 @@ public class Game {
         }
     }
 
-
+    /**
+     * Method used to load the data saved in GameState, when choosing to load a previous save
+     * @param saveFile Specifies, which saveFile is trying to be load
+     */
     private void loadGame(File saveFile) {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFile))) {
             GameState state = (GameState) in.readObject();
@@ -81,6 +104,10 @@ public class Game {
         }
     }
 
+    /**
+     * Applies the game's stats(saved in game state) to the loaded game, used when loading the game in 'loadGame' method
+     * @param state
+     */
     private void applyGameState(GameState state) {
         // Restore player state
         player.setHealth(state.getPlayerHealth());
@@ -120,6 +147,10 @@ public class Game {
         // Restore stalker
        world.setStalkerDistance(state.getStalkerDistance());
     }
+
+    /**
+     * Starts the game loop, registering player's inputs
+     */
     public void start() {
         boolean running = true;
         while (running) {
@@ -131,6 +162,11 @@ public class Game {
         scanner.close();
     }
 
+    /**
+     * Method used to create and process player's commands
+     * @param input Player's console input
+     * @return boolean value on whether the game shall continue or not
+     */
     private boolean processInput(String input) {
         String[] parts = input.split(" ", 2);
         String commandName = parts[0].toLowerCase();
@@ -204,18 +240,6 @@ public class Game {
                     System.out.println("Specify an item to use.");
                 }
                 break;
-            case "talk":
-                if (argument != null) {
-                    Character npc = findCharacterInRoom(argument);
-                    if (npc != null) {
-                        new TalkCommand(player, npc).execute();
-                    } else {
-                        System.out.println("No such character here.");
-                    }
-                } else {
-                    System.out.println("Specify a character to talk to.");
-                }
-                break;
             case "examine":
                 if (argument != null) {
                     Item item = player.findItemInInventory(argument); // Updated this line
@@ -246,29 +270,15 @@ public class Game {
         return true;
     }
 
-
+    /**
+     * Method used to try and locate an item the player had attempted to pick up, using the 'take' command
+     * @param itemName Name of the item we're trying to locate
+     * @return the item if found, null if not found
+     */
     private Item findItemInRoom(String itemName) {
         for (Item item : world.getCurrentRoom().getItems()) {
             if (item.getName().equalsIgnoreCase(itemName)) {
                 return item;
-            }
-        }
-        return null;
-    }
-
-    private Enemy findEnemyInRoom(String enemyName) {
-        for (Character character : world.getCurrentRoom().getCharacters()) {
-            if (character instanceof Enemy && character.getName().equalsIgnoreCase(enemyName)) {
-                return (Enemy) character;
-            }
-        }
-        return null;
-    }
-
-    private Character findCharacterInRoom(String name) {
-        for (Character character : world.getCurrentRoom().getCharacters()) {
-            if (character.getName().equalsIgnoreCase(name)) {
-                return character;
             }
         }
         return null;
