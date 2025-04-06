@@ -20,6 +20,8 @@ class WorldTest {
     private Player mockPlayer;
     /** Mock Inventory instance for testing */
     private Inventory mockInventory;
+    /** Mock Game instance for testing */
+    private Game mockGame;
     /**
      * Initializes test environment before each test method execution.
      * Creates mock objects and sets up a basic world with two connected rooms.
@@ -28,7 +30,8 @@ class WorldTest {
     void setUp() {
         mockPlayer = mock(Player.class);
         mockInventory = mock(Inventory.class);
-        world = new World(mockPlayer);
+        mockGame = mock(Game.class);
+        world = new World(mockPlayer,mockGame);
 
         // Setup basic rooms
         Room room0 = new Room(0, "Enter_Hall", List.of(1, 2));
@@ -91,7 +94,7 @@ class WorldTest {
     @Test
     void insertGearPiece_InCeleryWithValidGear_UpdatesGearLock() {
         // Setup
-        World testWorld = new World(mockPlayer);
+        World testWorld = new World(mockPlayer,mockGame);
 
         // Create and add required rooms
         Room celeryRoom = new Room(10, "Celery", List.of());

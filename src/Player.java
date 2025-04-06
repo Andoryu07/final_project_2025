@@ -26,7 +26,10 @@ public class Player extends Character implements Serializable {
      * Boolean to decide whether the player is currently in a fight or not
      */
     private boolean isFighting = false;
-
+    /**
+     * World instance
+     */
+    private World world;
     /**
      * Constructor, contains super from Character
      * @param name name of the Player
@@ -196,6 +199,22 @@ public class Player extends Character implements Serializable {
      */
     public boolean isBlocking() {
         return isBlocking;
+    }
+
+    /**
+     * Getter for World
+     * @return world
+     */
+    public World getWorld() {
+        return world;
+    }
+
+    /**
+     * Setter for World
+     * @param world what to set the world to
+     */
+    public void setWorld(World world) {
+        this.world = world;
     }
 }
 

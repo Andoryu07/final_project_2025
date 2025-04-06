@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,16 +26,22 @@ public class CombatSystem {
      * int value of how many player's turns had elapsed since the player had last used the 'Blind enemy' in combat
      */
     private int turnsSinceLastFlashlightUse = 3;
+    /**
+     * Runnable(works like an interface, has a use() method, we can change the behavior of the said method(what to run/do), will be used for loading the latest checkpoint)
+     */
+    private final Runnable checkpointLoader;
 
     /**
      * Constructor
      * @param player Specifies the player
      * @param enemy Specifies the enemy
      */
-    public CombatSystem(Player player, Enemy enemy) {
+    public CombatSystem(Player player, Enemy enemy,Scanner scanner,Runnable checkpointLoader) {
         this.player = player;
         this.enemy = enemy;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
+        this.checkpointLoader = checkpointLoader;
+
     }
 
     /**
@@ -146,10 +157,11 @@ public class CombatSystem {
 
         String input = scanner.nextLine();
         if (input.equals("1")) {
-            // TODO: Implement checkpoint loading
-            System.out.println("Checkpoint loading not yet implemented");
+            checkpointLoader.run();
+        } else {
+            System.out.println("Game over. Exiting the game.");
+            System.exit(0);
         }
-        System.exit(0); // Temporary until checkpoint system exists
     }
 
     /**
@@ -310,8 +322,7 @@ public class CombatSystem {
         if (player.getHealth() <= 0) {
             System.out.println("You were defeated by " + enemy.getName() + "!");
             player.setFighting(false);
-            System.exit(0);
-            //TODO: Handle game over
+            handleDefeat();
         } else {
             player.setFighting(false);
             System.out.println("You defeated " + enemy.getName() + "!");

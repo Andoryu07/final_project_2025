@@ -24,10 +24,9 @@ public class Game {
      * Constructor, contains the initialization of locks, gear locks, enemies, player,etc.
      */
     public Game() {
-        this.world = new World(null);  // Create the world first (with no player initially)
+        this.world = new World(null,this);  // Create the world first (with no player initially)
         this.scanner = new Scanner(System.in);
         world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
-
         this.player = new Player("Ethan", 100, world.getCurrentRoom());  // Now create the player with the world’s starting room
         world.setPlayer(player);  // Set the player in the world
         world.initializeLocks();
@@ -48,6 +47,7 @@ public class Game {
     private void initializeNewGame() {
         world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
         this.player = new Player("Ethan", 100, world.getCurrentRoom());
+        player.setWorld(world);
         world.setPlayer(player);
         world.initializeLocks();
         world.initializeGearLock();
@@ -104,11 +104,28 @@ public class Game {
         }
     }
 
+    public void loadCheckpoint() {
+        File[] saveFiles = new File("saves/").listFiles((dir, name) -> name.startsWith("save_"));
+        if (saveFiles == null || saveFiles.length == 0) {
+            System.out.println("No save files found! Starting new game.");
+            initializeNewGame();
+            return;
+        }
+        Arrays.sort(saveFiles, Comparator.comparingLong(File::lastModified).reversed());
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFiles[0]))) {
+            GameState state = (GameState) in.readObject();
+            applyGameState(state);
+            System.out.println("✅ Checkpoint loaded successfully!");
+        } catch (Exception e) {
+            System.out.println("❌ Failed to load checkpoint: " + e.getMessage());
+            initializeNewGame();
+        }
+    }
     /**
      * Applies the game's stats(saved in game state) to the loaded game, used when loading the game in 'loadGame' method
-     * @param state
+     * @param state used to access GameState class
      */
-    private void applyGameState(GameState state) {
+    public void applyGameState(GameState state) {
         // Restore player state
         player.setHealth(state.getPlayerHealth());
         player.getInventory().clear();

@@ -1,6 +1,7 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.util.*;
 
 /**
  * Class used to implement the stealth system in the celery, which is required to complete in order to finish the game
@@ -34,14 +35,18 @@ public class CeleryStealthSystem {
      * Boolean used to save the state of whether the player had completed the Stealth sequence(Repairing the power box and turning the lights back on)
      */
     private boolean lightsOn = false;
-
+    /**
+     * Runnable instance, used for loading the latest checkpoint
+     */
+    private final Runnable checkpointLoader;
     /**
      * Constructor, initializes zombies' positions
      * @param player Used to specify and access player's fields/items
      */
-    public CeleryStealthSystem(Player player) {
+    public CeleryStealthSystem(Player player, Runnable checkpointLoader) {
         this.player = player;
         this.flashlight = (Flashlight) player.findItemInInventory("Flashlight");
+        this.checkpointLoader = checkpointLoader;
         initializeZombiePositions();
     }
 
@@ -128,10 +133,10 @@ public class CeleryStealthSystem {
 
         // Check for zombies
         if (zombiePositions[newX][newY]) {
-            System.out.println("You stumbled right into a zombie!");
+            System.out.println("You stumbled right into a zombie and died!");
             player.takeDamage(player.getHealth()); // Instant death
-            System.exit(0);
-            //TODO: Handle game over differently
+            this.loadLatestCheckpoint();
+
         }
 
         // Move is valid
@@ -199,11 +204,22 @@ public class CeleryStealthSystem {
         // Fight each zombie one by one
         for (Enemy zombie : zombies) {
             System.out.println("\nA zombie shambles towards you!");
-            CombatSystem combat = new CombatSystem(player, zombie);
-            combat.startCombat();
+            new CombatSystem(player, zombie, new Scanner(System.in), this::loadLatestCheckpoint).startCombat();
         }
         System.out.println("\nYou've defeated all the zombies in the cellar!");
         // The game will automatically return to normal play after this
+
+    }
+    private void loadLatestCheckpoint() {
+            checkpointLoader.run();
+            this.playerX = 0;
+            this.playerY = 4;
+            if (flashlight != null) {
+                flashlight.setInCelery(true);
+            }
+            this.lightsOn = false;
+            System.out.println("\nYou wake up at the cellar entrance...");
+            startSequence(new Scanner(System.in)); // Restart the sequence
 
     }
 
