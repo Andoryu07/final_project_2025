@@ -1,6 +1,4 @@
-/**
- * Class used to implement the Help command(Prints out all available commands player can use)
- */
+/** Class used to implement the Help command(Prints out all available commands player can use) */
 public class HelpCommand implements Command {
     /**
      * Method used to implement, what happens upon using this command

@@ -1,6 +1,4 @@
-/**
- * Main class, used to start the game
- */
+/** Main class, used to start the game  */
 public class Main {
     /**
      * Constructor initializing the game

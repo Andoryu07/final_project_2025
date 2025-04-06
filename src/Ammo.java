@@ -1,7 +1,7 @@
 /**
  * Class used to create Ammo items' variables, fields, and specify their behavior under certain circumstances
  */
-public class Ammo extends Item{
+public class Ammo extends Item {
     /**
      * Used to specify the amount of ammo
      */

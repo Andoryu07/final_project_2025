@@ -38,7 +38,7 @@ public class GameState implements Serializable {
      */
     private Set<String> insertedGears;
     /**
-     * Map used to store states of locks in the game(<Name,hasItBeenUnlockedYet?>)
+     * Map used to store states of locks in the game(Name,hasItBeenUnlockedYet?)
      */
     private Map<String, Boolean> lockStates;
     /**

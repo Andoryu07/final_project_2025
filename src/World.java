@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*;
 
@@ -10,7 +11,7 @@ public class World implements Serializable {
      */
     private static final long serialVersionUID = 1L;
     /**
-     * Map containing all the rooms<index,room>
+     * Map containing all the rooms(index,room)
      */
     private final Map<Integer, Room> rooms = new HashMap<>();
     /**
@@ -46,11 +47,11 @@ public class World implements Serializable {
     }
 
     /**
-     * Constructor
-     *
-     * @param player Specifies the player
+     * Constructor, initializes Laboratory room
+     * @param player Player
+     * @param game Game
      */
-    public World(Player player,Game game) {
+    public World(Player player, Game game) {
         this.player = player;
         this.game = game;
         laboratory = new Room("Laboratory", true);
@@ -332,7 +333,7 @@ public class World implements Serializable {
                 return;
             }
 
-            CeleryStealthSystem stealth = new CeleryStealthSystem(player,game::loadCheckpoint);
+            CeleryStealthSystem stealth = new CeleryStealthSystem(player, game::loadCheckpoint);
             stealth.startSequence(scanner);
             return;
         }
@@ -376,16 +377,6 @@ public class World implements Serializable {
                 startCombat(zombie.get());
             }
         }
-
-//        // Check for Secret Chamber
-//        if (currentRoom.getName().equalsIgnoreCase("Secret_Chamber")) {
-//            System.out.println("\n******************************************************************");
-//            System.out.println("* You've found your sister! The nightmare is finally over...      *");
-//            System.out.println("*                                                                *");
-//            System.out.println("*                      T H E    E N D                            *");
-//            System.out.println("******************************************************************");
-//            System.exit(0); // Exit the game
-//        }
     }
 
     /**
@@ -394,35 +385,9 @@ public class World implements Serializable {
      * @param enemy which enemy is the player going to fight against
      */
     private void startCombat(Enemy enemy) {
-        new CombatSystem(player, enemy,new Scanner(System.in),game::loadCheckpoint).startCombat();
+        new CombatSystem(player, enemy, new Scanner(System.in), game::loadCheckpoint).startCombat();
     }
-    /**
-     * Method used to load the latest checkpoint using a comparator(sorts the array of saves in based on their latest modification, in reverse in order for the latest file to be first)
-     */
 
-//    private void loadLatestCheckpoint() {
-//        File[] saveFiles = new File("saves/").listFiles((dir, name) -> name.startsWith("save_"));
-//        if (saveFiles == null || saveFiles.length == 0) {
-//            System.out.println("No save files found!");
-//            return;
-//        }
-//
-//        Arrays.sort(saveFiles, Comparator.comparingLong(File::lastModified).reversed());
-//
-//        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFiles[0]))) {
-//            GameState state = (GameState) in.readObject();
-//            // Reset the world state
-//            player.setHealth(state.getPlayerHealth());
-//            player.getInventory().clear();
-//            for (Item item : state.getInventory()) {
-//                player.getInventory().addItem(item);
-//            }
-//            // ... restore other state as needed ...
-//            System.out.println("✅ Checkpoint loaded successfully!");
-//        } catch (Exception e) {
-//            System.out.println("❌ Failed to load checkpoint: " + e.getMessage());
-//        }
-//    }
     /**
      * Method used to find an enemy by his name
      *
@@ -525,7 +490,7 @@ public class World implements Serializable {
     /**
      * Method used to check and give states of all locks, containing room, search spot and gear locks
      *
-     * @return map of all the locks and their unlock states <Name,unlockedState>
+     * @return map of all the locks and their unlock states (Name,unlockedState)
      */
     public Map<String, Boolean> getAllLockStates() {
         Map<String, Boolean> lockStates = new HashMap<>();

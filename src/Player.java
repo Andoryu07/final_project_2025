@@ -1,6 +1,4 @@
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class used to implement the user/player, his fields, values and behavior, choices
@@ -138,7 +136,7 @@ public class Player extends Character implements Serializable {
 
     /**
      * Setter for 'health'
-     * @param health what value to set 'health' to
+     * @param health what to set 'health' to
      */
     public void setHealth(int health) {
         this.health = Math.max(0, health); // Ensure health doesn't go negative

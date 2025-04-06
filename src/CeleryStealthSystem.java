@@ -1,6 +1,3 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.util.*;
 
 /**
@@ -39,9 +36,11 @@ public class CeleryStealthSystem {
      * Runnable instance, used for loading the latest checkpoint
      */
     private final Runnable checkpointLoader;
+
     /**
      * Constructor, initializes zombies' positions
-     * @param player Used to specify and access player's fields/items
+     * @param player Who is attempting the stealth sequence
+     * @param checkpointLoader Which Runnable to use
      */
     public CeleryStealthSystem(Player player, Runnable checkpointLoader) {
         this.player = player;

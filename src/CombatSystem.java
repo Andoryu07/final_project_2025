@@ -1,8 +1,3 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -33,8 +28,10 @@ public class CombatSystem {
 
     /**
      * Constructor
-     * @param player Specifies the player
-     * @param enemy Specifies the enemy
+     * @param player Which player is fighting
+     * @param enemy Which enemy is fighting
+     * @param scanner Which scanner to use
+     * @param checkpointLoader which Runnable to use
      */
     public CombatSystem(Player player, Enemy enemy,Scanner scanner,Runnable checkpointLoader) {
         this.player = player;

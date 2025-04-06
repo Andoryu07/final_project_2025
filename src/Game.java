@@ -104,6 +104,9 @@ public class Game {
         }
     }
 
+    /**
+     * Method used to load checkpoint upon dying
+     */
     public void loadCheckpoint() {
         File[] saveFiles = new File("saves/").listFiles((dir, name) -> name.startsWith("save_"));
         if (saveFiles == null || saveFiles.length == 0) {

@@ -1,7 +1,5 @@
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
-
 /**
  * Class used to implement the search spot, its values and fields
  */

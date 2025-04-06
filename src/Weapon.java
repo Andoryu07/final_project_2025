@@ -92,7 +92,7 @@ public abstract class Weapon extends Item implements Serializable {
 
     /**
      * Getter for 'infiniteUse'
-     * @return value of 'maxAmmo<0'
+     * @return value of infiniteUse
      */
     public boolean isInfiniteUse() {
         return maxAmmo < 0;

@@ -1,9 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-/**
- * Class used to manage save files
- */
+/** Class used to manage save files */
 public class SaveManager {
     /**
      * Name of the folder for saves

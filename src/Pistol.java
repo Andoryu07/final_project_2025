@@ -11,7 +11,7 @@ public class Pistol extends Weapon {
 
     /**
      * Use method, implements Pistol's behavior upon use, contains super from Weapon class
-     * @param player
+     * @param player Who is using the pistol
      */
     @Override
     public void use(Player player) {

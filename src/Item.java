@@ -45,7 +45,7 @@ public abstract class Item implements Serializable {
 
     /**
      * Method used to implement the item's behavior
-     * @param player
+     * @param player Who is using the item
      */
     public abstract void use(Player player);
 

@@ -10,7 +10,7 @@ public abstract class Enemy extends Character implements Serializable {
      */
     private static final long serialVersionUID = 1L;
     /**
-     * Map containing all the enemy's attacks <Name,Damage>
+     * Map containing all the enemy's attacks (Name,Damage)
      */
     protected Map<String, Integer> attacks;
     /**
