@@ -143,6 +143,19 @@ public class Game {
         // Restore world state
         world.getGearLock().setInsertedGears(state.getInsertedGears());
         world.restoreLockStates(state.getLockStates());
+        Map<String, List<String>> searchedSpotsMap = state.getSearchedSpotsPerRoom();
+        if (searchedSpotsMap != null) {
+            for (Map.Entry<String, List<String>> entry : searchedSpotsMap.entrySet()) {
+                Room room = world.findRoomByName(entry.getKey());
+                if (room != null) {
+                    for (SearchSpot spot : room.getSearchSpots()) {
+                        if (entry.getValue().contains(spot.getName())) {
+                            spot.markAsSearched();//Marks the spot as searched
+                        }
+                    }
+                }
+            }
+        }
 
         // Restore stalker
        world.setStalkerDistance(state.getStalkerDistance());

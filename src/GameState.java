@@ -30,6 +30,10 @@ public class GameState implements Serializable {
     private String currentRoomName;
     // World state
     /**
+     * Map used to store already searched spots for each room
+     */
+    private Map<String, List<String>> searchedSpotsPerRoom;
+    /**
      * Set used to store, which gears player had inserted
      */
     private Set<String> insertedGears;
@@ -61,143 +65,229 @@ public class GameState implements Serializable {
     private boolean isPlayerBlocking;
 
     // Constructor
+
     /**
      * Constructor
      */
-    public GameState() {}
+    public GameState() {
+    }
 
     // Getters and Setters
 
     /**
      * Getter for 'playerHealth'
+     *
      * @return value of 'playerHealth'
      */
-    public int getPlayerHealth() { return playerHealth; }
+    public int getPlayerHealth() {
+        return playerHealth;
+    }
 
     /**
      * Setter for 'playerHealth'
+     *
      * @param playerHealth what to set 'playerHealth' to
      */
-    public void setPlayerHealth(int playerHealth) { this.playerHealth = playerHealth; }
+    public void setPlayerHealth(int playerHealth) {
+        this.playerHealth = playerHealth;
+    }
 
     /**
      * Getter for 'equippedWeapon'
+     *
      * @return value of 'equippedWeapon'
      */
-    public Weapon getEquippedWeapon() { return equippedWeapon; }
+    public Weapon getEquippedWeapon() {
+        return equippedWeapon;
+    }
 
     /**
      * Setter for 'equippedWeapon'
+     *
      * @param equippedWeapon what to set 'equippedWeapon' to
      */
-    public void setEquippedWeapon(Weapon equippedWeapon) { this.equippedWeapon = equippedWeapon; }
+    public void setEquippedWeapon(Weapon equippedWeapon) {
+        this.equippedWeapon = equippedWeapon;
+    }
 
     /**
      * Getter for 'inventory'
+     *
      * @return inventory
      */
-    public List<Item> getInventory() { return inventory; }
+    public List<Item> getInventory() {
+        return inventory;
+    }
 
     /**
      * Setter for 'inventory'
+     *
      * @param inventory what to set the list 'inventory' to
      */
-    public void setInventory(List<Item> inventory) { this.inventory = inventory; }
+    public void setInventory(List<Item> inventory) {
+        this.inventory = inventory;
+    }
 
     /**
      * Getter for 'currentRoomName'
+     *
      * @return String value of 'currentRoomName'
      */
-    public String getCurrentRoomName() { return currentRoomName; }
+    public String getCurrentRoomName() {
+        return currentRoomName;
+    }
 
     /**
      * Setter for 'currentRoomName'
+     *
      * @param currentRoomName what to set the value of 'currentRoomName' to
      */
-    public void setCurrentRoomName(String currentRoomName) { this.currentRoomName = currentRoomName; }
+    public void setCurrentRoomName(String currentRoomName) {
+        this.currentRoomName = currentRoomName;
+    }
 
     /**
      * Getter for 'insertedGears'
+     *
      * @return the set 'insertedGears'
      */
-    public Set<String> getInsertedGears() { return insertedGears; }
+    public Set<String> getInsertedGears() {
+        return insertedGears;
+    }
 
     /**
      * Setter for 'insertedGears'
+     *
      * @param insertedGears what to set the 'insertedGears' set to
      */
-    public void setInsertedGears(Set<String> insertedGears) { this.insertedGears = insertedGears; }
+    public void setInsertedGears(Set<String> insertedGears) {
+        this.insertedGears = insertedGears;
+    }
 
     /**
      * Getter for 'lockStates' map
+     *
      * @return the map 'lockStates'
      */
-    public Map<String, Boolean> getLockStates() { return lockStates; }
+    public Map<String, Boolean> getLockStates() {
+        return lockStates;
+    }
 
     /**
      * Setter for the map 'lockStates'
+     *
      * @param lockStates what to set the map 'lockStates' to
      */
-    public void setLockStates(Map<String, Boolean> lockStates) { this.lockStates = lockStates; }
+    public void setLockStates(Map<String, Boolean> lockStates) {
+        this.lockStates = lockStates;
+    }
 
     /**
      * Getter for 'stalkerDistance'
+     *
      * @return value of 'stalkerDistance'
      */
-    public int getStalkerDistance() { return stalkerDistance; }
+    public int getStalkerDistance() {
+        return stalkerDistance;
+    }
 
     /**
      * Setter for 'stalkerDistance'
+     *
      * @param stalkerDistance what to set the value of 'stalkerDistance' to
      */
-    public void setStalkerDistance(int stalkerDistance) { this.stalkerDistance = stalkerDistance; }
+    public void setStalkerDistance(int stalkerDistance) {
+        this.stalkerDistance = stalkerDistance;
+    }
 
     /**
      * Getter for 'flashlightBattery'
+     *
      * @return value of 'flashlightBattery'
      */
-    public int getFlashlightBattery() { return flashlightBattery; }
+    public int getFlashlightBattery() {
+        return flashlightBattery;
+    }
 
     /**
      * Setter for 'flashlightBattery'
+     *
      * @param flashlightBattery what to set the value of 'flashlightBattery' to
      */
-    public void setFlashlightBattery(int flashlightBattery) { this.flashlightBattery = flashlightBattery; }
+    public void setFlashlightBattery(int flashlightBattery) {
+        this.flashlightBattery = flashlightBattery;
+    }
 
     /**
      * Getter for 'isFlashlightInCelery'
+     *
      * @return value of 'isFlashlightInCelery'
      */
-    public boolean isFlashlightInCelery() { return isFlashlightInCelery; }
+    public boolean isFlashlightInCelery() {
+        return isFlashlightInCelery;
+    }
 
     /**
      * Setter for 'isFlashlightInCelery'
+     *
      * @param flashlightInCelery what to set the value of 'isFlashlightInCelery' to
      */
-    public void setFlashlightInCelery(boolean flashlightInCelery) { isFlashlightInCelery = flashlightInCelery; }
+    public void setFlashlightInCelery(boolean flashlightInCelery) {
+        isFlashlightInCelery = flashlightInCelery;
+    }
 
     /**
      * Getter for 'isPlayerFighting'
+     *
      * @return value of 'isPlayerFighting'
      */
-    public boolean isPlayerFighting() { return isPlayerFighting; }
+    public boolean isPlayerFighting() {
+        return isPlayerFighting;
+    }
 
     /**
      * Setter for 'isPlayerFighting'
+     *
      * @param playerFighting what to set the value of 'isPlayerFighting' to
      */
-    public void setPlayerFighting(boolean playerFighting) { isPlayerFighting = playerFighting; }
+    public void setPlayerFighting(boolean playerFighting) {
+        isPlayerFighting = playerFighting;
+    }
 
     /**
      * Getter for 'isPLayerBlocking'
+     *
      * @return the value of 'isPLayerBlocking'
      */
-    public boolean isPlayerBlocking() { return isPlayerBlocking; }
+    public boolean isPlayerBlocking() {
+        return isPlayerBlocking;
+    }
 
     /**
      * Setter for 'isPLayerBlocking'
+     *
      * @param playerBlocking what to set the value of 'isPLayerBlocking' to
      */
-    public void setPlayerBlocking(boolean playerBlocking) { isPlayerBlocking = playerBlocking; }
+    public void setPlayerBlocking(boolean playerBlocking) {
+        isPlayerBlocking = playerBlocking;
+    }
+
+    /**
+     * Getter for 'searchedSpotsPerRoom'
+     *
+     * @return Map of 'searchedSpotsPerRoom'
+     */
+    public Map<String, List<String>> getSearchedSpotsPerRoom() {
+        return searchedSpotsPerRoom;
+    }
+
+    /**
+     * Setter for 'searchedSpotsPerRoom'
+     *
+     * @param searchedSpotsPerRoom sets the map of 'searchedSpotsPerRoom'
+     */
+    public void setSearchedSpotsPerRoom(Map<String, List<String>> searchedSpotsPerRoom) {
+        this.searchedSpotsPerRoom = searchedSpotsPerRoom;
+    }
 }
 

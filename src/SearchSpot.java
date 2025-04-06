@@ -61,6 +61,21 @@ public class SearchSpot implements Serializable {
         }
         return null;
     }
+
+    /**
+     * Setter for 'searched'
+     * @param searched what to set the value of 'searched' to
+     */
+    public void setSearched(boolean searched) {
+        this.searched = searched;
+    }
+
+    /**
+     * Method used to set the search spot as 'searched'
+     */
+    public void markAsSearched() {
+        this.searched = true;
+    }
 }
 
 

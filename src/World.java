@@ -274,7 +274,7 @@ public class World implements Serializable {
             case "FLASHLIGHT":
                 return new Flashlight();
             case "BATTERIES":
-                return new KeyItem("Batteries", "Used to recharge the flashlight.");
+                return new Batteries();
             case "REPAIR_TOOL":
                 return new KeyItem("Repair Tool", "A tool for fixing machines.");
             case "HAMMER":

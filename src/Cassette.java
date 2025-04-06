@@ -1,7 +1,5 @@
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Class used to create and implement item Cassette's behavior, it's use and values
@@ -61,8 +59,8 @@ public class Cassette extends Item {
 
         String choice = scanner.nextLine();
         if (choice.equals("1")) {
-            saveGame(player);
             player.getInventory().removeItem(this);
+            saveGame(player);
         } else {
             System.out.println("You walk away from the cassette player.");
         }
@@ -112,12 +110,34 @@ public class Cassette extends Item {
         state.setPlayerFighting(player.isFighting());
         state.setPlayerBlocking(player.isBlocking());
 
-        // Get world state (you'll need to add methods to World class)
+        // Get world state
         state.setInsertedGears(world.getGearLock().getInsertedGears());
         state.setLockStates(world.getAllLockStates());
+        Map<String, List<String>> searchedSpotsMap = getSearchedSpotsMap();
+        state.setSearchedSpotsPerRoom(searchedSpotsMap);
 
         // Get stalker distance
         state.setStalkerDistance(world.getStalkerDistance());
         return state;
+    }
+
+    /**
+     * Extracted method used to create map of rooms and their searched spots
+     * @return map of searched spots in individual rooms
+     */
+    private Map<String, List<String>> getSearchedSpotsMap() {
+        Map<String, List<String>> searchedSpotsMap = new HashMap<>();
+        for (Room room : world.getRooms().values()) {
+            List<String> searchedSpotNames = new ArrayList<>();
+            for (SearchSpot spot : room.getSearchSpots()) {
+                if (spot.isSearched()) {
+                    searchedSpotNames.add(spot.getName());
+                }
+            }
+            if (!searchedSpotNames.isEmpty()) {
+                searchedSpotsMap.put(room.getName(), searchedSpotNames);
+            }
+        }
+        return searchedSpotsMap;
     }
 }

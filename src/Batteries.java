@@ -19,6 +19,7 @@ public class Batteries extends Item {
             if (item instanceof Flashlight) {
                 Flashlight flashlight = (Flashlight) item;
                 flashlight.recharge();
+                player.getInventory().removeItem(this);
                 System.out.println("🔋 Flashlight recharged!");
                 return;
             }
