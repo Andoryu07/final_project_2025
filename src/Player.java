@@ -32,10 +32,10 @@ public class Player extends Character implements Serializable {
      * Constructor, contains super from Character
      * @param name name of the Player
      * @param health health of the Player
-     * @param startRoom Room, in which the Player starts in
+     * @param world World, in which the Player is in
      */
-    public Player(String name, int health, Room startRoom) {
-        super(name, health, startRoom);
+    public Player(String name, int health, World world, String startingRoomName) {
+        super(name, health, world,startingRoomName);
         this.inventory = new Inventory(10);
 
     }
@@ -91,7 +91,7 @@ public class Player extends Character implements Serializable {
     public void pickUpItem(Item item) {
         if (inventory.addItem(item)) {
             System.out.println("You've picked up: " + item.getName());
-            currentRoom.removeItem(item);
+            getCurrentRoom().removeItem(item);
         } else {
             System.out.println("Inventory is full! You can't pick up the item: " + item.getName());
         }
@@ -214,5 +214,17 @@ public class Player extends Character implements Serializable {
     public void setWorld(World world) {
         this.world = world;
     }
+
+    /**
+     * Method used to set player's current room
+     * @param room what room to set player's current room to
+     */
+    public void setCurrentRoom(Room room) {
+        this.currentRoomName = room.getName();
+        if (world != null) {
+            world.setCurrentRoom(room);
+        }
+    }
+
 }
 

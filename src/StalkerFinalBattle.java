@@ -4,10 +4,10 @@
 public class StalkerFinalBattle extends Enemy {
     /**
      * Constructor, contains super from Enemy
-     * @param startRoom Room, which the stalker spawns in
+     * @param world world, which the stalker spawns in
      */
-    public StalkerFinalBattle(Room startRoom) {
-        super("StalkerFinalBattle", 250, startRoom);
+    public StalkerFinalBattle(World world,String startingRoomName) {
+        super("StalkerFinalBattle", 250, world,startingRoomName);
         this.distanceFromPlayer = 0; // Doesn't move, stays in the same room
     }
 

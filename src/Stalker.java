@@ -4,10 +4,10 @@
 public class Stalker extends Enemy {
     /**
      * Constructor, containing super from Enemy
-     * @param startRoom the room Stalker spawns/starts off in
+     * @param world the world Stalker spawns/starts off in
      */
-    public Stalker(Room startRoom) {
-        super("Stalker", 120, startRoom);
+    public Stalker(World world,String startingRoomName) {
+        super("Stalker", 120, world,startingRoomName);
         this.distanceFromPlayer = 3;
     }
 

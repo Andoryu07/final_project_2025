@@ -19,16 +19,22 @@ public class Game {
      * Scanner
      */
     private Scanner scanner;
+    /**
+     * CommandFactory instance
+     */
+    private CommandFactory commandFactory;
 
     /**
      * Constructor, contains the initialization of locks, gear locks, enemies, player,etc.
      */
     public Game() {
-        this.world = new World(null,this);  // Create the world first (with no player initially)
+        this.world = new World(null,this);
         this.scanner = new Scanner(System.in);
         world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
-        this.player = new Player("Ethan", 100, world.getCurrentRoom());  // Now create the player with the world’s starting room
+        this.player = new Player("Ethan", 100, world,world.getRooms().get(0).getName());
         world.setPlayer(player);  // Set the player in the world
+        player.setWorld(world);
+        commandFactory = new CommandFactory(world, player, scanner);
         world.initializeLocks();
         world.initializeGearLock();
         world.initializeEnemies();
@@ -46,7 +52,7 @@ public class Game {
      */
     private void initializeNewGame() {
         world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
-        this.player = new Player("Ethan", 100, world.getCurrentRoom());
+        this.player = new Player("Ethan", 100, world,world.getRooms().get(0).getName());
         player.setWorld(world);
         world.setPlayer(player);
         world.initializeLocks();
@@ -146,7 +152,7 @@ public class Game {
         Room targetRoom = world.findRoomByName(state.getCurrentRoomName());
         if (targetRoom != null) {
             player.setCurrentRoom(targetRoom);
-            world.setCurrentRoom(targetRoom);
+
         }
 
         // Restore flashlight
@@ -196,125 +202,24 @@ public class Game {
     }
 
     /**
-     * Method used to create and process player's commands
+     * Method used to process player's commands
      * @param input Player's console input
      * @return boolean value on whether the game shall continue or not
      */
     private boolean processInput(String input) {
-        String[] parts = input.split(" ", 2);
-        String commandName = parts[0].toLowerCase();
-        String argument = (parts.length > 1) ? parts[1] : null;
-
-        switch (commandName) {
-            case "insert":
-                if (argument != null) {
-                    world.insertGearPiece(argument.toUpperCase(), player);
-                } else {
-                    System.out.println("Specify which gear piece to insert.");
-                }
-                break;
-            case "go":
-                if (argument != null) {
-                    try {
-                        int roomIndex = Integer.parseInt(argument);
-                        new MoveCommand(world, roomIndex,scanner).execute();
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid room number.");
-                    }
-                } else {
-                    System.out.println("Specify a room index.");
-                }
-                break;
-            case "equip":
-                if (argument != null) {
-                    Item item = player.findItemInInventory(argument);
-                    if (item instanceof Weapon) {
-                        player.equipWeapon((Weapon) item);
-                    } else {
-                        System.out.println("That's not a weapon!");
-                    }
-                } else {
-                    System.out.println("Specify a weapon to equip");
-                }
-                break;
-            case "take":
-                if (argument != null) {
-                    Item item = findItemInRoom(argument);
-                    if (item != null) {
-                        new TakeCommand(player, item).execute();
-                    } else {
-                        System.out.println("Item not found in this room.");
-                    }
-                } else {
-                    System.out.println("Specify an item to take.");
-                }
-                break;
-            case "drop":
-                if (argument != null) {
-                    Item item = player.findItemInInventory(argument); // Updated this line
-                    if (item != null) {
-                        new DropCommand(player, item).execute();
-                    } else {
-                        System.out.println("You don't have this item.");
-                    }
-                } else {
-                    System.out.println("Specify an item to drop.");
-                }
-                break;
-            case "use":
-                if (argument != null) {
-                    Item item = player.findItemInInventory(argument); // Updated this line
-                    if (item != null) {
-                        new UseCommand(player, item).execute();
-                    } else {
-                        System.out.println("You don't have this item.");
-                    }
-                } else {
-                    System.out.println("Specify an item to use.");
-                }
-                break;
-            case "examine":
-                if (argument != null) {
-                    Item item = player.findItemInInventory(argument); // Updated this line
-                    if (item != null) {
-                        new ExamineCommand(player, item).execute();
-                    } else {
-                        System.out.println("You don't have this item.");
-                    }
-                } else {
-                    System.out.println("Specify an item to examine.");
-                }
-                break;
-            case "inventory":
-                new InventoryCommand(player).execute();
-                break;
-            case "help":
-                new HelpCommand().execute();
-                break;
-            case "exit":
-                System.out.println("Exiting game...");
+        try {
+            Command command = commandFactory.createCommand(input);
+            if (command instanceof ExitCommand) {
+                command.execute();
                 return false;
-            case "search":
-                new SearchCommand(player).execute();
-                break;
-            default:
-                System.out.println("Unknown command. Type 'help' for a list of commands.");
+            }
+            command.execute();
+            return true;
+        } catch (CommandException e) {
+            System.out.println(e.getMessage());
+            return true;
         }
-        return true;
     }
 
-    /**
-     * Method used to try and locate an item the player had attempted to pick up, using the 'take' command
-     * @param itemName Name of the item we're trying to locate
-     * @return the item if found, null if not found
-     */
-    private Item findItemInRoom(String itemName) {
-        for (Item item : world.getCurrentRoom().getItems()) {
-            if (item.getName().equalsIgnoreCase(itemName)) {
-                return item;
-            }
-        }
-        return null;
-    }
 
 }

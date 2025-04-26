@@ -22,10 +22,10 @@ public abstract class Enemy extends Character implements Serializable {
      * Constructor
      * @param name Name of the enemy
      * @param health Health of the enemy
-     * @param currentRoom Current room of the enemy
+     * @param world Current world of the enemy
      */
-    public Enemy(String name, int health, Room currentRoom) {
-        super(name, Math.max(1,health), currentRoom);//Ensures the enemy has atleast 1 health
+    public Enemy(String name, int health, World world, String startingRoomName) {
+        super(name, Math.max(1,health), world,startingRoomName);//Ensures the enemy has atleast 1 health
         this.attacks = new HashMap<>();
         initializeAttacks();
     }

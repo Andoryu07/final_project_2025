@@ -4,10 +4,10 @@
 public class Zombie extends Enemy {
     /**
      * Constructor, containing super from Enemy
-     * @param startRoom which room does the zombie start in
+     * @param world which world does the zombie start in
      */
-    public Zombie(Room startRoom) {
-        super("Zombie", 90, startRoom);
+    public Zombie(World world,String startingRoomName) {
+        super("Zombie", 90, world,startingRoomName);
         this.distanceFromPlayer = 0; // Zombies don't move
     }
 

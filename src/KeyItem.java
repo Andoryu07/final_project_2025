@@ -17,6 +17,6 @@ public class KeyItem extends Item {
      */
     @Override
     public void use(Player player) {
-        System.out.println("You have used " + name + ".");
+        System.out.println("You can't use this item like that");
     }
 }

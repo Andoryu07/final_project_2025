@@ -344,7 +344,6 @@ public class World implements Serializable {
         }
 
         currentRoom = nextRoom;
-        player.setCurrentRoom(currentRoom);
         System.out.println("\nMoved to the room: " + currentRoom.getName());
         // Check for Stalker movement after regular movement
         if (currentRoom.getName().equals("Secret_Chamber") &&
@@ -449,18 +448,22 @@ public class World implements Serializable {
     public void initializeEnemies() {
         // Final boss
         if (rooms.containsKey(11)) {
-            rooms.get(11).addCharacter(new StalkerFinalBattle(rooms.get(11)));
+            Room room = rooms.get(11);
+            room.addCharacter(new StalkerFinalBattle( this, room.getName()));
         }
 
         // Zombies
-        if (rooms.containsKey(7)) { // Garden House
+        if (rooms.containsKey(7)) {
+            Room room = rooms.get(7);
             for (int i = 0; i < 5; i++) {
-                rooms.get(7).addCharacter(new Zombie(rooms.get(7)));
+                room.addCharacter(new Zombie(this, room.getName()));
             }
         }
+
         // Stalker
-        if (rooms.containsKey(0)) { // Enter Hall
-            rooms.get(0).addCharacter(new Stalker(rooms.get(0)));
+        if (rooms.containsKey(0)) {
+            Room room = rooms.get(0);
+            room.addCharacter(new Stalker(this, room.getName()));
         }
     }
 
@@ -485,6 +488,12 @@ public class World implements Serializable {
      */
     public Room getCurrentRoom() {
         return currentRoom;
+    }
+    public void setCurrentRoom(Room room) {
+        this.currentRoom = room;
+        if (player != null) {
+            player.currentRoomName = room.getName();
+        }
     }
 
     /**
@@ -561,14 +570,7 @@ public class World implements Serializable {
         return gearLock;
     }
 
-    /**
-     * Setter for 'currentRoom'
-     *
-     * @param currentRoom what to set the value of 'currentRoom' to
-     */
-    public void setCurrentRoom(Room currentRoom) {
-        this.currentRoom = currentRoom;
-    }
+
 
     /**
      * Getter for map 'rooms'

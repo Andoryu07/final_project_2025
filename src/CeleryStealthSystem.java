@@ -198,7 +198,7 @@ public class CeleryStealthSystem {
         Room currentRoom = player.getCurrentRoom();
         List<Enemy> zombies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            zombies.add(new Zombie(currentRoom));
+            zombies.add(new Zombie(player.getWorld(),player.getCurrentRoom().getName()));
         }
         // Fight each zombie one by one
         for (Enemy zombie : zombies) {
@@ -209,6 +209,10 @@ public class CeleryStealthSystem {
         // The game will automatically return to normal play after this
 
     }
+
+    /**
+     * Method used to load the latest checkpoint during the stealth sequence(upon dying), resets player's position
+     */
     private void loadLatestCheckpoint() {
             checkpointLoader.run();
             this.playerX = 0;

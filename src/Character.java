@@ -17,20 +17,25 @@ public abstract class Character implements Serializable {
      */
     protected int health;
     /**
-     * Room instance, specifying the character's current room
+     * World instance
      */
-    protected Room currentRoom;
+    protected transient World world;
+    /**
+     * Name of the current room
+     */
+    protected String currentRoomName;//For serialization
 
     /**
      * Constructor
      * @param name Name of the character
      * @param health Int health value of the character
-     * @param currentRoom Room instance, specifying the character's current room
+     * @param world which world the character is in
      */
-    public Character(String name, int health, Room currentRoom) {
+    public Character(String name, int health, World world, String currentRoomName) {
         this.name = name;
         this.health = health;
-        this.currentRoom = currentRoom;
+        this.world = world;
+        this.currentRoomName = currentRoomName;
     }
 
     /**
@@ -67,20 +72,29 @@ public abstract class Character implements Serializable {
     }
 
     /**
-     * Getter for 'currentRoom'
-     * @return The current room of specific Character
+     * Getter for world
+     * @return value of world
      */
-    public Room getCurrentRoom() {
-        return currentRoom;
+    public World getWorld() {
+        return world;
     }
 
     /**
-     * Setter for 'currentRoom'
-     * @param room which room to change the 'currentRoom' value to
+     * Setter for 'world'
+     * @param world what to set the 'world' to
      */
-    public void setCurrentRoom(Room room) {
-        this.currentRoom = room;
+    public void setWorld(World world) {
+        this.world = world;
     }
 
-
+    /**
+     * Method used to get the player's current room, used for serialization
+     * @return the current room
+     */
+    public Room getCurrentRoom() {
+        if (world != null) {
+            return world.getCurrentRoom(); // For player
+        }
+        return world.findRoomByName(currentRoomName); // For enemies
+    }
 }

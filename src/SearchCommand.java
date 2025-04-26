@@ -27,7 +27,7 @@ public class SearchCommand implements Command {
      * Method used to implement the search command, its behavior under certain circumstances, etc.(Prints out available search spots in the current room and handles player choice)
      */
     public void execute() {
-        Room currentRoom = player.getCurrentRoom();
+        Room currentRoom = player.getWorld().getCurrentRoom();
         List<SearchSpot> unsearchedSpots = currentRoom.getUnsearchedSpots();
 
         if (unsearchedSpots.isEmpty()) {
