@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Class used to implement the Lock located in the Celery(Player has to insert all 4 GearPieces to proceed)
+ * Class used to implement the Lock located in the Cellar(Player has to insert all 4 GearPieces to proceed)
  */
 public class GearLock implements Serializable {
     /**
@@ -20,7 +20,7 @@ public class GearLock implements Serializable {
      */
     private final Set<String> insertedGears = new HashSet<>();
     /**
-     * Used to reference the Laboratory room, which is locked until the mechanism in Celery is unlocked
+     * Used to reference the Laboratory room, which is locked until the mechanism in Cellar is unlocked
      */
     private final Room lockedRoom;
     /**

@@ -1,3 +1,5 @@
+import javafx.geometry.Rectangle2D;
+
 import java.io.Serializable;
 
 /**
@@ -28,6 +30,42 @@ public class Player extends Character implements Serializable {
      * World instance
      */
     private World world;
+    /**
+     * X and Y coordinates on the map
+     */
+    private double x, y;
+    /**
+     * String of the current room name
+     */
+    private String currentRoomName;
+    private double speedX = 0;
+    private double speedY = 0;
+    private boolean movementEnabled = true;
+    private boolean isTransitioning = false;
+    private double walkCyclePosition = 0;
+    private final double WALK_CYCLE_SPEED = 0.1;
+    private double maxStamina = 100.0;
+    private double currentStamina = 100.0;
+    private boolean isSprinting = false;
+    private long lastSprintTime = 0;
+    private final double STAMINA_DRAIN_RATE = 20.0; // 20% per second (5s to drain fully)
+    private final double STAMINA_RECHARGE_RATE = 10.0; // 10% per second (10s to recharge fully)
+    private final double STAMINA_RECHARGE_DELAY = 1.0;// 1 second delay before recharge starts
+    private final double SPRINT_SPEED_MULTIPLIER = 2.0;
+    public void updateWalkCycle(boolean isMoving) {
+        if (isMoving) {
+            walkCyclePosition += WALK_CYCLE_SPEED;
+            if (walkCyclePosition >= 2 * Math.PI) {
+                walkCyclePosition = 0;
+            }
+        } else {
+            walkCyclePosition = 0;
+        }
+    }
+
+    public double getWalkCyclePosition() {
+        return walkCyclePosition;
+    }
     /**
      * Constructor, contains super from Character
      * @param name name of the Player
@@ -225,6 +263,129 @@ public class Player extends Character implements Serializable {
             world.setCurrentRoom(room);
         }
     }
+    public void setCurrentRoom(String roomName) {
+        this.currentRoomName = roomName;
+    }
 
+    public String getCurrentRoomName() {
+        return currentRoomName;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    /**
+     * Getter for X
+     * @return value of X
+     */
+    public double getX() {
+        return x;
+    }
+
+    /**
+     * Getter for Y
+     * @return value of Y
+     */
+    public double getY() {
+        return y;
+    }
+    public void setSpeed(double speedX, double speedY) {
+        this.speedX = speedX;
+        this.speedY = speedY;
+    }
+
+    public double getSpeedX() {
+        return speedX;
+    }
+
+    public double getSpeedY() {
+        return speedY;
+    }
+
+    /**
+     * Setter for X and Y
+     * @param x what to set X to
+     * @param y what to set Y to
+     */
+    public void setPosition(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    public void setTransitioning(boolean transitioning) {
+        this.isTransitioning = transitioning;
+        if (transitioning) {
+            this.speedX = 0;
+            this.speedY = 0;
+        }
+    }
+    public void updateStamina(double deltaTimeSeconds, boolean isMoving) {
+        if (isSprinting && movementEnabled && isMoving) {
+            // Only drain stamina when actually moving while sprinting
+            currentStamina -= STAMINA_DRAIN_RATE * deltaTimeSeconds;
+            if (currentStamina <= 0) {
+                currentStamina = 0;
+                isSprinting = false;
+            }
+            lastSprintTime = System.currentTimeMillis();
+        } else {
+            // Recharge stamina after a delay
+            long timeSinceLastSprintMillis = System.currentTimeMillis() - lastSprintTime;
+            double timeSinceLastSprintSeconds = timeSinceLastSprintMillis / 1000.0;
+
+            if (timeSinceLastSprintSeconds > STAMINA_RECHARGE_DELAY) {
+                currentStamina += STAMINA_RECHARGE_RATE * deltaTimeSeconds;
+                if (currentStamina > maxStamina) {
+                    currentStamina = maxStamina;
+                }
+            }
+        }
+    }
+    public void updatePosition() {
+        if (!isTransitioning) {
+            this.x += speedX;
+            this.y += speedY;
+        }
+    }
+    public void setMovementEnabled(boolean enabled) {
+        this.movementEnabled = enabled;
+        if (!enabled) {
+            setSpeed(0, 0);
+        }
+    }
+    public boolean isTransitioning() {
+        return isTransitioning;
+    }
+
+    public boolean isMovementEnabled() {
+        return movementEnabled;
+    }
+    public double getCurrentStamina() {
+        return currentStamina;
+    }
+
+    public double getMaxStamina() {
+        return maxStamina;
+    }
+
+    public boolean isSprinting() {
+        return isSprinting;
+    }
+
+    public void setSprinting(boolean sprinting) {
+        this.isSprinting = sprinting;
+        if (sprinting) {
+            this.lastSprintTime = System.currentTimeMillis();
+        }
+    }
+
+    public double getSPRINT_SPEED_MULTIPLIER() {
+        return SPRINT_SPEED_MULTIPLIER;
+    }
 }
 

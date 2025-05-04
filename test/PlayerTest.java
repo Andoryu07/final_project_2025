@@ -11,9 +11,11 @@ class PlayerTest {
     /** The Player instance under test */
     private Player player;
     /** Test Room instance for player location */
-    private Room testRoom;
+    private String testRoom;
     /** Test Weapon instance for equipment tests */
     private Weapon testWeapon;
+    /** World instance*/
+    private World world;
     /**
      * Initializes test environment before each test method execution.
      * Creates a fresh player instance with:
@@ -23,8 +25,7 @@ class PlayerTest {
      */
     @BeforeEach
     void setUp() {
-        testRoom = new Room(0, "Test", List.of());
-        player = new Player("Test", 100, testRoom);
+        player = new Player("Test", 100, world,testRoom);
         testWeapon = new Pistol(); // Requires Pistol class in test scope
     }
     /**

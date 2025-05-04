@@ -103,7 +103,7 @@ public class Cassette extends Item {
         Flashlight flashlight = (Flashlight) player.findItemInInventory("Flashlight");
         if (flashlight != null) {
             state.setFlashlightBattery(flashlight.getBatteryLevel());
-            state.setFlashlightInCelery(flashlight.getIsInCelery());
+            state.setFlashlightInCellar(flashlight.getIsInCellar());
         }
 
         // Get combat state

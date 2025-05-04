@@ -8,5 +8,5 @@
 7 Garden_House 6
 8 Caravan 6
 9 Laboratory 11 10
-10 Celery 1 9
+10 Cellar 1 9
 11 Secret_Chamber 9

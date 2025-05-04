@@ -69,7 +69,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#serialVersionUID" tabindex="0">serialVersionUID</a></li>
 <li><a href="#battery" tabindex="0">battery</a></li>
-<li><a href="#isInCelery" tabindex="0">isInCelery</a></li>
+<li><a href="#isInCellar" tabindex="0">isInCellar</a></li>
 </ol>
 </li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
@@ -81,10 +81,10 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#useBattery(int)" tabindex="0">useBattery(int)</a></li>
 <li><a href="#use(Player)" tabindex="0">use(Player)</a></li>
-<li><a href="#setInCelery(boolean)" tabindex="0">setInCelery(boolean)</a></li>
+<li><a href="#setInCellar(boolean)" tabindex="0">setInCellar(boolean)</a></li>
 <li><a href="#recharge()" tabindex="0">recharge()</a></li>
 <li><a href="#setBatteryLevel(int)" tabindex="0">setBatteryLevel(int)</a></li>
-<li><a href="#getIsInCelery()" tabindex="0">getIsInCelery()</a></li>
+<li><a href="#getIsInCellar()" tabindex="0">getIsInCellar()</a></li>
 <li><a href="#isCharged()" tabindex="0">isCharged()</a></li>
 <li><a href="#getBatteryLevel()" tabindex="0">getBatteryLevel()</a></li>
 </ol>
@@ -139,9 +139,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 <div class="block">int value of how much battery charge is left in the flashlight</div>
 </div>
 <div class="col-first odd-row-color"><code>private boolean</code></div>
-<div class="col-second odd-row-color"><code><a href="#isInCelery" class="member-name-link">isInCelery</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#isInCellar" class="member-name-link">isInCellar</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">boolean value, indicating whether the player is currently located in Celery or not</div>
+<div class="block">boolean value, indicating whether the player is currently located in Cellar or not</div>
 </div>
 <div class="col-first even-row-color"><code>private static final long</code></div>
 <div class="col-second even-row-color"><code><a href="#serialVersionUID" class="member-name-link">serialVersionUID</a></code></div>
@@ -186,9 +186,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 <div class="block">Getter for 'battery'</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIsInCelery()" class="member-name-link">getIsInCelery</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIsInCellar()" class="member-name-link">getIsInCellar</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Getter for 'isInCelery'</div>
+<div class="block">Getter for 'isInCellar'</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isCharged()" class="member-name-link">isCharged</a>()</code></div>
@@ -206,19 +206,19 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 <div class="block">Setter for 'battery'</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInCelery(boolean)" class="member-name-link">setInCelery</a><wbr>(boolean&nbsp;inCelery)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInCellar(boolean)" class="member-name-link">setInCellar</a><wbr>(boolean&nbsp;inCellar)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the boolean value of isInCelery to a given value, works like a setter</div>
+<div class="block">Sets the boolean value of isInCellar to a given value, works like a setter</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#use(Player)" class="member-name-link">use</a><wbr>(<a href="Player.html" title="class in Unnamed Package">Player</a>&nbsp;player)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Use method, specifically made for the in-combat use(Blinding the enemy with a flashlight), or Celery SS</div>
+<div class="block">Use method, specifically made for the in-combat use(Blinding the enemy with a flashlight), or Cellar SS</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#useBattery(int)" class="member-name-link">useBattery</a><wbr>(int&nbsp;amount)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Method for using the Flashlight's battery(Flashlight can only be used in the Celery stealth sequence, that's why the condition)</div>
+<div class="block">Method for using the Flashlight's battery(Flashlight can only be used in the Cellar stealth sequence, that's why the condition)</div>
 </div>
 </div>
 </div>
@@ -267,11 +267,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="isInCelery">
-<h3>isInCelery</h3>
+<section class="detail" id="isInCellar">
+<h3>isInCellar</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">private</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isInCelery</span></div>
-<div class="block">boolean value, indicating whether the player is currently located in Celery or not</div>
+<div class="member-signature"><span class="modifiers">private</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isInCellar</span></div>
+<div class="block">boolean value, indicating whether the player is currently located in Cellar or not</div>
 </div>
 </section>
 </li>
@@ -305,7 +305,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 <h3>useBattery</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">useBattery</span><wbr><span class="parameters">(int&nbsp;amount)</span></div>
-<div class="block">Method for using the Flashlight's battery(Flashlight can only be used in the Celery stealth sequence, that's why the condition)</div>
+<div class="block">Method for using the Flashlight's battery(Flashlight can only be used in the Cellar stealth sequence, that's why the condition)</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>amount</code> - amount of battery charge to subtract/remove</dd>
@@ -318,7 +318,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 <h3>use</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">use</span><wbr><span class="parameters">(<a href="Player.html" title="class in Unnamed Package">Player</a>&nbsp;player)</span></div>
-<div class="block">Use method, specifically made for the in-combat use(Blinding the enemy with a flashlight), or Celery SS</div>
+<div class="block">Use method, specifically made for the in-combat use(Blinding the enemy with a flashlight), or Cellar SS</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="Item.html#use(Player)">use</a></code>&nbsp;in class&nbsp;<code><a href="Item.html" title="class in Unnamed Package">Item</a></code></dd>
@@ -329,14 +329,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="setInCelery(boolean)">
-<h3>setInCelery</h3>
+<section class="detail" id="setInCellar(boolean)">
+<h3>setInCellar</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setInCelery</span><wbr><span class="parameters">(boolean&nbsp;inCelery)</span></div>
-<div class="block">Sets the boolean value of isInCelery to a given value, works like a setter</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setInCellar</span><wbr><span class="parameters">(boolean&nbsp;inCellar)</span></div>
+<div class="block">Sets the boolean value of isInCellar to a given value, works like a setter</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>inCelery</code> - value, which the isInCelery field will be changed to</dd>
+<dd><code>inCellar</code> - value, which the isInCellar field will be changed to</dd>
 </dl>
 </div>
 </section>
@@ -364,14 +364,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="getIsInCelery()">
-<h3>getIsInCelery</h3>
+<section class="detail" id="getIsInCellar()">
+<h3>getIsInCellar</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">getIsInCelery</span>()</div>
-<div class="block">Getter for 'isInCelery'</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">getIsInCellar</span>()</div>
+<div class="block">Getter for 'isInCellar'</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>boolean value of 'isInCelery'</dd>
+<dd>boolean value of 'isInCellar'</dd>
 </dl>
 </div>
 </section>

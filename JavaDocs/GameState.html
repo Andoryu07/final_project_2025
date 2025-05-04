@@ -77,7 +77,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#lockStates" tabindex="0">lockStates</a></li>
 <li><a href="#stalkerDistance" tabindex="0">stalkerDistance</a></li>
 <li><a href="#flashlightBattery" tabindex="0">flashlightBattery</a></li>
-<li><a href="#isFlashlightInCelery" tabindex="0">isFlashlightInCelery</a></li>
+<li><a href="#isFlashlightInCellar" tabindex="0">isFlashlightInCellar</a></li>
 <li><a href="#isPlayerFighting" tabindex="0">isPlayerFighting</a></li>
 <li><a href="#isPlayerBlocking" tabindex="0">isPlayerBlocking</a></li>
 </ol>
@@ -105,8 +105,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#setStalkerDistance(int)" tabindex="0">setStalkerDistance(int)</a></li>
 <li><a href="#getFlashlightBattery()" tabindex="0">getFlashlightBattery()</a></li>
 <li><a href="#setFlashlightBattery(int)" tabindex="0">setFlashlightBattery(int)</a></li>
-<li><a href="#isFlashlightInCelery()" tabindex="0">isFlashlightInCelery()</a></li>
-<li><a href="#setFlashlightInCelery(boolean)" tabindex="0">setFlashlightInCelery(boolean)</a></li>
+<li><a href="#isFlashlightInCellar()" tabindex="0">isFlashlightInCellar()</a></li>
+<li><a href="#setFlashlightInCellar(boolean)" tabindex="0">setFlashlightInCellar(boolean)</a></li>
 <li><a href="#isPlayerFighting()" tabindex="0">isPlayerFighting()</a></li>
 <li><a href="#setPlayerFighting(boolean)" tabindex="0">setPlayerFighting(boolean)</a></li>
 <li><a href="#isPlayerBlocking()" tabindex="0">isPlayerBlocking()</a></li>
@@ -183,9 +183,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 <div class="block">List used to store the items in player's inventory</div>
 </div>
 <div class="col-first odd-row-color"><code>private boolean</code></div>
-<div class="col-second odd-row-color"><code><a href="#isFlashlightInCelery" class="member-name-link">isFlashlightInCelery</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#isFlashlightInCellar" class="member-name-link">isFlashlightInCellar</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">boolean used to store the information, whether the Flashlight's state isInCelery is true or not</div>
+<div class="block">boolean used to store the information, whether the Flashlight's state isInCellar is true or not</div>
 </div>
 <div class="col-first even-row-color"><code>private boolean</code></div>
 <div class="col-second even-row-color"><code><a href="#isPlayerBlocking" class="member-name-link">isPlayerBlocking</a></code></div>
@@ -297,9 +297,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 <div class="block">Getter for 'stalkerDistance'</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isFlashlightInCelery()" class="member-name-link">isFlashlightInCelery</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isFlashlightInCellar()" class="member-name-link">isFlashlightInCellar</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Getter for 'isFlashlightInCelery'</div>
+<div class="block">Getter for 'isFlashlightInCellar'</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPlayerBlocking()" class="member-name-link">isPlayerBlocking</a>()</code></div>
@@ -327,9 +327,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 <div class="block">Setter for 'flashlightBattery'</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setFlashlightInCelery(boolean)" class="member-name-link">setFlashlightInCelery</a><wbr>(boolean&nbsp;flashlightInCelery)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setFlashlightInCellar(boolean)" class="member-name-link">setFlashlightInCellar</a><wbr>(boolean&nbsp;flashlightInCellar)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Setter for 'isFlashlightInCelery'</div>
+<div class="block">Setter for 'isFlashlightInCellar'</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInsertedGears(java.util.Set)" class="member-name-link">setInsertedGears</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;insertedGears)</code></div>
@@ -487,11 +487,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="isFlashlightInCelery">
-<h3>isFlashlightInCelery</h3>
+<section class="detail" id="isFlashlightInCellar">
+<h3>isFlashlightInCellar</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">private</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isFlashlightInCelery</span></div>
-<div class="block">boolean used to store the information, whether the Flashlight's state isInCelery is true or not</div>
+<div class="member-signature"><span class="modifiers">private</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isFlashlightInCellar</span></div>
+<div class="block">boolean used to store the information, whether the Flashlight's state isInCellar is true or not</div>
 </div>
 </section>
 </li>
@@ -747,27 +747,27 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="isFlashlightInCelery()">
-<h3>isFlashlightInCelery</h3>
+<section class="detail" id="isFlashlightInCellar()">
+<h3>isFlashlightInCellar</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isFlashlightInCelery</span>()</div>
-<div class="block">Getter for 'isFlashlightInCelery'</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isFlashlightInCellar</span>()</div>
+<div class="block">Getter for 'isFlashlightInCellar'</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>value of 'isFlashlightInCelery'</dd>
+<dd>value of 'isFlashlightInCellar'</dd>
 </dl>
 </div>
 </section>
 </li>
 <li>
-<section class="detail" id="setFlashlightInCelery(boolean)">
-<h3>setFlashlightInCelery</h3>
+<section class="detail" id="setFlashlightInCellar(boolean)">
+<h3>setFlashlightInCellar</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setFlashlightInCelery</span><wbr><span class="parameters">(boolean&nbsp;flashlightInCelery)</span></div>
-<div class="block">Setter for 'isFlashlightInCelery'</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setFlashlightInCellar</span><wbr><span class="parameters">(boolean&nbsp;flashlightInCellar)</span></div>
+<div class="block">Setter for 'isFlashlightInCellar'</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>flashlightInCelery</code> - what to set the value of 'isFlashlightInCelery' to</dd>
+<dd><code>flashlightInCellar</code> - what to set the value of 'isFlashlightInCellar' to</dd>
 </dl>
 </div>
 </section>

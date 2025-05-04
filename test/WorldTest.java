@@ -72,34 +72,34 @@ class WorldTest {
      */
     @Test
     void initializeLocks_SetsCorrectLockConditions() {
-        Room celery = new Room(10, "Celery", List.of());
+        Room Cellar = new Room(10, "Cellar", List.of());
         Room livingRoom = new Room(2, "Living_Room", List.of());
         Room garden = new Room(6, "Garden", List.of());
         Room gardenHouse = new Room(7, "Garden_House", List.of());
         Room bathroom = new Room(4, "Bathroom", List.of());
 
-        world.getRooms().put(10, celery);
+        world.getRooms().put(10, Cellar);
         world.getRooms().put(2, livingRoom);
         world.getRooms().put(6, garden);
         world.getRooms().put(7, gardenHouse);
         world.getRooms().put(4, bathroom);
 
         world.initializeLocks();
-        assertTrue(world.getAllLockStates().containsKey("Celery_room"));
+        assertTrue(world.getAllLockStates().containsKey("Cellar_room"));
     }
     /**
-     * Tests gear piece insertion mechanism in the Celery room.
+     * Tests gear piece insertion mechanism in the Cellar room.
      * Verifies that valid gear pieces are properly registered in the gear lock system.
      */
     @Test
-    void insertGearPiece_InCeleryWithValidGear_UpdatesGearLock() {
+    void insertGearPiece_InCellarWithValidGear_UpdatesGearLock() {
         // Setup
         World testWorld = new World(mockPlayer,mockGame);
 
         // Create and add required rooms
-        Room celeryRoom = new Room(10, "Celery", List.of());
+        Room CellarRoom = new Room(10, "Cellar", List.of());
         Room laboratoryRoom = new Room(11, "Laboratory", List.of());
-        testWorld.getRooms().put(10, celeryRoom);
+        testWorld.getRooms().put(10, CellarRoom);
         testWorld.getRooms().put(11, laboratoryRoom);
 
         // Initialize gear lock AFTER rooms are added
@@ -109,7 +109,7 @@ class WorldTest {
         GearPiece gearPiece = new GearPiece("GEAR_PIECE_1");
 
         // Mock player behavior
-        when(mockPlayer.getCurrentRoom()).thenReturn(celeryRoom);
+        when(mockPlayer.getCurrentRoom()).thenReturn(CellarRoom);
         when(mockPlayer.findItemInInventory(anyString())).thenReturn(gearPiece);
 
         // For void methods, use doNothing() or doAnswer()

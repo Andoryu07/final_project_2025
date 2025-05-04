@@ -61,9 +61,9 @@ public class World implements Serializable {
      * Method used to initialize the locks/limitations, and setting their unlocking conditions
      */
     public void initializeLocks() {
-        // Celery requires charged flashlight
-        Room celery = findRoomByName("Celery");
-        celery.setLock(new Lock("Flashlight",
+        // Cellar requires charged flashlight
+        Room Cellar = findRoomByName("Cellar");
+        Cellar.setLock(new Lock("Flashlight",
                 "\nThe doorway to the cellar is pitch black. You'd have no way to defend yourself against potential enemies!",
                 "\nYou switch on your flashlight, its beam cutting through the darkness...", false) {
             @Override
@@ -84,7 +84,7 @@ public class World implements Serializable {
             }
         });
         // Wardrobe_2 requires key
-        Room diningRoom = findRoomByName("Living_Room");
+        Room diningRoom = findRoomByName("Dining_Room");
         diningRoom.addSearchSpotLock("Wardrobe_2", new Lock(
                 "Key to Dining Room Wardrobe 2",
                 "The wardrobe is securely locked.",
@@ -126,10 +126,10 @@ public class World implements Serializable {
     }
 
     /**
-     * Method used to initialize the Gear lock/mechanism in Celery
+     * Method used to initialize the Gear lock/mechanism in Cellar
      */
     public void initializeGearLock() {
-        Room cellar = findRoomByName("Celery");
+        Room cellar = findRoomByName("Cellar");
         Room laboratory = findRoomByName("Laboratory");
 
         if (cellar != null && laboratory != null) {
@@ -149,7 +149,7 @@ public class World implements Serializable {
      */
     public void insertGearPiece(String gearName, Player player) {
         System.out.println("Current room: " + player.getCurrentRoom().getName());
-        if (player.getCurrentRoom().getName().equalsIgnoreCase("Celery")) {
+        if (player.getCurrentRoom().getName().equalsIgnoreCase("Cellar")) {
             if (gearLock != null) {
                 gearLock.insertGear(gearName, player);
             } else {
@@ -325,15 +325,15 @@ public class World implements Serializable {
             System.out.println("\nInvalid move. You can't go there directly.");
             return;
         }
-        // Special case for Celery
-        if (nextRoom.getName().equalsIgnoreCase("Celery")) {
+        // Special case for Cellar
+        if (nextRoom.getName().equalsIgnoreCase("Cellar")) {
             Flashlight flashlight = (Flashlight) player.findItemInInventory("Flashlight");
             if (flashlight == null || !flashlight.isCharged()) {
                 System.out.println("You need a working flashlight to enter the cellar!");
                 return;
             }
 
-            CeleryStealthSystem stealth = new CeleryStealthSystem(player, game::loadCheckpoint);
+            CellarStealthSystem stealth = new CellarStealthSystem(player, game::loadCheckpoint);
             stealth.startSequence(scanner);
             return;
         }
@@ -492,7 +492,7 @@ public class World implements Serializable {
     public void setCurrentRoom(Room room) {
         this.currentRoom = room;
         if (player != null) {
-            player.currentRoomName = room.getName();
+            player.setCurrentRoom(room);
         }
     }
 
@@ -570,7 +570,13 @@ public class World implements Serializable {
         return gearLock;
     }
 
-
+    /**
+     * Getter for player
+     * @return value of player
+     */
+    public Player getPlayer() {
+        return player;
+    }
 
     /**
      * Getter for map 'rooms'

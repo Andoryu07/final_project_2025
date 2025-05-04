@@ -4,18 +4,18 @@ HINT_3 Hint The third gear piece is probably located in the bathroom somewhere..
 HINT_4 Hint The last gear piece is located somewhere in the lower floor.
 KEY_TO_DINING_ROOM_WARDROBE_2 KeyItem A key. It seems to fit into a wardrobe in the dining room
 KNIFE Knife A basic knife. May be used to access certain locations and fight off enemy's attacks
-CASSETTE com.game_project.items.Cassette A cassette. Can be used at a com.game_project.items.Cassette player location to save the game
+CASSETTE Cassette A cassette. Can be used at a Cassette player location to save the game
 BANDAGE Bandage Bandage, used to heal your wounds, provide a small amount of health
 PISTOL Pistol A pistol. May be used to attack enemies, medium power. Requires Pistol ammo to shoot.
 PISTOL_AMMO PistolAmmo Used to reload the Pistol.
-FLASHLIGHT com.game_project.items.Flashlight A flashlight used to enter dark places. Requires com.game_project.items.Batteries to function.
-BATTERIES com.game_project.items.Batteries com.game_project.items.Batteries. Used to reload the com.game_project.items.Flashlight.
-GEAR_PIECE_1 com.game_project.items.GearPiece A gear piece, used to unlock the basement door mechanism.
-GEAR_PIECE_2 com.game_project.items.GearPiece A gear piece, used to unlock the basement door mechanism.
-GEAR_PIECE_3 com.game_project.items.GearPiece A gear piece, used to unlock the basement door mechanism.
-GEAR_PIECE_4 com.game_project.items.GearPiece A gear piece, used to unlock the basement door mechanism.
+FLASHLIGHT Flashlight A flashlight used to enter dark places. Requires Batteries to function.
+BATTERIES Batteries Batteries. Used to reload the Flashlight.
+GEAR_PIECE_1 GearPiece A gear piece, used to unlock the basement door mechanism.
+GEAR_PIECE_2 GearPiece A gear piece, used to unlock the basement door mechanism.
+GEAR_PIECE_3 GearPiece A gear piece, used to unlock the basement door mechanism.
+GEAR_PIECE_4 GearPiece A gear piece, used to unlock the basement door mechanism.
 HEALING_SERUM HealingSerum A healing serum, works like a bandage, but gives more health.
-REPAIR_TOOL com.game_project.items.RepairTool Repair tool, you can repair stuff. Might come in handy later.
+REPAIR_TOOL RepairTool Repair tool, you can repair stuff. Might come in handy later.
 KEY_TO_GARDEN_HOUSE KeyItem Key, clearly used to access the garden house.
 CURING_SERUM KeyItem A serum, it seems to be a cure of some sort. I wonder what happens if you use it on a non-human...
 STALKERS_CLAW KeyItem A trophy representing what you've achieved. But maybe it has a different use as well.

@@ -51,9 +51,9 @@ public class GameState implements Serializable {
      */
     private int flashlightBattery;
     /**
-     * boolean used to store the information, whether the Flashlight's state isInCelery is true or not
+     * boolean used to store the information, whether the Flashlight's state isInCellar is true or not
      */
-    private boolean isFlashlightInCelery;
+    private boolean isFlashlightInCellar;
     // Other game state
     /**
      * Boolean used to store the information, whether the player is currently in a fight or not(isFighting)
@@ -219,21 +219,21 @@ public class GameState implements Serializable {
     }
 
     /**
-     * Getter for 'isFlashlightInCelery'
+     * Getter for 'isFlashlightInCellar'
      *
-     * @return value of 'isFlashlightInCelery'
+     * @return value of 'isFlashlightInCellar'
      */
-    public boolean isFlashlightInCelery() {
-        return isFlashlightInCelery;
+    public boolean isFlashlightInCellar() {
+        return isFlashlightInCellar;
     }
 
     /**
-     * Setter for 'isFlashlightInCelery'
+     * Setter for 'isFlashlightInCellar'
      *
-     * @param flashlightInCelery what to set the value of 'isFlashlightInCelery' to
+     * @param flashlightInCellar what to set the value of 'isFlashlightInCellar' to
      */
-    public void setFlashlightInCelery(boolean flashlightInCelery) {
-        isFlashlightInCelery = flashlightInCelery;
+    public void setFlashlightInCellar(boolean flashlightInCellar) {
+        isFlashlightInCellar = flashlightInCellar;
     }
 
     /**

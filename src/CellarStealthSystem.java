@@ -1,9 +1,9 @@
 import java.util.*;
 
 /**
- * Class used to implement the stealth system in the celery, which is required to complete in order to finish the game
+ * Class used to implement the stealth system in the Cellar, which is required to complete in order to finish the game
  */
-public class CeleryStealthSystem {
+public class CellarStealthSystem {
     /**
      * Specifies the size of the grid, on which the player is going to be moving
      */
@@ -42,7 +42,7 @@ public class CeleryStealthSystem {
      * @param player Who is attempting the stealth sequence
      * @param checkpointLoader Which Runnable to use
      */
-    public CeleryStealthSystem(Player player, Runnable checkpointLoader) {
+    public CellarStealthSystem(Player player, Runnable checkpointLoader) {
         this.player = player;
         this.flashlight = (Flashlight) player.findItemInInventory("Flashlight");
         this.checkpointLoader = checkpointLoader;
@@ -67,9 +67,9 @@ public class CeleryStealthSystem {
      * @param scanner Scanner instance, to connect different classes' scanner to register player's inputs
      */
     public void startSequence(Scanner scanner) {
-        flashlight.setInCelery(true);
+        flashlight.setInCellar(true);
         try {
-            System.out.println("\n=== CELERY STEALTH SEQUENCE ===");
+            System.out.println("\n=== Cellar STEALTH SEQUENCE ===");
             System.out.println("You enter the pitch black cellar. You'll need to navigate to the power box somewhere in the basement.");
             System.out.println("Commands: forward, back, left, right, quit");
             while (!lightsOn && player.getHealth() > 0) {
@@ -111,7 +111,7 @@ public class CeleryStealthSystem {
                 startZombieCombat();
             }
         } finally {
-            flashlight.setInCelery(false); //Ensures the state always changes back to normal
+            flashlight.setInCellar(false); //Ensures the state always changes back to normal
         }
     }
 
@@ -218,7 +218,7 @@ public class CeleryStealthSystem {
             this.playerX = 0;
             this.playerY = 4;
             if (flashlight != null) {
-                flashlight.setInCelery(true);
+                flashlight.setInCellar(true);
             }
             this.lightsOn = false;
             System.out.println("\nYou wake up at the cellar entrance...");
@@ -265,7 +265,7 @@ public class CeleryStealthSystem {
      * Method used to print the grid map, including a circle in the tile the player is currently located in
      */
     private void printMap() {
-        System.out.println("\n=== CELERY MAP ===");
+        System.out.println("\n=== Cellar MAP ===");
 
         // Print column headers (A-E)
         System.out.print("   ");

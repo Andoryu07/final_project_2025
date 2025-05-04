@@ -159,7 +159,7 @@ public class Game {
         Flashlight flashlight = (Flashlight) player.findItemInInventory("Flashlight");
         if (flashlight != null) {
             flashlight.setBatteryLevel(state.getFlashlightBattery());
-            flashlight.setInCelery(state.isFlashlightInCelery());
+            flashlight.setInCellar(state.isFlashlightInCellar());
         }
 
         // Restore combat state

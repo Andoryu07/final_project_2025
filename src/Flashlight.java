@@ -13,9 +13,9 @@ public class Flashlight extends Item implements Serializable {
      */
     private int battery;
     /**
-     * boolean value, indicating whether the player is currently located in Celery or not
+     * boolean value, indicating whether the player is currently located in Cellar or not
      */
-    private boolean isInCelery = false;
+    private boolean isInCellar = false;
 
     /**
      * Constructor, uses Item class super
@@ -26,11 +26,11 @@ public class Flashlight extends Item implements Serializable {
     }
 
     /**
-     * Method for using the Flashlight's battery(Flashlight can only be used in the Celery stealth sequence, that's why the condition)
+     * Method for using the Flashlight's battery(Flashlight can only be used in the Cellar stealth sequence, that's why the condition)
      * @param amount amount of battery charge to subtract/remove
      */
     public void useBattery(int amount) {
-        if (!isInCelery) {
+        if (!isInCellar) {
             System.out.println("Flashlight battery can only be used in the basement!");
             return;
         }
@@ -41,12 +41,12 @@ public class Flashlight extends Item implements Serializable {
     }
 
     /**
-     * Use method, specifically made for the in-combat use(Blinding the enemy with a flashlight), or Celery SS
+     * Use method, specifically made for the in-combat use(Blinding the enemy with a flashlight), or Cellar SS
      * @param player which player is using the Flashlight
      */
     @Override
     public void use(Player player) {
-        if (!isInCelery && !player.isFighting()) {
+        if (!isInCellar && !player.isFighting()) {
             System.out.println("❌ The flashlight only works in the basement!");
             return;
         }
@@ -64,12 +64,12 @@ public class Flashlight extends Item implements Serializable {
     }
 
     /**
-     * Sets the boolean value of isInCelery to a given value, works like a setter
-     * @param inCelery value, which the isInCelery field will be changed to
+     * Sets the boolean value of isInCellar to a given value, works like a setter
+     * @param inCellar value, which the isInCellar field will be changed to
      */
-    public void setInCelery(boolean inCelery) {
-        this.isInCelery = inCelery;
-        if (inCelery) {
+    public void setInCellar(boolean inCellar) {
+        this.isInCellar = inCellar;
+        if (inCellar) {
             System.out.println("The flashlight automatically turns on as you enter the dark basement.");
         } else {
             System.out.println("The flashlight automatically turns off as you leave the basement.");
@@ -93,11 +93,11 @@ public class Flashlight extends Item implements Serializable {
     }
 
     /**
-     * Getter for 'isInCelery'
-     * @return boolean value of 'isInCelery'
+     * Getter for 'isInCellar'
+     * @return boolean value of 'isInCellar'
      */
-    public boolean getIsInCelery() {
-        return isInCelery;
+    public boolean getIsInCellar() {
+        return isInCellar;
     }
 
     /**
