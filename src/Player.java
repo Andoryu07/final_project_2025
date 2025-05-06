@@ -1,5 +1,3 @@
-import javafx.geometry.Rectangle2D;
-
 import java.io.Serializable;
 
 /**
@@ -316,7 +314,7 @@ public class Player extends Character implements Serializable {
         this.x = x;
         this.y = y;
     }
-    
+
     public void setTransitioning(boolean transitioning) {
         this.isTransitioning = transitioning;
         if (transitioning) {
@@ -388,4 +386,3 @@ public class Player extends Character implements Serializable {
         return SPRINT_SPEED_MULTIPLIER;
     }
 }
-
