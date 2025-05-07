@@ -18,7 +18,7 @@ public class Inventory implements Serializable {
      * Capacity of the inventory(How many items player can store in it)
      */
     private int capacity;
-
+    private transient List<InventoryObserver> observers = new ArrayList<>();
     /**
      * Constructor
      * @param capacity Capacity of the inventory(How many items player can store in it)
@@ -65,6 +65,7 @@ public class Inventory implements Serializable {
     public boolean addItem(Item item) {
         if (items.size() < capacity) {
             items.add(item);
+            notifyObservers();
             return true;
         }
         return false;
@@ -76,8 +77,12 @@ public class Inventory implements Serializable {
      */
     public void removeItem(Item item) {
         items.remove(item);
+        notifyObservers();
     }
 
+    interface InventoryObserver {
+        void inventoryUpdated();
+    }
     /**
      * Getter for the 'items' list
      * @return 'items' list
@@ -85,6 +90,12 @@ public class Inventory implements Serializable {
     public List<Item> getItems() {
         return items;
     }
+    public void addObserver(InventoryObserver observer) {
+        observers.add(observer);
+    }
 
+    private void notifyObservers() {
+        for (InventoryObserver o : observers) o.inventoryUpdated();
+    }
 
 }

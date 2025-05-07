@@ -4,7 +4,7 @@ import java.util.*;
 /**
  * Class used to create and implement item Cassette's behavior, it's use and values
  */
-public class Cassette extends Item {
+public class Cassette extends Consumable {
     /**
      * List of rooms, where the player can use the Cassette, in order to save the game
      */

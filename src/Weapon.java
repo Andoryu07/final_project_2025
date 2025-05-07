@@ -85,7 +85,7 @@ public abstract class Weapon extends Item implements Serializable {
      * @param player Who is using the weapon
      */
     public void use(Player player) {
-        if (!infiniteUse) {  // Only consume ammo if not infinite
+        if (!infiniteUse) {
             currentAmmo--;
         }
     }

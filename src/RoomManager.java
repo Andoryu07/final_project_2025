@@ -42,7 +42,7 @@ public class RoomManager {
     public void loadRoom(String roomName) throws Exception {
         if (!rooms.containsKey(roomName)) {
             RoomRenderer room = new RoomRenderer();
-            room.loadRoom("resources/maps/" + roomName + ".tmj");
+            room.loadRoom("/maps/" + roomName + ".tmj");
             rooms.put(roomName, room);
         }
 

@@ -20,9 +20,6 @@ import java.util.Set;
 
 public class GameGUI extends Application {
     private final double MAX_WALK_SPEED = 0.008;  // Reduced from 0.02 (very slow)
-    private final double ACCELERATION_RATE = 0.002;  // Reduced from 0.004
-    private final double DECELERATION_RATE = 0.004;     // Slightly faster deceleration
-    private final double TURN_SMOOTHING = 0.15;          // Smoother direction changes
     private RoomManager roomManager;
     private Player player;
     private Canvas canvas;
@@ -32,32 +29,25 @@ public class GameGUI extends Application {
     private final int TRANSITION_DURATION = 100;
     private boolean shiftPressed = false;
     private long lastUpdateTime = System.nanoTime();
+    private InventoryGUI inventoryGUI;
+    private StackPane rootPane;
+
     @Override
     public void start(Stage primaryStage) {
         try {
+            primaryStage.setMinWidth(1024);
+            primaryStage.setMinHeight(768);
             canvas = new Canvas(); // Initialize canvas first
             setupStage(primaryStage);
             primaryStage.setOnShown(e -> updateCanvasSize());
-
-            // Initialize player
+            // Set initial window size
+            primaryStage.setWidth(1280);
+            primaryStage.setHeight(720);
             player = new Player("Player", 100, null, "Enter_Hall");
-
-            // Initialize room manager
+            inventoryGUI = new InventoryGUI(player);
+            rootPane.getChildren().add(inventoryGUI); // Add to StackPane
             roomManager = new RoomManager(player, this);
-            roomManager.loadRoom("enter_hall");
-            roomManager.loadRoom("library");
-            roomManager.loadRoom("living_room");
-            roomManager.loadRoom("garden");
-            roomManager.loadRoom("dining_room");
-            roomManager.loadRoom("bathroom");
-            roomManager.loadRoom("secret_chamber");
-            roomManager.loadRoom("main_bedroom");
-            roomManager.loadRoom("laboratory");
-            roomManager.loadRoom("garden_house");
-            roomManager.loadRoom("cellar");
-            roomManager.loadRoom("caravan");
-            roomManager.loadRoom("cemetery_ending");
-
+            loadRooms(roomManager);
             roomManager.setOnRoomChanged(() -> {
                 primaryStage.setTitle("Your Game - " + roomManager.getCurrentRoomName());
                 updateCanvasSize();
@@ -73,14 +63,59 @@ public class GameGUI extends Application {
         }
     }
 
+    private void loadRooms(RoomManager roomManager) {
+        try {
+            roomManager.loadRoom("enter_hall");
+            roomManager.loadRoom("library");
+            roomManager.loadRoom("living_room");
+            roomManager.loadRoom("garden");
+            roomManager.loadRoom("dining_room");
+            roomManager.loadRoom("bathroom");
+            roomManager.loadRoom("secret_chamber");
+            roomManager.loadRoom("main_bedroom");
+            roomManager.loadRoom("laboratory");
+            roomManager.loadRoom("garden_house");
+            roomManager.loadRoom("cellar");
+            roomManager.loadRoom("caravan");
+            roomManager.loadRoom("cemetery_ending");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Failed to start game: " + e.getMessage());
+        }
+    }
+
     private void setupStage(Stage primaryStage) {
-        StackPane rootPane = new StackPane();
+        rootPane = new StackPane();
         rootPane.setStyle("-fx-background-color: black;");
         rootPane.getChildren().add(canvas);
 
         Scene scene = new Scene(rootPane, Color.BLACK);
+        // Correct path if CSS is in src/main/resources/resources/
+//        scene.getStylesheets().add(getClass().getResource("/inventory.css").toExternalForm());
+        // In setupStage() method:
+        scene.getStylesheets().add(getClass().getResource("/inventory.css").toExternalForm());
         primaryStage.setScene(scene);
 
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.I) {
+                if (!inventoryGUI.isInventoryVisible()) {
+                    // Pause game
+                    player.setMovementEnabled(false);
+                    gameLoop.stop();
+                } else {
+                    // Resume game
+                    player.setMovementEnabled(true);
+                    gameLoop.start();
+                }
+                inventoryGUI.toggle();
+                e.consume();
+            } else if (e.getCode() == KeyCode.ESCAPE && inventoryGUI.isInventoryVisible()) {
+                inventoryGUI.toggle();
+                player.setMovementEnabled(true);
+                gameLoop.start();
+                e.consume();
+            }
+        });
         // Enhanced input handling
         scene.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             KeyCode code = e.getCode();
@@ -295,6 +330,7 @@ public class GameGUI extends Application {
         player.setPosition(newX, newY);
         player.setSpeed(targetSpeedX, targetSpeedY);
     }
+
     private void renderStaminaBar(GraphicsContext gc) {
         double staminaPercentage = player.getCurrentStamina() / player.getMaxStamina();
         double barWidth = 200;
@@ -319,8 +355,9 @@ public class GameGUI extends Application {
         // Text
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", 12));
-        gc.fillText("Stamina: " + (int)player.getCurrentStamina() + "%", x, y - 5);
+        gc.fillText("Stamina: " + (int) player.getCurrentStamina() + "%", x, y - 5);
     }
+
     private boolean checkCollision(double tileX, double tileY) {
         RoomRenderer room = roomManager.getCurrentRoom();
         if (room == null) return false;
@@ -336,20 +373,6 @@ public class GameGUI extends Application {
         // Simply check for intersection without any bounce effect
         return room.getCollisions().stream()
                 .anyMatch(rect -> rect.intersects(playerHitbox));
-    }
-
-    private double calculateNewSpeed(double current, double target) {
-        if (Math.abs(target) > 0) {
-            // Directional smoothing
-            double direction = target > 0 ? 1 : -1;
-            double acceleration = ACCELERATION_RATE * (1.0 - TURN_SMOOTHING * Math.abs(current));
-            return current + (direction * acceleration);
-        } else {
-            // Precision deceleration
-            if (current > 0) return Math.max(0, current - DECELERATION_RATE);
-            if (current < 0) return Math.min(0, current + DECELERATION_RATE);
-        }
-        return 0;
     }
 
     public void clearMovementInputs() {

@@ -1,7 +1,7 @@
 /**
  * Class used to implement the healing items in the game
  */
-public class HealingItem extends Item {
+public class HealingItem extends Consumable {
     /**
      * int value of how much health certain item adds to the person using it
      */

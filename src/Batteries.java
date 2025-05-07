@@ -1,7 +1,7 @@
 /**
  * Class used to implement the item Batteries and it's behavior and use
  */
-public class Batteries extends Item {
+public class Batteries extends Consumable {
     /**
      * Constructor, includes super from Item class, to specify the values of Batteries
      */

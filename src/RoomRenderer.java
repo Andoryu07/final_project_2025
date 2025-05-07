@@ -76,7 +76,7 @@ public class RoomRenderer {
 
             imagePath = imagePath.replace("..\\", "").replace("../", "");
             String filename = imagePath.substring(imagePath.lastIndexOf("/") + 1);
-            String resourcePath = "resources/tilesets/" + filename;
+            String resourcePath = "/tilesets/" + filename;
 
             try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
                 if (is == null) {

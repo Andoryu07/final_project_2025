@@ -1,0 +1,66 @@
+.inventory-button {
+    -fx-background-color:
+            linear-gradient(to bottom, #565656 0%, #3a3a3a 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #707070;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+    -fx-min-width: 100px;
+}
+
+.inventory-button:hover {
+    -fx-background-color:
+            linear-gradient(to bottom, #666666 0%, #4a4a4a 100%);
+    -fx-text-fill: #ffd700;
+    -fx-border-color: #ffd700;
+    -fx-effect: dropshadow(three-pass-box, rgba(255,215,0,0.3), 8, 0, 0, 2);
+}
+
+.info-panel {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-border-color: #404040;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+}
+
+.item-name {
+    -fx-font-size: 16px;
+    -fx-text-fill: #ffd700;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 2, 0, 0, 1);
+}
+
+.item-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: #ffffff;
+    -fx-wrap-text: true;
+    -fx-max-width: 300px;
+}
+.tooltip-box {
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+    -fx-padding: 10;
+    -fx-border-color: #ffd700;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 1);
+}
+
+.tooltip-box .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.action-box {
+    -fx-background-color: rgba(30, 30, 30, 0.95);
+    -fx-padding: 10;
+    -fx-border-color: #606060;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 1);
+}
