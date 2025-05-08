@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -38,18 +39,15 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         this.player = player;
         setInventoryVisible(false);
         player.getInventory().addObserver(this);
-
         // Main container
         HBox mainContent = new HBox(40);
         mainContent.setAlignment(Pos.CENTER);
-
         // Grid setup
         grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(GAP_SIZE);
         grid.setVgap(GAP_SIZE);
         grid.setPadding(new Insets(PADDING));
-
         // Background container
         StackPane gridContainer = new StackPane();
         bg = new Rectangle(700, 500);
@@ -59,11 +57,9 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         bg.setArcWidth(20);
         bg.setArcHeight(20);
         bg.setEffect(new DropShadow(10, Color.BLACK));
-
         gridContainer.getChildren().addAll(bg, grid);
         mainContent.getChildren().add(gridContainer);
-
-        // Tooltip setup
+        // Toltip setup
         VBox tooltipContent = new VBox(5);
         tooltipContent.getStyleClass().add("tooltip-box");
         Label tooltipName = new Label();
@@ -72,24 +68,20 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         tooltipDesc.getStyleClass().add("item-description");
         tooltipContent.getChildren().addAll(tooltipName, tooltipDesc);
         tooltipPopup.getContent().add(tooltipContent);
-
         // Action menu setup
         VBox actionContent = new VBox(8);
         actionContent.getStyleClass().add("action-box");
         actionPopup.getContent().add(actionContent);
-
         // Main layout
         getChildren().add(mainContent);
         setAlignment(Pos.CENTER);
         setVisible(false);
-
         // Event handling
         setOnMouseMoved(e -> {
             if (tooltipPopup.isShowing() && currentHoverItem != null) {
                 updateTooltipPosition(e.getScreenX() + 15, e.getScreenY() + 15);
             }
         });
-
         // Close menu when clicking outside
         setOnMouseClicked(e -> {
             if (!actionPopup.getContent().get(0).getBoundsInParent().contains(e.getX(), e.getY())) {
@@ -202,7 +194,8 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
 
     @Override
     public void inventoryUpdated() {
-        if (isInventoryVisible()) updateDisplay();
+        Platform.runLater(this::updateDisplay);
+//        if (isInventoryVisible()) updateDisplay();
     }
 
     public void toggle() {

@@ -1,4 +1,7 @@
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.*;
 import java.util.*;
 
@@ -34,7 +37,7 @@ public class World implements Serializable {
      * Game instance
      */
     private final Game game;
-
+    private Map<Integer, Map<String, List<Item>>> searchSpotItems;
     /**
      * Method used to load the rooms from the file
      *
@@ -55,6 +58,7 @@ public class World implements Serializable {
         this.player = player;
         this.game = game;
         laboratory = new Room("Laboratory", true);
+        this.searchSpotItems = new HashMap<>();
     }
 
     /**
@@ -203,42 +207,57 @@ public class World implements Serializable {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.isEmpty()) continue;  // Skip empty lines
-
                 String[] parts = line.split(" ", 3);
-                if (parts.length < 3) continue;  // If line format is invalid, skip it
+                int roomIndex = Integer.parseInt(parts[0]);
+                String spotName = parts[1];
+                String[] itemNames = parts[2].split(",");
 
-                try {
-                    int roomIndex = Integer.parseInt(parts[0]);
-                    Room room = rooms.get(roomIndex);  // Get the room based on the index
-                    if (room == null) {
-                        System.err.println("Warning: Room with index " + roomIndex + " not found!");
-                        continue;  // Skip if the room doesn't exist
+                List<Item> items = new ArrayList<>();
+                for (String itemName : itemNames) {
+                    if (!itemName.equalsIgnoreCase("Empty")) {
+                        Item item = createItem(itemName.trim());
+                        if (item != null) items.add(item);
                     }
-
-                    String spotName = parts[1];  // Spot name
-                    String[] items = parts[2].split(",");  // Split items by comma
-
-                    List<Item> hiddenItems = new ArrayList<>();
-                    for (String itemName : items) {
-                        if (!itemName.equalsIgnoreCase("Empty")) {
-                            Item item = createItem(itemName.trim());  // Create item
-                            if (item != null) {
-                                hiddenItems.add(item);  // Add valid item to the list
-                            }
-                        }
-                    }
-
-                    // Add the search spot to the room
-                    SearchSpot spot = new SearchSpot(spotName, hiddenItems);
-                    room.addSearchSpot(spot);
-
-                } catch (NumberFormatException e) {
-                    System.err.println("Error parsing room index: " + parts[0]);
                 }
+                searchSpotItems.computeIfAbsent(roomIndex, k -> new HashMap<>())
+                        .put(spotName, items);
             }
         } catch (IOException e) {
-            System.err.println("Error loading search spots: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public List<Item> getSearchSpotItems(int roomIndex, String spotName) {
+        return searchSpotItems.getOrDefault(roomIndex, new HashMap<>())
+                .getOrDefault(spotName, new ArrayList<>());
+    }
+    public void loadSearchSpotsFromTMJ(Room room, JSONObject tmjData) {
+        try {
+            JSONArray layers = tmjData.getJSONArray("layers");
+            for (int i = 0; i < layers.length(); i++) {
+                JSONObject layer = layers.getJSONObject(i);
+                if ("SearchSpots".equals(layer.getString("name"))) {
+                    JSONArray objects = layer.getJSONArray("objects");
+                    for (int j = 0; j < objects.length(); j++) {
+                        JSONObject obj = objects.getJSONObject(j);
+                        String name = obj.getString("name");
+                        // Store coordinates in pixels as they come from Tiled
+                        double x = obj.getDouble("x");
+                        double y = obj.getDouble("y");
+                        double width = obj.getDouble("width");
+                        double height = obj.getDouble("height");
+
+                        List<Item> items = getSearchSpotItems(room.getIndex(), name);
+                        SearchSpot spot = new SearchSpot(name, items, x, y, width, height);
+                        room.addSearchSpot(spot);
+                        // Debug output
+                        System.out.printf("Loaded search spot: %s at (%.1f, %.1f) size (%.1f, %.1f)%n",
+                                name, x, y, width, height);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading search spots for room " + room.getName());
+            e.printStackTrace();
         }
     }
 
@@ -585,6 +604,26 @@ public class World implements Serializable {
      */
     public Map<Integer, Room> getRooms() {
         return rooms;
+    }
+    public Room getRoomByIndex(int index) {
+        return rooms.get(index);
+    }
+
+    public Game getGame() {
+        return game;
+    }
+    public Room getRoomByName(String name) {
+        return rooms.values().stream()
+                .filter(r -> r.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
+    }
+    public void addRoom(Room room) {
+        // Find the next available index
+        int nextIndex = rooms.keySet().stream()
+                .max(Integer::compare)
+                .orElse(-1) + 1;
+        rooms.put(nextIndex, room);
     }
 }
 

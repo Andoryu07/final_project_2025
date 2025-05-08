@@ -138,6 +138,72 @@
         }, 
         {
          "draworder":"topdown",
+         "id":7,
+         "name":"SearchSpots",
+         "objects":[
+                {
+                 "height":11.0909,
+                 "id":25,
+                 "name":"Wardrobe_1",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":28.0909,
+                 "x":161,
+                 "y":55.9091
+                }, 
+                {
+                 "height":11.0909,
+                 "id":26,
+                 "name":"Wardrobe_2",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":28.0909,
+                 "x":161.136,
+                 "y":55.8182
+                }, 
+                {
+                 "height":11.0909,
+                 "id":27,
+                 "name":"Wardrobe_3",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":28.0909,
+                 "x":160.955,
+                 "y":55.7273
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":8,
+         "name":"HidingSpotPrompt",
+         "objects":[
+                {
+                 "height":6.54545454545453,
+                 "id":29,
+                 "name":"Hide under the couch",
+                 "rotation":0,
+                 "type":"HidingSpot",
+                 "visible":true,
+                 "width":62.1818181818182,
+                 "x":71,
+                 "y":70.9090909090909
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":5,
          "name":"Collisions",
          "objects":[
@@ -313,8 +379,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":25,
+ "nextlayerid":9,
+ "nextobjectid":30,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

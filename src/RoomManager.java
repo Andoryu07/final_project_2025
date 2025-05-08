@@ -4,6 +4,8 @@ import javafx.scene.canvas.GraphicsContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,22 +40,39 @@ public class RoomManager {
         this.gameGUI = gameGUI;
 
     }
+    private Room getOrCreateGameRoom(String roomName) {
+        Room gameRoom = gameGUI.getWorld().getRoomByName(roomName);
+        if (gameRoom == null) {
+            gameRoom = new Room(roomName, false);
+            gameGUI.getWorld().addRoom(gameRoom);
+        }
+        return gameRoom;
+    }
 
     public void loadRoom(String roomName) throws Exception {
         if (!rooms.containsKey(roomName)) {
-            RoomRenderer room = new RoomRenderer();
-            room.loadRoom("/maps/" + roomName + ".tmj");
-            rooms.put(roomName, room);
-        }
-
-        // Set as current room if this is the first room being loaded
-        if (currentRoom == null) {
-            currentRoom = rooms.get(roomName);
-            currentRoomName = roomName;
-            positionPlayerAtSpawn();
+            JSONObject tmjData = loadTMJData("/maps/" + roomName + ".tmj");
+            RoomRenderer renderer = new RoomRenderer();
+            renderer.loadRoom(tmjData);
+            rooms.put(roomName, renderer);
+            // Get or create the game room
+            Room gameRoom = getOrCreateGameRoom(roomName);
+            gameGUI.getWorld().loadSearchSpotsFromTMJ(gameRoom, tmjData);
+            // Set current room if this is the first room
+            if (currentRoom == null) {
+                currentRoom = renderer;
+                currentRoomName = roomName;
+                gameGUI.getWorld().setCurrentRoom(gameRoom);
+                positionPlayerAtSpawn();
+            }
         }
     }
-
+    private JSONObject loadTMJData(String path) throws Exception {
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            assert is != null;
+            return new JSONObject(new String(is.readAllBytes()));
+        }
+    }
     private String normalizeRoomName(String roomName) {
         // Convert to lowercase and replace spaces with underscores
         return roomName.trim()
@@ -88,30 +107,28 @@ public class RoomManager {
                 player.setTransitioning(true);
 
             });
-
             String normalizedName = normalizeRoomName(roomName);
             if (!rooms.containsKey(normalizedName)) {
                 loadRoom(normalizedName);
             }
-
             if (rooms.containsKey(normalizedName)) {
                 String previousRoomName = currentRoomName;
                 currentRoom = rooms.get(normalizedName);
                 currentRoomName = normalizedName;
-
+                Room gameRoom = gameGUI.getWorld().getRoomByName(normalizedName);
+                gameGUI.getWorld().setCurrentRoom(gameRoom);
                 positionPlayerAtEntrance(previousRoomName);
-
                 if (onRoomChanged != null) {
                     onRoomChanged.run();
                 }
 
-                // Add a small delay before re-enabling controls
+                // Adds a small delay before re-enabling controls
                 new Thread(() -> {
                     try {
                         Thread.sleep(100);
                         Platform.runLater(() -> {
                             player.setTransitioning(false);
-                            player.setMovementEnabled(true); // Re-enable
+                            player.setMovementEnabled(true);
                         });
                     } catch (InterruptedException e) { /* ... */ }
                 }).start();
@@ -180,12 +197,10 @@ public class RoomManager {
     private boolean checkCollision(double tileX, double tileY) {
         RoomRenderer room = getCurrentRoom();
         if (room == null) return false;
-
         double playerX = tileX * room.getTileWidth();
         double playerY = tileY * room.getTileHeight();
         Rectangle2D hitbox = new Rectangle2D(
                 playerX - 10, playerY - 10, 20, 20);
-
         return room.getCollisions().stream()
                 .anyMatch(rect -> rect.intersects(hitbox));
     }
@@ -195,29 +210,23 @@ public class RoomManager {
         double exitY = exit.getDouble("y");
         double exitWidth = exit.getDouble("width");
         double exitHeight = exit.getDouble("height");
-
         // Convert player position to pixels
         double playerX = player.getX() * currentRoom.getTileWidth();
         double playerY = player.getY() * currentRoom.getTileHeight();
         double playerSize = 20; // Player circle diameter
-
         // Calculate player bounds
         double playerLeft = playerX - playerSize / 2;
         double playerRight = playerX + playerSize / 2;
         double playerTop = playerY - playerSize / 2;
         double playerBottom = playerY + playerSize / 2;
-
         // Calculate exit bounds
         double exitLeft = exitX;
         double exitRight = exitX + exitWidth;
         double exitTop = exitY;
         double exitBottom = exitY + exitHeight;
-
         // Check for overlap with more generous bounds for small exits
         boolean xOverlap = playerRight > exitLeft && playerLeft < exitRight;
         boolean yOverlap = playerBottom > exitTop && playerTop < exitBottom;
-
-        // For very small exits (like in caravan), make the check more generous
         if (exitWidth < 20 || exitHeight < 20) {
             double expandedWidth = Math.max(20, exitWidth);
             double expandedHeight = Math.max(20, exitHeight);

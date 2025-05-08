@@ -261,6 +261,83 @@
     
         {
          "draworder":"topdown",
+         "id":12,
+         "name":"CassettePlayer",
+         "objects":[
+                {
+                 "height":0,
+                 "id":30,
+                 "name":"SavePrompt",
+                 "rotation":0,
+                 "type":"CassettePlayer",
+                 "visible":true,
+                 "width":0,
+                 "x":128.909090909091,
+                 "y":240.909090909091
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":13,
+         "name":"SearchSpots",
+         "objects":[
+                {
+                 "height":11.7272727272728,
+                 "id":31,
+                 "name":"Shelf_1",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":31.6363636363637,
+                 "x":199.181818181818,
+                 "y":195.212121212121
+                }, 
+                {
+                 "height":11.7273,
+                 "id":32,
+                 "name":"Shelf_2",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":31.6364,
+                 "x":199.1818,
+                 "y":195.13635
+                }, 
+                {
+                 "height":11.7273,
+                 "id":33,
+                 "name":"Shelf_4",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":31.6364,
+                 "x":199.1818,
+                 "y":195.227259090909
+                }, 
+                {
+                 "height":11.7273,
+                 "id":34,
+                 "name":"Shelf_3",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":31.6364,
+                 "x":199.090890909091,
+                 "y":195.227259090909
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":11,
          "name":"Collisions",
          "objects":[
@@ -514,8 +591,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":12,
- "nextobjectid":30,
+ "nextlayerid":14,
+ "nextobjectid":35,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

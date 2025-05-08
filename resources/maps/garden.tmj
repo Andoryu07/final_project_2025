@@ -153,8 +153,8 @@
                  "type":"",
                  "visible":true,
                  "width":27.5,
-                 "x":10.8333333333333,
-                 "y":65.3333333333333
+                 "x":10.8333,
+                 "y":65.3333
                 }, 
                 {
                  "height":94,
@@ -163,9 +163,9 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":6.66666666666667,
-                 "x":0.666666666666667,
-                 "y":65.3333333333333
+                 "width":6.66667,
+                 "x":0.666667,
+                 "y":65.3333
                 }, 
                 {
                  "height":32,
@@ -188,6 +188,28 @@
                  "width":53.6667,
                  "x":272.735,
                  "y":224.041
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":9,
+         "name":"SearchSpots",
+         "objects":[
+                {
+                 "height":31.9166666666667,
+                 "id":22,
+                 "name":"Ground",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":32,
+                 "x":64.0833333333333,
+                 "y":223.791666666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -338,8 +360,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":9,
- "nextobjectid":22,
+ "nextlayerid":10,
+ "nextobjectid":23,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

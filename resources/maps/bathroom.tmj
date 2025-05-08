@@ -132,6 +132,83 @@
         }, 
         {
          "draworder":"topdown",
+         "id":8,
+         "name":"SearchSpots",
+         "objects":[
+                {
+                 "height":33.2727,
+                 "id":12,
+                 "name":"Wall_safe",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":18.8182,
+                 "x":191.364,
+                 "y":0.181818
+                }, 
+                {
+                 "height":25.2727,
+                 "id":13,
+                 "name":"Wardrobe_1",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":25.6364,
+                 "x":130.068,
+                 "y":38.8864
+                }, 
+                {
+                 "height":25.2727,
+                 "id":14,
+                 "name":"Wardrobe_3",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":25.6364,
+                 "x":130.182,
+                 "y":38.9091
+                }, 
+                {
+                 "height":25.2727,
+                 "id":15,
+                 "name":"Wardrobe_2",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":25.6364,
+                 "x":130.091,
+                 "y":39
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":9,
+         "name":"HidingSpotPrompt",
+         "objects":[
+                {
+                 "height":11.6363636363636,
+                 "id":16,
+                 "name":"Hide in bathtub",
+                 "rotation":0,
+                 "type":"HidingSpot",
+                 "visible":true,
+                 "width":63.7272727272728,
+                 "x":224.227272727273,
+                 "y":160.113636363636
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":7,
          "name":"Collisions",
          "objects":[
@@ -240,8 +317,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":8,
- "nextobjectid":12,
+ "nextlayerid":10,
+ "nextobjectid":17,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

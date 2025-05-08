@@ -184,6 +184,62 @@
         }, 
         {
          "draworder":"topdown",
+         "id":11,
+         "name":"HidingSpotPrompt",
+         "objects":[
+                {
+                 "height":8.25,
+                 "id":21,
+                 "name":"Hide under the bed",
+                 "rotation":0,
+                 "type":"HidingSpot",
+                 "visible":true,
+                 "width":62.5,
+                 "x":192.5,
+                 "y":92
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":10,
+         "name":"SearchSpots",
+         "objects":[
+                {
+                 "height":10.0909,
+                 "id":19,
+                 "name":"Nightstand_left_side",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":26,
+                 "x":162.182,
+                 "y":56.0909
+                }, 
+                {
+                 "height":10.0909,
+                 "id":20,
+                 "name":"Nightstand_right_side",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":26,
+                 "x":258.068,
+                 "y":56.3182
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        },
+    
+        {
+         "draworder":"topdown",
          "id":9,
          "name":"Collisions",
          "objects":[
@@ -348,8 +404,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":10,
- "nextobjectid":19,
+ "nextlayerid":12,
+ "nextobjectid":22,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

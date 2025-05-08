@@ -124,6 +124,9 @@ public class Room implements Serializable {
     public Room(String name, boolean isLocked) {
         this.name = name;
         this.isLocked = isLocked;
+        this.searchSpots = new ArrayList<>();
+        this.items = new ArrayList<>();
+        this.characters = new ArrayList<>();
     }
 
     /**
@@ -230,6 +233,9 @@ public class Room implements Serializable {
      * @param spot which spot to add into the room
      */
     public void addSearchSpot(SearchSpot spot) {
+        if (searchSpots == null) {
+            searchSpots = new ArrayList<>();
+        }
         searchSpots.add(spot);
     }
 
@@ -285,8 +291,15 @@ public class Room implements Serializable {
      * @return list of searchSpots
      */
     public List<SearchSpot> getSearchSpots() {
+        if (searchSpots == null) {
+            searchSpots = new ArrayList<>();
+        }
         return searchSpots;
     }
+    public void clearSearchSpots() {
+        searchSpots.clear();
+    }
+
 }
 
 

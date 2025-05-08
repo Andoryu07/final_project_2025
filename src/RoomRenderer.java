@@ -3,6 +3,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,12 +18,11 @@ public class RoomRenderer {
     private List<Rectangle2D> doorLockCollisions = new ArrayList<>();
     private boolean gardenLockActive = true;
     private boolean doorLockActive = true;
-    public void loadRoom(String mapPath) throws Exception {
+    public void loadRoom(JSONObject tmjData) throws Exception {
         mapLoader = new TiledMapLoader();
-        mapLoader.loadMap(mapPath);
+        mapLoader.loadMap(tmjData);
         loadTilesets();
         loadCollisionObjects();
-        System.out.println("Loaded " + collisionRects.size() + " collision objects");
     }
 
     private void loadCollisionObjects() {
@@ -184,4 +184,5 @@ public class RoomRenderer {
         }
         return allCollisions;
     }
+
 }

@@ -57,8 +57,8 @@
                  "type":"",
                  "visible":true,
                  "width":76,
-                 "x":5.18182,
-                 "y":55.9773
+                 "x":3.93182,
+                 "y":54.4773
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -72,15 +72,15 @@
          "name":"RoomTransitionPrompts",
          "objects":[
                 {
-                 "height":11.25,
+                 "height":15.7955,
                  "id":10,
                  "name":"EXIT TO GARDEN",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":76.1818,
-                 "x":5.6591,
-                 "y":83.5
+                 "width":77.7273,
+                 "x":2.36365,
+                 "y":79.5909
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -89,6 +89,72 @@
          "y":0
         },
     
+        {
+         "draworder":"topdown",
+         "id":9,
+         "name":"CassettePlayer",
+         "objects":[
+                {
+                 "height":0,
+                 "id":14,
+                 "name":"SavePrompt",
+                 "rotation":0,
+                 "type":"CassettePlayer",
+                 "visible":true,
+                 "width":0,
+                 "x":96.3636,
+                 "y":48.5455
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":8,
+         "name":"SearchSpots",
+         "objects":[
+                {
+                 "height":29.9783,
+                 "id":11,
+                 "name":"Desk_wardrobe_3",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":24.6522,
+                 "x":131.076,
+                 "y":1.97727
+                }, 
+                {
+                 "height":29.9783,
+                 "id":12,
+                 "name":"Desk_wardrobe_2",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":24.6522,
+                 "x":131.049,
+                 "y":1.76085
+                }, 
+                {
+                 "height":29.9783,
+                 "id":13,
+                 "name":"Desk_wardrobe_1",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":24.6522,
+                 "x":131.076,
+                 "y":1.9402
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
         {
          "draworder":"topdown",
          "id":6,
@@ -155,8 +221,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":8,
- "nextobjectid":11,
+ "nextlayerid":10,
+ "nextobjectid":15,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

@@ -120,6 +120,39 @@
         }, 
         {
          "draworder":"topdown",
+         "id":6,
+         "name":"SearchSpots",
+         "objects":[
+                {
+                 "height":18.0316205533597,
+                 "id":24,
+                 "name":"Key_Table",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":23.9130434782608,
+                 "x":131.086956521739,
+                 "y":47.6205533596838
+                }, 
+                {
+                 "height":18.0316,
+                 "id":25,
+                 "name":"Key_Table_Drawer",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":23.913,
+                 "x":131.0435,
+                 "y":47.5296545454546
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":5,
          "name":"Collisions",
          "objects":[
@@ -306,8 +339,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":6,
- "nextobjectid":24,
+ "nextlayerid":7,
+ "nextobjectid":26,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

@@ -8,21 +8,10 @@ public class TiledMapLoader {
     private int tileWidth;
     private int tileHeight;
 
-    public void loadMap(String resourcePath) throws Exception {
-        // Ensure path starts with slash and is case-sensitive
-        if (!resourcePath.startsWith("/")) {
-            resourcePath = "/" + resourcePath;
-        }
-
-        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
-            if (is == null) {
-                throw new RuntimeException("Could not find resource: " + resourcePath);
-            }
-            String jsonContent = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            mapData = new JSONObject(jsonContent);
-            tileWidth = mapData.getInt("tilewidth");
-            tileHeight = mapData.getInt("tileheight");
-        }
+    public void loadMap(JSONObject mapData) throws Exception {
+        this.mapData = mapData;
+        tileWidth = mapData.getInt("tilewidth");
+        tileHeight = mapData.getInt("tileheight");
     }
 
     public JSONObject getObjectGroup(String name) {

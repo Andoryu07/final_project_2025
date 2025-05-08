@@ -15,7 +15,9 @@ import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class GameGUI extends Application {
@@ -31,7 +33,10 @@ public class GameGUI extends Application {
     private long lastUpdateTime = System.nanoTime();
     private InventoryGUI inventoryGUI;
     private StackPane rootPane;
-
+    private List<SearchSpot> activeSearchSpots = new ArrayList<>();
+    private int selectedSpotIndex = 0;
+    private World world;
+    private Game game;
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -44,6 +49,9 @@ public class GameGUI extends Application {
             primaryStage.setWidth(1280);
             primaryStage.setHeight(720);
             player = new Player("Player", 100, null, "Enter_Hall");
+            game = new Game();
+            world = new World(player,game);
+            game.setWorld(world);
             inventoryGUI = new InventoryGUI(player);
             rootPane.getChildren().add(inventoryGUI); // Add to StackPane
             roomManager = new RoomManager(player, this);
@@ -182,6 +190,25 @@ public class GameGUI extends Application {
                 }
             }
         });
+        scene.setOnScroll(e -> {
+            if (!activeSearchSpots.isEmpty()) {
+                double delta = e.getDeltaY();
+                selectedSpotIndex = (int) (selectedSpotIndex - Math.signum(delta)) % activeSearchSpots.size();
+                if (selectedSpotIndex < 0) selectedSpotIndex = activeSearchSpots.size() - 1;
+            }
+        });
+
+// Handle interaction (e.g., pressing 'F')
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.F && !activeSearchSpots.isEmpty()) {
+                SearchSpot spot = activeSearchSpots.get(selectedSpotIndex);
+                if (!spot.isSearched()) {
+                    List<Item> items = spot.search();
+                    // Add items to inventory
+                    items.forEach(player.getInventory()::addItem);
+                }
+            }
+        });
     }
 
     // Helper method to check if a key is a movement key
@@ -231,6 +258,25 @@ public class GameGUI extends Application {
         // Clear any keys pressed during transitions/prompts
         keysToRemove.forEach(pressedKeys::remove);
         keysToRemove.clear();
+        if (world == null || world.getCurrentRoom() == null) {
+            return;
+        }
+        List<SearchSpot> activeSpots = new ArrayList<>();
+
+        activeSearchSpots.clear();
+        Room currentRoom = world.getCurrentRoom();
+        if (world != null && world.getCurrentRoom() != null) {
+            for (SearchSpot spot : currentRoom.getSearchSpots()) {
+                if (isPlayerOverlapping(spot, player.getX(), player.getY())) {
+                    activeSearchSpots.add(spot);
+                }
+            }
+        }
+        for (SearchSpot spot : currentRoom.getSearchSpots()) {
+            if (isPlayerOverlapping(spot, player.getX(), player.getY())) {
+                activeSpots.add(spot);
+            }
+        }
         boolean isMoving = pressedKeys.stream().anyMatch(this::isMovementKey);
         player.updateWalkCycle(isMoving);
         player.updatePosition();
@@ -249,7 +295,28 @@ public class GameGUI extends Application {
             player.setSprinting(false);
         }
     }
+    private boolean isPlayerOverlapping(SearchSpot spot, double playerX, double playerY) {
+        RoomRenderer room = roomManager.getCurrentRoom();
+        if (room == null) return false;
 
+        // Convert player position to pixels
+        double px = playerX * room.getTileWidth();
+        double py = playerY * room.getTileHeight();
+
+        // Search spot coordinates are already in pixels from Tiled
+        double spotX = spot.getX();
+        double spotY = spot.getY();
+        double spotWidth = spot.getWidth();
+        double spotHeight = spot.getHeight();
+
+        // Debug positions
+        System.out.printf("Player at (%.1f, %.1f), Spot %s at (%.1f, %.1f)%n",
+                px, py, spot.getName(), spotX, spotY);
+
+        // Check overlap with player's approximate bounds (20x20 pixels)
+        return px + 10 >= spotX && px - 10 <= spotX + spotWidth &&
+                py + 10 >= spotY && py - 10 <= spotY + spotHeight;
+    }
     private void constrainPlayerToRoom() {
         if (roomManager.getCurrentRoom() == null) return;
 
@@ -352,7 +419,7 @@ public class GameGUI extends Application {
         gc.setLineWidth(1);
         gc.strokeRect(x, y, barWidth, barHeight);
 
-        // Text
+        // Tex
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", 12));
         gc.fillText("Stamina: " + (int) player.getCurrentStamina() + "%", x, y - 5);
@@ -369,14 +436,12 @@ public class GameGUI extends Application {
         Rectangle2D playerHitbox = new Rectangle2D(
                 playerX - 6, playerY - 6, 12, 12
         );
-
         // Simply check for intersection without any bounce effect
         return room.getCollisions().stream()
                 .anyMatch(rect -> rect.intersects(playerHitbox));
     }
 
     public void clearMovementInputs() {
-        // Clear all movement-related keys
         pressedKeys.removeIf(code ->
                 code == KeyCode.W || code == KeyCode.A || code == KeyCode.S || code == KeyCode.D ||
                         code == KeyCode.UP || code == KeyCode.DOWN || code == KeyCode.LEFT || code == KeyCode.RIGHT
@@ -393,8 +458,6 @@ public class GameGUI extends Application {
             gc.scale(roomManager.getRenderScale(), roomManager.getRenderScale());
             RoomRenderer room = roomManager.getCurrentRoom();
             room.render(gc);
-
-            // Draw collision boxes in red
             gc.setStroke(Color.RED);
             gc.setLineWidth(1);
             for (Rectangle2D rect : room.getCollisions()) {
@@ -407,8 +470,6 @@ public class GameGUI extends Application {
             }
             room.render(gc);
             renderExitAreas(gc, room);
-
-            // Render player
             double playerX = player.getX() * room.getTileWidth();
             double playerY = player.getY() * room.getTileHeight();
             if (player.getSpeedX() != 0 || player.getSpeedY() != 0) {
@@ -423,9 +484,28 @@ public class GameGUI extends Application {
         if (player.getCurrentStamina() < player.getMaxStamina() || player.isSprinting()) {
             renderStaminaBar(gc);
         }
+        if (!activeSearchSpots.isEmpty()) {
+
+            RoomRenderer room = roomManager.getCurrentRoom();
+            double playerScreenX = (player.getX() * room.getTileWidth()) * roomManager.getRenderScale();
+            double playerScreenY = (player.getY() * room.getTileHeight()) * roomManager.getRenderScale();
+            double menuX = playerScreenX + 30;
+            double menuY = playerScreenY - 50;
+            menuX = Math.min(menuX, canvas.getWidth() - 210);
+            menuY = Math.max(menuY, 10);
+            gc.setFill(Color.rgb(0, 0, 0, 0.7));
+            gc.fillRect(menuX, menuY, 200, 30 * activeSearchSpots.size());
+            gc.setFont(Font.font("Arial", 16));
+            for (int i = 0; i < activeSearchSpots.size(); i++) {
+                SearchSpot spot = activeSearchSpots.get(i);
+                gc.setFill(i == selectedSpotIndex ? Color.YELLOW : Color.WHITE);
+                gc.fillText("Search " + spot.getName(),
+                        menuX + 10,
+                        menuY + 20 + i * 30);
+            }
+        }
         gc.restore();
     }
-
 
     private void renderExitAreas(GraphicsContext gc, RoomRenderer room) {
         JSONObject objects = room.getObjectGroup("GameObjects");
@@ -449,10 +529,7 @@ public class GameGUI extends Application {
     }
 
     public void performTransition(String targetRoom) {
-        // Clear all movement inputs
         clearMovementInputs();
-
-        // Gentle fade effect
         FadeTransition fadeOut = new FadeTransition(Duration.millis(TRANSITION_DURATION), canvas);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.4);
@@ -464,6 +541,10 @@ public class GameGUI extends Application {
             fadeIn.play();
         });
         fadeOut.play();
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     public static void main(String[] args) {

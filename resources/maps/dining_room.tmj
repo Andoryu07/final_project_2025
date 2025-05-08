@@ -81,8 +81,8 @@
         {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 460, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 484, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 185,
-            0, 0, 0, 463, 464, 465, 0, 0, 0, 209,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 2209,
+            0, 0, 0, 463, 464, 465, 0, 0, 0, 1416,
             0, 0, 0, 487, 488, 489, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -123,6 +123,94 @@
                  "width":76.5455,
                  "x":74.7045,
                  "y":12.4773
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":11,
+         "name":"HidingSpotPrompt",
+         "objects":[
+                {
+                 "height":2.90909090909092,
+                 "id":23,
+                 "name":"Hide under the table",
+                 "rotation":0,
+                 "type":"HidingSpot",
+                 "visible":true,
+                 "width":35.4545454545454,
+                 "x":109.272727272727,
+                 "y":104.272727272727
+                }, 
+                {
+                 "height":14.6363636363636,
+                 "id":24,
+                 "name":"Hide under the table",
+                 "rotation":0,
+                 "type":"HidingSpot",
+                 "visible":true,
+                 "width":4.09090909090908,
+                 "x":109.272727272727,
+                 "y":107.363636363636
+                }, 
+                {
+                 "height":14.1818181818182,
+                 "id":25,
+                 "name":"Hide under the table",
+                 "rotation":0,
+                 "type":"HidingSpot",
+                 "visible":true,
+                 "width":43.2727272727273,
+                 "x":117.454545454545,
+                 "y":149.090909090909
+                }, 
+                {
+                 "height":40.1818181818182,
+                 "id":27,
+                 "name":"Hide under the table",
+                 "rotation":0,
+                 "type":"HidingSpot",
+                 "visible":true,
+                 "width":10.1818181818182,
+                 "x":164.909090909091,
+                 "y":121.818181818182
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":10,
+         "name":"SearchSpots",
+         "objects":[
+                {
+                 "height":22.5,
+                 "id":20,
+                 "name":"Wardrobe_1",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":24.625,
+                 "x":258.625,
+                 "y":43.375
+                }, 
+                {
+                 "height":22.5,
+                 "id":21,
+                 "name":"Wardrobe_2",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":24.625,
+                 "x":258.625,
+                 "y":43.4375
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -329,8 +417,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":10,
- "nextobjectid":20,
+ "nextlayerid":12,
+ "nextobjectid":28,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -347,215 +435,6 @@
          "spacing":0,
          "tilecount":576,
          "tileheight":32,
-         "tiles":[
-                {
-                 "id":459,
-                 "objectgroup":
-                    {
-                     "draworder":"index",
-                     "id":2,
-                     "name":"",
-                     "objects":[
-                            {
-                             "height":9,
-                             "id":1,
-                             "name":"",
-                             "rotation":0,
-                             "type":"",
-                             "visible":true,
-                             "width":28,
-                             "x":1,
-                             "y":23
-                            }],
-                     "opacity":1,
-                     "type":"objectgroup",
-                     "visible":true,
-                     "x":0,
-                     "y":0
-                    }
-                }, 
-                {
-                 "id":462,
-                 "objectgroup":
-                    {
-                     "draworder":"index",
-                     "id":2,
-                     "name":"",
-                     "objects":[
-                            {
-                             "height":20.5526,
-                             "id":1,
-                             "name":"",
-                             "rotation":0,
-                             "type":"",
-                             "visible":true,
-                             "width":14.4474,
-                             "x":17.5526,
-                             "y":11.4474
-                            }],
-                     "opacity":1,
-                     "type":"objectgroup",
-                     "visible":true,
-                     "x":0,
-                     "y":0
-                    }
-                }, 
-                {
-                 "id":463,
-                 "objectgroup":
-                    {
-                     "draworder":"index",
-                     "id":2,
-                     "name":"",
-                     "objects":[
-                            {
-                             "height":20,
-                             "id":1,
-                             "name":"",
-                             "rotation":0,
-                             "type":"",
-                             "visible":true,
-                             "width":32,
-                             "x":0,
-                             "y":12
-                            }],
-                     "opacity":1,
-                     "type":"objectgroup",
-                     "visible":true,
-                     "x":0,
-                     "y":0
-                    }
-                }, 
-                {
-                 "id":464,
-                 "objectgroup":
-                    {
-                     "draworder":"index",
-                     "id":2,
-                     "name":"",
-                     "objects":[
-                            {
-                             "height":20,
-                             "id":1,
-                             "name":"",
-                             "rotation":0,
-                             "type":"",
-                             "visible":true,
-                             "width":4,
-                             "x":0,
-                             "y":12
-                            }],
-                     "opacity":1,
-                     "type":"objectgroup",
-                     "visible":true,
-                     "x":0,
-                     "y":0
-                    }
-                }, 
-                {
-                 "id":483,
-                 "objectgroup":
-                    {
-                     "draworder":"index",
-                     "id":2,
-                     "name":"",
-                     "objects":[
-                            {
-                             "height":32,
-                             "id":1,
-                             "name":"",
-                             "rotation":0,
-                             "type":"",
-                             "visible":true,
-                             "width":28,
-                             "x":1,
-                             "y":0
-                            }],
-                     "opacity":1,
-                     "type":"objectgroup",
-                     "visible":true,
-                     "x":0,
-                     "y":0
-                    }
-                }, 
-                {
-                 "id":486,
-                 "objectgroup":
-                    {
-                     "draworder":"index",
-                     "id":2,
-                     "name":"",
-                     "objects":[
-                            {
-                             "height":32,
-                             "id":1,
-                             "name":"",
-                             "rotation":0,
-                             "type":"",
-                             "visible":true,
-                             "width":14,
-                             "x":18,
-                             "y":0
-                            }],
-                     "opacity":1,
-                     "type":"objectgroup",
-                     "visible":true,
-                     "x":0,
-                     "y":0
-                    }
-                }, 
-                {
-                 "id":487,
-                 "objectgroup":
-                    {
-                     "draworder":"index",
-                     "id":2,
-                     "name":"",
-                     "objects":[
-                            {
-                             "height":20,
-                             "id":1,
-                             "name":"",
-                             "rotation":0,
-                             "type":"",
-                             "visible":true,
-                             "width":32,
-                             "x":0,
-                             "y":0
-                            }],
-                     "opacity":1,
-                     "type":"objectgroup",
-                     "visible":true,
-                     "x":0,
-                     "y":0
-                    }
-                }, 
-                {
-                 "id":488,
-                 "objectgroup":
-                    {
-                     "draworder":"index",
-                     "id":2,
-                     "name":"",
-                     "objects":[
-                            {
-                             "height":32,
-                             "id":1,
-                             "name":"",
-                             "rotation":0,
-                             "type":"",
-                             "visible":true,
-                             "width":4,
-                             "x":0,
-                             "y":0
-                            }],
-                     "opacity":1,
-                     "type":"objectgroup",
-                     "visible":true,
-                     "x":0,
-                     "y":0
-                    }
-                }],
          "tilewidth":32,
          "wangsets":[
                 {
@@ -582,11 +461,7 @@
                  "name":"TableRU",
                  "tile":-1,
                  "type":"mixed",
-                 "wangtiles":[
-                        {
-                         "tileid":494,
-                         "wangid":[0, 0, 1, 1, 1, 1, 1, 0]
-                        }]
+                 "wangtiles":[]
                 }, 
                 {
                  "colors":[
@@ -599,11 +474,7 @@
                  "name":"TableRD",
                  "tile":-1,
                  "type":"mixed",
-                 "wangtiles":[
-                        {
-                         "tileid":542,
-                         "wangid":[1, 1, 0, 0, 0, 0, 0, 0]
-                        }]
+                 "wangtiles":[]
                 }, 
                 {
                  "colors":[
@@ -616,11 +487,7 @@
                  "name":"TableLD",
                  "tile":-1,
                  "type":"mixed",
-                 "wangtiles":[
-                        {
-                         "tileid":540,
-                         "wangid":[1, 0, 0, 0, 0, 0, 0, 1]
-                        }]
+                 "wangtiles":[]
                 }]
         }, 
         {

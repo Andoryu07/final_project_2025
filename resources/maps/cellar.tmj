@@ -313,6 +313,127 @@
     
         {
          "draworder":"topdown",
+         "id":15,
+         "name":"SearchSpots",
+         "objects":[
+                {
+                 "height":0,
+                 "id":76,
+                 "name":"Dead_body",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":0,
+                 "x":304.364,
+                 "y":110.727
+                }, 
+                {
+                 "height":13.125,
+                 "id":77,
+                 "name":"Under_desk_1",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":37.375,
+                 "x":276.5,
+                 "y":52.5
+                }, 
+                {
+                 "height":13.125,
+                 "id":78,
+                 "name":"Under_desk_2",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":37.375,
+                 "x":20.2216,
+                 "y":180.528
+                }, 
+                {
+                 "height":13.125,
+                 "id":79,
+                 "name":"Under_desk_3",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":37.375,
+                 "x":276.312,
+                 "y":180.983
+                }, 
+                {
+                 "height":46.5,
+                 "id":80,
+                 "name":"Shelf_1",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":27.625,
+                 "x":233.625,
+                 "y":222.25
+                }, 
+                {
+                 "height":46.5,
+                 "id":81,
+                 "name":"Shelf_2",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":27.625,
+                 "x":233.563,
+                 "y":222.375
+                }, 
+                {
+                 "height":46.5,
+                 "id":82,
+                 "name":"Shelf_3",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":27.625,
+                 "x":233.563,
+                 "y":222.5
+                }, 
+                {
+                 "height":28.8182,
+                 "id":83,
+                 "name":"Desk_2",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":38,
+                 "x":20,
+                 "y":164.636
+                }, 
+                {
+                 "height":28.8182,
+                 "id":85,
+                 "name":"Desk_3",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":38,
+                 "x":276,
+                 "y":165.318
+                }, 
+                {
+                 "height":28.8182,
+                 "id":86,
+                 "name":"Desk_1",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":38,
+                 "x":276.25,
+                 "y":36.8409
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":13,
          "name":"Collisions",
          "objects":[
@@ -1017,9 +1138,9 @@
                 {
                  "height":256,
                  "id":74,
-                 "name":"",
+                 "name":"Collision",
                  "rotation":0,
-                 "type":"",
+                 "type":"Collisions",
                  "visible":true,
                  "width":1,
                  "x":0,
@@ -1028,9 +1149,9 @@
                 {
                  "height":1,
                  "id":75,
-                 "name":"",
+                 "name":"Collision",
                  "rotation":0,
-                 "type":"",
+                 "type":"Collisions",
                  "visible":true,
                  "width":256,
                  "x":64,
@@ -1064,8 +1185,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":15,
- "nextobjectid":76,
+ "nextlayerid":16,
+ "nextobjectid":87,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

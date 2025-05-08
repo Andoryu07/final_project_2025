@@ -1,3 +1,5 @@
+import javafx.geometry.Rectangle2D;
+
 import java.io.Serializable;
 import java.util.List;
 /**
@@ -20,15 +22,22 @@ public class SearchSpot implements Serializable {
      * List of items hidden inside the search spot
      */
     private List<Item> hiddenItems;
-
+    private double x;
+    private double y;
+    private double width;
+    private double height;
     /**
      * Constructor
      * @param name Name of the search spot
      * @param hiddenItems List of items hidden inside the search spot
      */
-    public SearchSpot(String name, List<Item> hiddenItems) {
+    public SearchSpot(String name, List<Item> hiddenItems, double x, double y, double width, double height) {
         this.name = name;
         this.hiddenItems = hiddenItems;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
         this.searched = false;
     }
 
@@ -73,6 +82,25 @@ public class SearchSpot implements Serializable {
      */
     public void markAsSearched() {
         this.searched = true;
+    }
+    public Rectangle2D getArea() {
+        return new Rectangle2D(x, y, width, height);
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
     }
 }
 
