@@ -53,7 +53,7 @@ public class SearchCommand implements Command {
                 }
 
                 // If we get here, the spot is accessible
-                List<Item> foundItems = chosenSpot.search();
+                List<Item> foundItems = chosenSpot.getItems();
                 if (foundItems != null && !foundItems.isEmpty()) {
                     System.out.println("You found:");
                     for (Item item : foundItems) {

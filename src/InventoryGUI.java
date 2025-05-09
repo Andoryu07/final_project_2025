@@ -1,3 +1,4 @@
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -18,6 +19,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
+import javafx.util.Duration;
 
 import java.io.InputStream;
 
@@ -104,7 +106,28 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
             grid.add(slot, i % cols, i / cols);
         }
     }
+    @Override
+    public void inventoryUpdated() {
+        Platform.runLater(() -> {
+            updateDisplay();
+            // Flash the inventory if it's visible
+            if (isInventoryVisible()) {
+                animateInventoryUpdate();
+            }
+        });
+    }
 
+    private void animateInventoryUpdate() {
+        // Add visual feedback for inventory changes
+        ScaleTransition st = new ScaleTransition(Duration.millis(100), grid);
+        st.setFromX(1.0);
+        st.setFromY(1.0);
+        st.setToX(1.05);
+        st.setToY(1.05);
+        st.setAutoReverse(true);
+        st.setCycleCount(2);
+        st.play();
+    }
     private void addItemToSlot(StackPane slot, Item item) {
         ImageView iv = loadItemImage(item);
         if (iv != null) {
@@ -190,14 +213,6 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         }
         updateDisplay();
     }
-
-
-    @Override
-    public void inventoryUpdated() {
-        Platform.runLater(this::updateDisplay);
-//        if (isInventoryVisible()) updateDisplay();
-    }
-
     public void toggle() {
         setInventoryVisible(!isInventoryVisible());
         if (isInventoryVisible()) {

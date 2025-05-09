@@ -1,6 +1,7 @@
 import javafx.geometry.Rectangle2D;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 /**
  * Class used to implement the search spot, its values and fields
@@ -61,10 +62,9 @@ public class SearchSpot implements Serializable {
      * Method used to search the search spot
      * @return the items hidden inside the search spot, null if no items are in the search spot
      */
-    public List<Item> search() {
+    public List<Item> getItems() { // Rename from search()
         if (!searched) {
-            searched = true;
-            return hiddenItems;
+            return new ArrayList<>(hiddenItems);
         }
         return null;
     }
@@ -102,6 +102,7 @@ public class SearchSpot implements Serializable {
     public double getHeight() {
         return height;
     }
+
 }
 
 

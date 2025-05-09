@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class used to implement the world, its layout, methods, fields, behavior, etc.
@@ -38,6 +39,7 @@ public class World implements Serializable {
      */
     private final Game game;
     private Map<Integer, Map<String, List<Item>>> searchSpotItems;
+
     /**
      * Method used to load the rooms from the file
      *
@@ -51,8 +53,9 @@ public class World implements Serializable {
 
     /**
      * Constructor, initializes Laboratory room
+     *
      * @param player Player
-     * @param game Game
+     * @param game   Game
      */
     public World(Player player, Game game) {
         this.player = player;
@@ -203,7 +206,7 @@ public class World implements Serializable {
      *
      * @param filePath of the file we're going to load the spots from
      */
-    private void loadSearchSpots(String filePath) {
+    public void loadSearchSpots(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -226,10 +229,12 @@ public class World implements Serializable {
             e.printStackTrace();
         }
     }
+
     public List<Item> getSearchSpotItems(int roomIndex, String spotName) {
         return searchSpotItems.getOrDefault(roomIndex, new HashMap<>())
                 .getOrDefault(spotName, new ArrayList<>());
     }
+
     public void loadSearchSpotsFromTMJ(Room room, JSONObject tmjData) {
         try {
             JSONArray layers = tmjData.getJSONArray("layers");
@@ -240,18 +245,30 @@ public class World implements Serializable {
                     for (int j = 0; j < objects.length(); j++) {
                         JSONObject obj = objects.getJSONObject(j);
                         String name = obj.getString("name");
-                        // Store coordinates in pixels as they come from Tiled
-                        double x = obj.getDouble("x");
-                        double y = obj.getDouble("y");
-                        double width = obj.getDouble("width");
-                        double height = obj.getDouble("height");
-
-                        List<Item> items = getSearchSpotItems(room.getIndex(), name);
-                        SearchSpot spot = new SearchSpot(name, items, x, y, width, height);
-                        room.addSearchSpot(spot);
-                        // Debug output
-                        System.out.printf("Loaded search spot: %s at (%.1f, %.1f) size (%.1f, %.1f)%n",
-                                name, x, y, width, height);
+                        SearchSpot existingSpot = room.getSearchSpots().stream()
+                                .filter(s -> s.getName().equals(name))
+                                .findFirst()
+                                .orElse(null);
+                        if (existingSpot != null) {
+                            // Update existing spot's searched status if needed
+                            existingSpot.setSearched(existingSpot.isSearched());
+                        } else {
+                            // Store coordinates in pixels as they come from Tiled
+                            double x = obj.getDouble("x");
+                            double y = obj.getDouble("y");
+                            double width = obj.getDouble("width");
+                            double height = obj.getDouble("height");
+                            List<Item> items = getSearchSpotItems(room.getIndex(), name);
+                            items.removeIf(item -> item == null || item.getName().equalsIgnoreCase("Empty"));
+                            SearchSpot spot = new SearchSpot(name, items, x, y, width, height);
+                            room.addSearchSpot(spot);
+                            // Debug output
+                            System.out.println("Found items: " + items.stream()
+                                    .map(Item::getName)
+                                    .collect(Collectors.joining(", ")));
+                            System.out.printf("Loaded search spot: %s at (%.1f, %.1f) size (%.1f, %.1f)%n",
+                                    name, x, y, width, height);
+                        }
                     }
                 }
             }
@@ -397,6 +414,21 @@ public class World implements Serializable {
         }
     }
 
+    public void loadRoomLayout(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(" ");
+                int index = Integer.parseInt(parts[0]);
+                String name = parts[1];
+                Room room = new Room(index, name, new ArrayList<>());
+                rooms.put(index, room);
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading room layout: " + e.getMessage());
+        }
+    }
+
     /**
      * Method used to start combat between player and an enemy
      *
@@ -468,7 +500,7 @@ public class World implements Serializable {
         // Final boss
         if (rooms.containsKey(11)) {
             Room room = rooms.get(11);
-            room.addCharacter(new StalkerFinalBattle( this, room.getName()));
+            room.addCharacter(new StalkerFinalBattle(this, room.getName()));
         }
 
         // Zombies
@@ -508,6 +540,7 @@ public class World implements Serializable {
     public Room getCurrentRoom() {
         return currentRoom;
     }
+
     public void setCurrentRoom(Room room) {
         this.currentRoom = room;
         if (player != null) {
@@ -591,6 +624,7 @@ public class World implements Serializable {
 
     /**
      * Getter for player
+     *
      * @return value of player
      */
     public Player getPlayer() {
@@ -605,6 +639,7 @@ public class World implements Serializable {
     public Map<Integer, Room> getRooms() {
         return rooms;
     }
+
     public Room getRoomByIndex(int index) {
         return rooms.get(index);
     }
@@ -612,12 +647,14 @@ public class World implements Serializable {
     public Game getGame() {
         return game;
     }
+
     public Room getRoomByName(String name) {
         return rooms.values().stream()
                 .filter(r -> r.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
     }
+
     public void addRoom(Room room) {
         // Find the next available index
         int nextIndex = rooms.keySet().stream()

@@ -10,3 +10,4 @@
 9 Laboratory 11 10
 10 Cellar 1 9
 11 Secret_Chamber 9
+12 Cemetery_Ending

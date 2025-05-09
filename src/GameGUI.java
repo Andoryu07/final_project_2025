@@ -1,6 +1,7 @@
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -10,6 +11,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.json.JSONArray;
@@ -37,6 +40,8 @@ public class GameGUI extends Application {
     private int selectedSpotIndex = 0;
     private World world;
     private Game game;
+    private List<Item> recentFoundItems = new ArrayList<>();
+    private long itemNotificationEndTime = 0;
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -50,8 +55,10 @@ public class GameGUI extends Application {
             primaryStage.setHeight(720);
             player = new Player("Player", 100, null, "Enter_Hall");
             game = new Game();
-            world = new World(player,game);
+            world = new World(player, game);
             game.setWorld(world);
+            world.loadRoomLayout("src/fileImports/game_layout.txt");
+            world.loadSearchSpots("src/fileImports/search_spots.txt");
             inventoryGUI = new InventoryGUI(player);
             rootPane.getChildren().add(inventoryGUI); // Add to StackPane
             roomManager = new RoomManager(player, this);
@@ -197,16 +204,49 @@ public class GameGUI extends Application {
                 if (selectedSpotIndex < 0) selectedSpotIndex = activeSearchSpots.size() - 1;
             }
         });
-
-// Handle interaction (e.g., pressing 'F')
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.F && !activeSearchSpots.isEmpty()) {
                 SearchSpot spot = activeSearchSpots.get(selectedSpotIndex);
                 if (!spot.isSearched()) {
-                    List<Item> items = spot.search();
+                    List<Item> items = spot.getItems();
                     // Add items to inventory
                     items.forEach(player.getInventory()::addItem);
                 }
+            }
+        });
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.E && !activeSearchSpots.isEmpty()) {
+                SearchSpot spot = activeSearchSpots.get(selectedSpotIndex);
+                if (!spot.isSearched()) {
+                    List<Item> items = spot.getItems();
+                    recentFoundItems.clear(); // Clear previous items
+                    recentFoundItems.addAll(items); // Add all new items
+
+                    items.forEach(item -> {
+                        if (player.getInventory().addItem(item)) {
+                            System.out.println("Added item: " + item.getName());
+                        }
+                    });
+
+                    if (!recentFoundItems.isEmpty()) {
+                        itemNotificationEndTime = System.currentTimeMillis() + 3000;
+                    }
+
+                    spot.setSearched(true);
+//                    activeSearchSpots.removeIf(SearchSpot::isSearched);
+                    if (!activeSearchSpots.isEmpty()) {
+                        selectedSpotIndex = Math.min(selectedSpotIndex, activeSearchSpots.size() - 1);
+                    }
+                    e.consume();
+                }
+            }
+        });
+        scene.setOnScroll(e -> {
+            if (!activeSearchSpots.isEmpty()) {
+                double delta = e.getDeltaY();
+                int direction = (int) Math.signum(delta);
+                selectedSpotIndex = (selectedSpotIndex - direction + activeSearchSpots.size()) % activeSearchSpots.size();
+                e.consume();
             }
         });
     }
@@ -267,11 +307,18 @@ public class GameGUI extends Application {
         Room currentRoom = world.getCurrentRoom();
         if (world != null && world.getCurrentRoom() != null) {
             for (SearchSpot spot : currentRoom.getSearchSpots()) {
-                if (isPlayerOverlapping(spot, player.getX(), player.getY())) {
+                if (!spot.isSearched() && isPlayerOverlapping(spot, player.getX(), player.getY())) {
                     activeSearchSpots.add(spot);
                 }
             }
         }
+        // Ensure selected index is valid
+        if (!activeSearchSpots.isEmpty()) {
+            selectedSpotIndex = Math.min(selectedSpotIndex, activeSearchSpots.size() - 1);
+        } else {
+            selectedSpotIndex = 0;
+        }
+
         for (SearchSpot spot : currentRoom.getSearchSpots()) {
             if (isPlayerOverlapping(spot, player.getX(), player.getY())) {
                 activeSpots.add(spot);
@@ -295,6 +342,7 @@ public class GameGUI extends Application {
             player.setSprinting(false);
         }
     }
+
     private boolean isPlayerOverlapping(SearchSpot spot, double playerX, double playerY) {
         RoomRenderer room = roomManager.getCurrentRoom();
         if (room == null) return false;
@@ -317,6 +365,7 @@ public class GameGUI extends Application {
         return px + 10 >= spotX && px - 10 <= spotX + spotWidth &&
                 py + 10 >= spotY && py - 10 <= spotY + spotHeight;
     }
+
     private void constrainPlayerToRoom() {
         if (roomManager.getCurrentRoom() == null) return;
 
@@ -485,28 +534,96 @@ public class GameGUI extends Application {
             renderStaminaBar(gc);
         }
         if (!activeSearchSpots.isEmpty()) {
-
             RoomRenderer room = roomManager.getCurrentRoom();
             double playerScreenX = (player.getX() * room.getTileWidth()) * roomManager.getRenderScale();
             double playerScreenY = (player.getY() * room.getTileHeight()) * roomManager.getRenderScale();
+
+            // Position menu relative to player but constrained to screen
             double menuX = playerScreenX + 30;
             double menuY = playerScreenY - 50;
-            menuX = Math.min(menuX, canvas.getWidth() - 210);
-            menuY = Math.max(menuY, 10);
-            gc.setFill(Color.rgb(0, 0, 0, 0.7));
-            gc.fillRect(menuX, menuY, 200, 30 * activeSearchSpots.size());
+            menuX = Math.min(menuX, canvas.getWidth() - 250); // Keep on screen
+            menuY = Math.max(menuY, 20); // Keep on screen
+
+            // Menu background with rounded corners
+            gc.setFill(Color.rgb(30, 30, 40, 0.85));
+            gc.fillRoundRect(menuX, menuY, 230, 40 + 35 * activeSearchSpots.size(), 15, 15);
+
+            // Border
+            gc.setStroke(Color.rgb(100, 150, 255));
+            gc.setLineWidth(2);
+            gc.strokeRoundRect(menuX, menuY, 230, 40 + 35 * activeSearchSpots.size(), 15, 15);
+
+            // Title
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+            gc.fillText("Searchable Objects", menuX + 15, menuY + 25);
+
+            // Separator line
+            gc.setStroke(Color.rgb(100, 150, 255, 0.5));
+            gc.setLineWidth(1);
+            gc.strokeLine(menuX + 10, menuY + 35, menuX + 220, menuY + 35);
+
+            // Items
             gc.setFont(Font.font("Arial", 16));
             for (int i = 0; i < activeSearchSpots.size(); i++) {
                 SearchSpot spot = activeSearchSpots.get(i);
-                gc.setFill(i == selectedSpotIndex ? Color.YELLOW : Color.WHITE);
-                gc.fillText("Search " + spot.getName(),
-                        menuX + 10,
-                        menuY + 20 + i * 30);
+
+                // Highlight selected item
+                if (i == selectedSpotIndex) {
+                    gc.setFill(Color.rgb(100, 150, 255, 0.3));
+                    gc.fillRoundRect(menuX + 10, menuY + 40 + i * 35, 210, 30, 5, 5);
+
+                    gc.setStroke(Color.rgb(100, 150, 255));
+                    gc.setLineWidth(1.5);
+                    gc.strokeRoundRect(menuX + 10, menuY + 40 + i * 35, 210, 30, 5, 5);
+                }
+
+                // Item text
+                gc.setFill(i == selectedSpotIndex ? Color.rgb(200, 230, 255) : Color.WHITE);
+                gc.fillText(spot.getName(), menuX + 20, menuY + 60 + i * 35);
+
+                // Search status indicator
+                gc.setFill(spot.isSearched() ? Color.RED : Color.GREEN);
+                gc.fillOval(menuX + 190, menuY + 47 + i * 35, 8, 8);
             }
+
+            // Instruction text
+            gc.setFill(Color.rgb(200, 200, 200));
+            gc.setFont(Font.font("Arial", FontPosture.ITALIC, 12));
+            gc.fillText("Press E to search", menuX + 15, menuY + 55 + activeSearchSpots.size() * 35);
+        }
+        if (System.currentTimeMillis() < itemNotificationEndTime) {
+            renderItemNotification(gc);
         }
         gc.restore();
     }
+    private void renderItemNotification(GraphicsContext gc) {
+        if (recentFoundItems.isEmpty()) return;
 
+        double width = 300;
+        double height = 50 + 20 * recentFoundItems.size();
+        double x = (canvas.getWidth() - width) / 2;
+        double y = canvas.getHeight() - height - 20; // Bottom of screen
+
+        // Background
+        gc.setFill(Color.rgb(0, 0, 0, 0.85));
+        gc.fillRoundRect(x, y, width, height, 10, 10);
+
+        // Border
+        gc.setStroke(Color.GOLDENROD);
+        gc.setLineWidth(2);
+        gc.strokeRoundRect(x, y, width, height, 10, 10);
+
+        // Text
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        gc.fillText("Items Found:", x + 10, y + 25);
+
+        for (int i = 0; i < recentFoundItems.size(); i++) {
+            gc.fillText("- " + recentFoundItems.get(i).getName(),
+                    x + 20, y + 45 + i * 20);
+        }
+    }
     private void renderExitAreas(GraphicsContext gc, RoomRenderer room) {
         JSONObject objects = room.getObjectGroup("GameObjects");
         if (objects != null) {
@@ -546,7 +663,43 @@ public class GameGUI extends Application {
     public World getWorld() {
         return world;
     }
+    private void showItemFoundEffect(Item item) {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.save();
 
+        double centerX = canvas.getWidth() / 2;
+        double centerY = canvas.getHeight() / 2;
+
+        // Background
+        gc.setFill(Color.rgb(0, 0, 0, 0.7));
+        gc.fillRect(centerX - 150, centerY - 50, 300, 100);
+
+        // Border
+        gc.setStroke(Color.GOLD);
+        gc.setLineWidth(2);
+        gc.strokeRect(centerX - 150, centerY - 50, 300, 100);
+
+        // Text
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        gc.fillText("Found: " + item.getName(), centerX - 120, centerY - 10);
+
+        gc.restore();
+
+        // Fade out after 2 seconds
+        new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Platform.runLater(() -> render());
+        }).start();
+    }
+    //    private void showItemFoundEffect(List<Item> items) {
+//        recentFoundItems = new ArrayList<>(items);
+//        itemNotificationEndTime = System.currentTimeMillis() + 3000; // Show for 3 seconds
+//    }
     public static void main(String[] args) {
         launch(args);
     }

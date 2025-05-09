@@ -72,12 +72,8 @@ public class Player extends Character implements Serializable {
      */
     public Player(String name, int health, World world, String startingRoomName) {
         super(name, health, world,startingRoomName);
-        this.inventory = new Inventory(30);
-        this.inventory.addItem(new Knife());
-        this.inventory.addItem(new Flashlight());
-        this.inventory.addItem(new KeyItem("Hammer", "For breaking things"));
-        this.inventory.addItem(new HealingSerum());
-        this.inventory.addItem(new GearPiece("GEAR_PIECE_1"));
+        this.inventory = new Inventory(20);
+
     }
 
     /**

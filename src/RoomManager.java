@@ -40,6 +40,7 @@ public class RoomManager {
         this.gameGUI = gameGUI;
 
     }
+
     private Room getOrCreateGameRoom(String roomName) {
         Room gameRoom = gameGUI.getWorld().getRoomByName(roomName);
         if (gameRoom == null) {
@@ -67,12 +68,14 @@ public class RoomManager {
             }
         }
     }
+
     private JSONObject loadTMJData(String path) throws Exception {
         try (InputStream is = getClass().getResourceAsStream(path)) {
             assert is != null;
             return new JSONObject(new String(is.readAllBytes()));
         }
     }
+
     private String normalizeRoomName(String roomName) {
         // Convert to lowercase and replace spaces with underscores
         return roomName.trim()
@@ -230,11 +233,11 @@ public class RoomManager {
         if (exitWidth < 20 || exitHeight < 20) {
             double expandedWidth = Math.max(20, exitWidth);
             double expandedHeight = Math.max(20, exitHeight);
-            double centerX = exitX + exitWidth/2;
-            double centerY = exitY + exitHeight/2;
+            double centerX = exitX + exitWidth / 2;
+            double centerY = exitY + exitHeight / 2;
 
-            return Math.abs(playerX - centerX) < expandedWidth/2 &&
-                    Math.abs(playerY - centerY) < expandedHeight/2;
+            return Math.abs(playerX - centerX) < expandedWidth / 2 &&
+                    Math.abs(playerY - centerY) < expandedHeight / 2;
         }
 
         return xOverlap && yOverlap;

@@ -425,6 +425,17 @@
                  "width":38,
                  "x":276.25,
                  "y":36.8409
+                }, 
+                {
+                 "height":30.75,
+                 "id":87,
+                 "name":"Wall_hole",
+                 "rotation":0,
+                 "type":"SearchSpot",
+                 "visible":true,
+                 "width":16,
+                 "x":310.5,
+                 "y":288.75
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1186,7 +1197,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":87,
+ "nextobjectid":88,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
