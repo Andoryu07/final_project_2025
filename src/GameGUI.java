@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 public class GameGUI extends Application {
-    private final double MAX_WALK_SPEED = 0.008;  // Reduced from 0.02 (very slow)
+    private final double MAX_WALK_SPEED = 0.008;
     private RoomManager roomManager;
     private Player player;
     private Canvas canvas;
@@ -71,7 +71,7 @@ public class GameGUI extends Application {
             world.loadRoomLayout("src/fileImports/game_layout.txt");
             world.loadSearchSpots("src/fileImports/search_spots.txt");
             inventoryGUI = new InventoryGUI(player, this);
-            rootPane.getChildren().add(inventoryGUI); // Add to StackPane
+            rootPane.getChildren().add(inventoryGUI);
             roomManager = new RoomManager(player, this);
             hidingSpotManager = new HidingSpotManager(player, roomManager);
             loadRooms(roomManager);
@@ -117,7 +117,6 @@ public class GameGUI extends Application {
         rootPane.getChildren().add(canvas);
 
          scene = new Scene(rootPane, Color.BLACK);
-//        scene.setCursor(Cursor.NONE);
         setupConsole(scene);
         scene.getStylesheets().add(getClass().getResource("/inventory.css").toExternalForm());
         primaryStage.setScene(scene);
@@ -196,7 +195,7 @@ public class GameGUI extends Application {
         scene.addEventFilter(KeyEvent.ANY, event -> {
             if (player.isTransitioning() || roomManager.isShowingPrompt()) {
                 if (isMovementKey(event.getCode())) {
-                    event.consume(); // Block all movement input
+                    event.consume();
                     clearMovementInputs();
                     pressedKeys.remove(event.getCode());
                 }
@@ -231,8 +230,8 @@ public class GameGUI extends Application {
                 SearchSpot spot = activeSearchSpots.get(selectedSpotIndex);
                 if (!spot.isSearched()) {
                     List<Item> items = spot.getItems();
-                    recentFoundItems.clear(); // Clear previous items
-                    recentFoundItems.addAll(items); // Add all new items
+                    recentFoundItems.clear();
+                    recentFoundItems.addAll(items);
 
                     items.forEach(item -> {
                         if (player.getInventory().addItem(item)) {
@@ -245,7 +244,6 @@ public class GameGUI extends Application {
                     }
 
                     spot.setSearched(true);
-//                    activeSearchSpots.removeIf(SearchSpot::isSearched);
                     if (!activeSearchSpots.isEmpty()) {
                         selectedSpotIndex = Math.min(selectedSpotIndex, activeSearchSpots.size() - 1);
                     }
@@ -275,7 +273,7 @@ public class GameGUI extends Application {
                 scene.setCursor(inventoryGUI.isInventoryVisible() ? Cursor.DEFAULT : Cursor.NONE);
             } else {
                 scene.setCursor(Cursor.DEFAULT); // Show cursor when window loses focus
-                inventoryGUI.hideAllPopups();    // Add this method to InventoryGUI
+                inventoryGUI.hideAllPopups();
             }
         });
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
@@ -291,8 +289,6 @@ public class GameGUI extends Application {
         console.setEditable(false);
         console.getStyleClass().add("console-text-area");
         console.setPrefRowCount(8);
-        // Create a container for the console and button
-
         ScrollPane scrollPane = new ScrollPane(console);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -304,19 +300,16 @@ public class GameGUI extends Application {
                 "-fx-border-radius: 5; -fx-background-radius: 5;");
         consoleContainer = new StackPane(scrollPane);
         consoleContainer.setAlignment(Pos.TOP_LEFT);
-        consoleContainer.setVisible(false); // Start hidden
-        StackPane.setMargin(consoleContainer, new Insets(20, 0, 0, 20)); // Top-left positioning
+        consoleContainer.setVisible(false);
+        StackPane.setMargin(consoleContainer, new Insets(20, 0, 0, 20));
         scrollPane.prefWidthProperty().bind(consoleContainer.widthProperty());
         scrollPane.prefHeightProperty().bind(consoleContainer.heightProperty());
-        // Add components to the container
-        // Add the container to root pane
         rootPane.getChildren().add(consoleContainer);
     }
 
     public void addConsoleMessage(String message) {
         Platform.runLater(() -> {
             console.appendText(message + "\n");
-            // Auto-scroll to bottom
             console.setScrollTop(Double.MAX_VALUE);
         });
     }
@@ -331,7 +324,6 @@ public class GameGUI extends Application {
 
     public void toggleConsole() {
         consoleVisible = !consoleVisible;
-        // Update cursor and visibility
         Scene scene = rootPane.getScene();
         scene.setCursor(consoleVisible ? Cursor.DEFAULT : Cursor.NONE);
         consoleContainer.setVisible(consoleVisible);
@@ -346,7 +338,6 @@ public class GameGUI extends Application {
                 consoleContainer.requestFocus();
             });
         } else {
-            // Ensure game resumes when closing console
             if (!inventoryGUI.isInventoryVisible()) {
                 scene.setCursor(Cursor.NONE);
                 player.setMovementEnabled(true);
@@ -365,12 +356,10 @@ public class GameGUI extends Application {
 
         RoomRenderer room = roomManager.getCurrentRoom();
 
-        // Calculate scale factors
         double scaleX = canvas.getScene().getWidth() / room.getWidthInPixels();
         double scaleY = canvas.getScene().getHeight() / room.getHeightInPixels();
         double scale = Math.min(scaleX, scaleY);
 
-        // Set canvas size to integer multiples for crisp rendering
         double renderWidth = room.getWidthInPixels() * Math.floor(scale);
         double renderHeight = room.getHeightInPixels() * Math.floor(scale);
 
@@ -437,7 +426,7 @@ public class GameGUI extends Application {
         long deltaTimeNanos = currentTime - lastUpdateTime;
         double deltaTimeSeconds = deltaTimeNanos / 1_000_000_000.0;
         lastUpdateTime = currentTime;
-        // Update stamina - now passing isMoving parameter
+        // Updated stamina - now passing isMoving parameter
         player.updateStamina(deltaTimeSeconds, isMoving);
 
         // If shift is held but stamina ran out, stop sprinting
@@ -464,7 +453,6 @@ public class GameGUI extends Application {
         System.out.printf("Player at (%.1f, %.1f), Spot %s at (%.1f, %.1f)%n",
                 px, py, spot.getName(), spotX, spotY);
 
-        // Check overlap with player's approximate bounds (20x20 pixels)
         return px + 10 >= spotX && px - 10 <= spotX + spotWidth &&
                 py + 10 >= spotY && py - 10 <= spotY + spotHeight;
     }
@@ -508,44 +496,33 @@ public class GameGUI extends Application {
         boolean movingDown = pressedKeys.contains(KeyCode.S) || pressedKeys.contains(KeyCode.DOWN);
         boolean movingLeft = pressedKeys.contains(KeyCode.A) || pressedKeys.contains(KeyCode.LEFT);
         boolean movingRight = pressedKeys.contains(KeyCode.D) || pressedKeys.contains(KeyCode.RIGHT);
-
-        // Calculate base movement direction
         if (movingUp && !movingDown) targetSpeedY = -currentMaxSpeed;
         if (movingDown && !movingUp) targetSpeedY = currentMaxSpeed;
         if (movingLeft && !movingRight) targetSpeedX = -currentMaxSpeed;
         if (movingRight && !movingLeft) targetSpeedX = currentMaxSpeed;
-
-        // Normalize diagonal movement
         if (targetSpeedX != 0 && targetSpeedY != 0) {
             targetSpeedX *= 0.7071;
             targetSpeedY *= 0.7071;
         }
-
-        // Check collisions BEFORE moving
         double newX = player.getX();
         double newY = player.getY();
-
-        // First check X movement
         if (targetSpeedX != 0) {
             double testX = player.getX() + targetSpeedX;
             if (!checkCollision(testX, player.getY())) {
                 newX = testX;
             } else {
-                targetSpeedX = 0; // Stop X movement if collision detected
+                targetSpeedX = 0;
             }
         }
 
-        // Then check Y movement
         if (targetSpeedY != 0) {
             double testY = player.getY() + targetSpeedY;
             if (!checkCollision(player.getX(), testY)) {
                 newY = testY;
             } else {
-                targetSpeedY = 0; // Stop Y movement if collision detected
+                targetSpeedY = 0;
             }
         }
-
-        // Update position and speed
         player.setPosition(newX, newY);
         player.setSpeed(targetSpeedX, targetSpeedY);
     }
@@ -570,8 +547,7 @@ public class GameGUI extends Application {
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(1);
         gc.strokeRect(x, y, barWidth, barHeight);
-
-        // Tex
+        // Text
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", 12));
         gc.fillText("Stamina: " + (int) player.getCurrentStamina() + "%", x, y - 5);
