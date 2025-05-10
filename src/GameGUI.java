@@ -2,10 +2,16 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
@@ -30,7 +36,7 @@ public class GameGUI extends Application {
     private Canvas canvas;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private Set<KeyCode> keysToRemove = new HashSet<>();
-    private AnimationTimer gameLoop;
+    public AnimationTimer gameLoop;
     private final int TRANSITION_DURATION = 100;
     private boolean shiftPressed = false;
     private long lastUpdateTime = System.nanoTime();
@@ -42,6 +48,11 @@ public class GameGUI extends Application {
     private Game game;
     private List<Item> recentFoundItems = new ArrayList<>();
     private long itemNotificationEndTime = 0;
+    private HidingSpotManager hidingSpotManager;
+    private final TextArea console = new TextArea();
+    public boolean consoleVisible = false;
+    private StackPane consoleContainer;
+    private Scene scene;
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -59,9 +70,10 @@ public class GameGUI extends Application {
             game.setWorld(world);
             world.loadRoomLayout("src/fileImports/game_layout.txt");
             world.loadSearchSpots("src/fileImports/search_spots.txt");
-            inventoryGUI = new InventoryGUI(player);
+            inventoryGUI = new InventoryGUI(player, this);
             rootPane.getChildren().add(inventoryGUI); // Add to StackPane
             roomManager = new RoomManager(player, this);
+            hidingSpotManager = new HidingSpotManager(player, roomManager);
             loadRooms(roomManager);
             roomManager.setOnRoomChanged(() -> {
                 primaryStage.setTitle("Your Game - " + roomManager.getCurrentRoomName());
@@ -104,21 +116,21 @@ public class GameGUI extends Application {
         rootPane.setStyle("-fx-background-color: black;");
         rootPane.getChildren().add(canvas);
 
-        Scene scene = new Scene(rootPane, Color.BLACK);
-        // Correct path if CSS is in src/main/resources/resources/
-//        scene.getStylesheets().add(getClass().getResource("/inventory.css").toExternalForm());
-        // In setupStage() method:
+         scene = new Scene(rootPane, Color.BLACK);
+//        scene.setCursor(Cursor.NONE);
+        setupConsole(scene);
         scene.getStylesheets().add(getClass().getResource("/inventory.css").toExternalForm());
         primaryStage.setScene(scene);
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.I) {
                 if (!inventoryGUI.isInventoryVisible()) {
-                    // Pause game
+                    scene.setCursor(Cursor.DEFAULT);
                     player.setMovementEnabled(false);
                     gameLoop.stop();
                 } else {
                     // Resume game
+                    scene.setCursor(Cursor.NONE);
                     player.setMovementEnabled(true);
                     gameLoop.start();
                 }
@@ -249,6 +261,64 @@ public class GameGUI extends Application {
                 e.consume();
             }
         });
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.F) {
+                if (roomManager.tryConfirmPrompt()) {
+                    e.consume();
+                } else if (hidingSpotManager.tryHide()) {
+                    e.consume();
+                }
+            }
+        });
+        primaryStage.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                scene.setCursor(inventoryGUI.isInventoryVisible() ? Cursor.DEFAULT : Cursor.NONE);
+            } else {
+                scene.setCursor(Cursor.DEFAULT); // Show cursor when window loses focus
+                inventoryGUI.hideAllPopups();    // Add this method to InventoryGUI
+            }
+        });
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.BACK_QUOTE) {
+                toggleConsole();
+                e.consume();
+            }
+        });
+    }
+
+    private void setupConsole(Scene scene) {
+        console.setWrapText(true);
+        console.setEditable(false);
+        console.getStyleClass().add("console-text-area");
+        console.setPrefRowCount(8);
+        // Create a container for the console and button
+
+        ScrollPane scrollPane = new ScrollPane(console);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefSize(400, 200);
+        scrollPane.setMaxSize(400, 200); // Add constraint
+        scrollPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7); " +
+                "-fx-border-color: #666; -fx-border-width: 2; " +
+                "-fx-border-radius: 5; -fx-background-radius: 5;");
+        consoleContainer = new StackPane(scrollPane);
+        consoleContainer.setAlignment(Pos.TOP_LEFT);
+        consoleContainer.setVisible(false); // Start hidden
+        StackPane.setMargin(consoleContainer, new Insets(20, 0, 0, 20)); // Top-left positioning
+        scrollPane.prefWidthProperty().bind(consoleContainer.widthProperty());
+        scrollPane.prefHeightProperty().bind(consoleContainer.heightProperty());
+        // Add components to the container
+        // Add the container to root pane
+        rootPane.getChildren().add(consoleContainer);
+    }
+
+    public void addConsoleMessage(String message) {
+        Platform.runLater(() -> {
+            console.appendText(message + "\n");
+            // Auto-scroll to bottom
+            console.setScrollTop(Double.MAX_VALUE);
+        });
     }
 
     // Helper method to check if a key is a movement key
@@ -257,6 +327,37 @@ public class GameGUI extends Application {
                 code == KeyCode.S || code == KeyCode.DOWN ||
                 code == KeyCode.A || code == KeyCode.LEFT ||
                 code == KeyCode.D || code == KeyCode.RIGHT;
+    }
+
+    public void toggleConsole() {
+        consoleVisible = !consoleVisible;
+        // Update cursor and visibility
+        Scene scene = rootPane.getScene();
+        scene.setCursor(consoleVisible ? Cursor.DEFAULT : Cursor.NONE);
+        consoleContainer.setVisible(consoleVisible);
+        // Close inventory if opening console
+        if (consoleVisible) {
+            // Close inventory properly if it's open
+            if (inventoryGUI.isInventoryVisible()) {
+                inventoryGUI.toggle();
+            }
+            Platform.runLater(() -> {
+                console.requestFocus();
+                consoleContainer.requestFocus();
+            });
+        } else {
+            // Ensure game resumes when closing console
+            if (!inventoryGUI.isInventoryVisible()) {
+                scene.setCursor(Cursor.NONE);
+                player.setMovementEnabled(true);
+                gameLoop.start();
+            }
+        }
+    }
+
+
+    public void clearConsole() {
+        console.clear();
     }
 
     private void updateCanvasSize() {
@@ -327,6 +428,8 @@ public class GameGUI extends Application {
         boolean isMoving = pressedKeys.stream().anyMatch(this::isMovementKey);
         player.updateWalkCycle(isMoving);
         player.updatePosition();
+        hidingSpotManager.loadHidingSpots();
+        hidingSpotManager.update();
         handlePlayerMovement();
         roomManager.checkAllTransitions();
         constrainPlayerToRoom();
@@ -475,6 +578,9 @@ public class GameGUI extends Application {
     }
 
     private boolean checkCollision(double tileX, double tileY) {
+        if (hidingSpotManager.isHiding()) {
+            return false; // No collisions while hiding
+        }
         RoomRenderer room = roomManager.getCurrentRoom();
         if (room == null) return false;
 
@@ -519,6 +625,9 @@ public class GameGUI extends Application {
             }
             room.render(gc);
             renderExitAreas(gc, room);
+        }
+        if (!hidingSpotManager.isHiding()) {
+            RoomRenderer room = roomManager.getCurrentRoom();
             double playerX = player.getX() * room.getTileWidth();
             double playerY = player.getY() * room.getTileHeight();
             if (player.getSpeedX() != 0 || player.getSpeedY() != 0) {
@@ -526,9 +635,9 @@ public class GameGUI extends Application {
             }
             gc.setFill(Color.BLUE);
             gc.fillOval(playerX - 10, playerY - 10, 20, 20);
-            gc.restore();
         }
-        // Render prompt AFTER everything else, in screen coordinates
+        gc.restore();
+        hidingSpotManager.render(gc, canvas.getWidth(), canvas.getHeight());
         roomManager.renderPrompt(gc, canvas.getWidth(), canvas.getHeight());
         if (player.getCurrentStamina() < player.getMaxStamina() || player.isSprinting()) {
             renderStaminaBar(gc);
@@ -595,8 +704,11 @@ public class GameGUI extends Application {
         if (System.currentTimeMillis() < itemNotificationEndTime) {
             renderItemNotification(gc);
         }
-        gc.restore();
+//        gc.restore();
+
     }
+
+
     private void renderItemNotification(GraphicsContext gc) {
         if (recentFoundItems.isEmpty()) return;
 
@@ -624,6 +736,7 @@ public class GameGUI extends Application {
                     x + 20, y + 45 + i * 20);
         }
     }
+
     private void renderExitAreas(GraphicsContext gc, RoomRenderer room) {
         JSONObject objects = room.getObjectGroup("GameObjects");
         if (objects != null) {
@@ -663,6 +776,7 @@ public class GameGUI extends Application {
     public World getWorld() {
         return world;
     }
+
     private void showItemFoundEffect(Item item) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.save();
@@ -696,11 +810,17 @@ public class GameGUI extends Application {
             Platform.runLater(() -> render());
         }).start();
     }
-    //    private void showItemFoundEffect(List<Item> items) {
-//        recentFoundItems = new ArrayList<>(items);
-//        itemNotificationEndTime = System.currentTimeMillis() + 3000; // Show for 3 seconds
-//    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
+
 }

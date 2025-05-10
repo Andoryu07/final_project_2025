@@ -63,4 +63,30 @@
     -fx-border-radius: 4;
     -fx-background-radius: 4;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 1);
+    -fx-z-index: 100; /* Ensure action menu stays above other elements */
+}
+.console-scroll-pane {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-border-color: #666;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.console-scroll-pane .viewport {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+}
+.console-text-area {
+    -fx-text-fill: #00ff00;
+    -fx-font-family: 'Monospaced';
+    -fx-font-size: 12px;
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+}
+.console-close-button {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-border-color: #666;
+    -fx-border-radius: 3;
 }

@@ -50,6 +50,7 @@ public class Player extends Character implements Serializable {
     private final double STAMINA_RECHARGE_RATE = 10.0; // 10% per second (10s to recharge fully)
     private final double STAMINA_RECHARGE_DELAY = 1.0;// 1 second delay before recharge starts
     private final double SPRINT_SPEED_MULTIPLIER = 2.0;
+    private boolean isHiding = false;
     public void updateWalkCycle(boolean isMoving) {
         if (isMoving) {
             walkCyclePosition += WALK_CYCLE_SPEED;
@@ -385,4 +386,13 @@ public class Player extends Character implements Serializable {
     public double getSPRINT_SPEED_MULTIPLIER() {
         return SPRINT_SPEED_MULTIPLIER;
     }
+    public boolean isHiding() {
+        return isHiding;
+    }
+
+    public void setHiding(boolean hiding) {
+        isHiding = hiding;
+        setMovementEnabled(!hiding);
+    }
+
 }

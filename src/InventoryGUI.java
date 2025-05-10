@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -19,9 +20,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class InventoryGUI extends StackPane implements Inventory.InventoryObserver {
     private static final int SLOT_SIZE = 100;
@@ -37,7 +41,9 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
     private final Popup tooltipPopup = new Popup();
     private final Popup actionPopup = new Popup();
     private Item currentHoverItem;
-    public InventoryGUI(Player player) {
+    private final GameGUI gameGUI;
+    public InventoryGUI(Player player, GameGUI gameGUI) {
+        this.gameGUI = gameGUI;
         this.player = player;
         setInventoryVisible(false);
         player.getInventory().addObserver(this);
@@ -78,6 +84,10 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         getChildren().add(mainContent);
         setAlignment(Pos.CENTER);
         setVisible(false);
+        tooltipPopup.setAutoHide(true);
+        actionPopup.setAutoHide(true);
+        tooltipPopup.setAutoFix(true);
+        actionPopup.setAutoFix(true);
         // Event handling
         setOnMouseMoved(e -> {
             if (tooltipPopup.isShowing() && currentHoverItem != null) {
@@ -88,6 +98,19 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         setOnMouseClicked(e -> {
             if (!actionPopup.getContent().get(0).getBoundsInParent().contains(e.getX(), e.getY())) {
                 actionPopup.hide();
+            }
+        });
+        this.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.windowProperty().addListener((obsWin, oldWin, newWin) -> {
+                    if (newWin != null) {
+                        newWin.focusedProperty().addListener((obsFocused, wasFocused, isNowFocused) -> {
+                            if (!isNowFocused) {
+                                Platform.runLater(this::hideAllPopups);
+                            }
+                        });
+                    }
+                });
             }
         });
     }
@@ -167,17 +190,27 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
 
 
     private void showActionMenu(Item item, double screenX, double screenY) {
+        Stage ownerStage = (Stage) getScene().getWindow();
+        actionPopup.show(ownerStage);
         VBox actionBox = (VBox) actionPopup.getContent().get(0);
         actionBox.getChildren().clear();
-
+        Point2D windowCoord = new Point2D(
+                ownerStage.getX() + screenX,
+                ownerStage.getY() + screenY
+        );
         // Create buttons
         Button actionBtn = createActionButton(item);
         Button infoBtn = createInfoButton(item);
 
         actionBox.getChildren().addAll(actionBtn, infoBtn);
         actionPopup.show(getScene().getWindow());
-        actionPopup.setX(screenX + 15);
-        actionPopup.setY(screenY + 15);
+        actionPopup.setX(ownerStage.getX() + screenX + 15);
+        actionPopup.setY(ownerStage.getY() + screenY + 15);
+        ownerStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (!isNowFocused) {
+                actionPopup.hide();
+            }
+        });
     }
 
     private Button createActionButton(Item item) {
@@ -198,10 +231,22 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
     }
 
     private void showItemDescription(Item item) {
-        // Optional: Implement description display logic
-        System.out.println("Item Info: " + item.getDescription());
-    }
+        String info = String.format("[%s]\n%s\n\n%s",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                item.getName(),
+                item.getDescription()
+        );
 
+        gameGUI.addConsoleMessage(info);
+        hideAllPopups();
+        // Auto-show console if hidden
+        if (!gameGUI.consoleVisible) {
+            gameGUI.toggleConsole();
+        }
+        if (isInventoryVisible()) {
+            toggle();
+        }
+    }
     private void handleItemAction(Item item) {
         if (item instanceof Weapon) {
             player.equipWeapon((Weapon) item);
@@ -214,20 +259,36 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         updateDisplay();
     }
     public void toggle() {
-        setInventoryVisible(!isInventoryVisible());
-        if (isInventoryVisible()) {
-            // Update size when showing inventory
-            updateInventorySize();
+        boolean newVisibility = !isInventoryVisible();
+        setInventoryVisible(newVisibility);
+        if (newVisibility) {
+            // When opening inventory
             setMouseTransparent(false);
-
+            updateInventorySize();
+            setVisible(true);
+            gameGUI.getScene().setCursor(Cursor.DEFAULT);
+            gameGUI.getPlayer().setMovementEnabled(false);
+            gameGUI.gameLoop.stop();
         } else {
+            // When closing inventory
+            hideAllPopups();
             setMouseTransparent(true);
+            setVisible(false);
+            if (!gameGUI.consoleVisible) {
+                gameGUI.getScene().setCursor(Cursor.NONE);
+                gameGUI.getPlayer().setMovementEnabled(true);
+                gameGUI.gameLoop.start();
+            }
         }
-        setVisible(isInventoryVisible());
         updateDisplay();
     }
 
-
+    public void forceClose() {
+        if (isInventoryVisible()) {
+            toggle();
+        }
+        hideAllPopups();
+    }
     private void updateInventorySize() {
         int capacity = player.getInventory().getCapacity();
         int cols = (int) Math.ceil(Math.sqrt(capacity));
@@ -288,6 +349,12 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
 
     public boolean isInventoryVisible() {
         return inventoryVisible.get();
+    }
+    public void hideAllPopups() {
+        Platform.runLater(() -> {
+            if (tooltipPopup != null) tooltipPopup.hide();
+            if (actionPopup != null) actionPopup.hide();
+        });
     }
 
     private void setInventoryVisible(boolean value) {
