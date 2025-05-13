@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GameGUI extends Application {
     private final double MAX_WALK_SPEED = 0.008;
@@ -211,25 +212,79 @@ public class GameGUI extends Application {
                 if (selectedSpotIndex < 0) selectedSpotIndex = activeSearchSpots.size() - 1;
             }
         });
+//        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+//            if (e.getCode() == KeyCode.E && !activeSearchSpots.isEmpty()) {
+//                SearchSpot spot = activeSearchSpots.get(selectedSpotIndex);
+//                if (!spot.isSearched()) {
+//                    List<Item> items = spot.getItems();
+//                    recentFoundItems.clear();
+//                    recentFoundItems.addAll(items);
+//
+//                    items.forEach(item -> {
+//                        if (player.getInventory().addItem(item)) {
+//                            System.out.println("Added item: " + item.getName());
+//                        }
+//                    });
+//
+//                    if (!recentFoundItems.isEmpty()) {
+//                        itemNotificationEndTime = System.currentTimeMillis() + 3000;
+//                    }
+//
+//                    spot.setSearched(true);
+//                    if (!activeSearchSpots.isEmpty()) {
+//                        selectedSpotIndex = Math.min(selectedSpotIndex, activeSearchSpots.size() - 1);
+//                    }
+//                    e.consume();
+//                }
+//            }
+//        });
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.E && !activeSearchSpots.isEmpty()) {
                 SearchSpot spot = activeSearchSpots.get(selectedSpotIndex);
                 if (!spot.isSearched()) {
-                    List<Item> items = spot.getItems();
+                    List<Item> items = spot.getItems().stream()
+                            .map(item -> {
+                                try {
+                                    return item.getClass().getDeclaredConstructor().newInstance();
+                                } catch (Exception exception) {
+                                    return item; // Fallback for non-cloneable items
+                                }
+                            })
+                            .collect(Collectors.toList());
                     recentFoundItems.clear();
-                    recentFoundItems.addAll(items);
+                    List<Item> overflowItems = new ArrayList<>();
 
                     items.forEach(item -> {
                         if (player.getInventory().addItem(item)) {
+                            recentFoundItems.add(item);
                             System.out.println("Added item: " + item.getName());
+                        } else {
+                            overflowItems.add(item);
                         }
                     });
 
-                    if (!recentFoundItems.isEmpty()) {
+                    // Add overflow items to the room with offset positions
+                    if (!overflowItems.isEmpty()) {
+                        Room currentRoom = world.getCurrentRoom();
+                        final double[] offset = {0}; // Track position offset
+                        overflowItems.forEach(item -> {
+                            // Create a new instance to avoid reference sharing
+                            Item newItem = createNewItemInstance(item);
+                            // Calculate offset position
+                            double x = player.getX() + offset[0] * 0.1;
+                            double y = player.getY() + offset[0] * 0.1;
+                            currentRoom.addItem(newItem, x, y);
+                            offset[0] += 1;
+                            System.out.println("Dropped item: " + newItem.getName());
+                        });
+                    }
+
+                    if (!recentFoundItems.isEmpty() || !overflowItems.isEmpty()) {
                         itemNotificationEndTime = System.currentTimeMillis() + 3000;
                     }
 
                     spot.setSearched(true);
+                    activeSearchSpots.removeIf(SearchSpot::isSearched);
                     if (!activeSearchSpots.isEmpty()) {
                         selectedSpotIndex = Math.min(selectedSpotIndex, activeSearchSpots.size() - 1);
                     }
@@ -283,7 +338,16 @@ public class GameGUI extends Application {
         });
 
     }
-
+    private Item createNewItemInstance(Item original) {
+        if (original instanceof Bandage) return new Bandage();
+        if (original instanceof PistolAmmo) return new PistolAmmo(((PistolAmmo) original).getAmount());
+        if (original instanceof HealingSerum) return new HealingSerum();
+        if (original instanceof ShotgunShells) return new ShotgunShells(((ShotgunShells) original).getAmount());
+        if (original instanceof Batteries) return new Batteries();
+        if (original instanceof Cassette) return new Cassette(this.getWorld());
+        // Add other item types as needed
+        return original; // fallback for non-cloneable items
+    }
     private void setupConsole(Scene scene) {
         console.setWrapText(true);
         console.setEditable(false);

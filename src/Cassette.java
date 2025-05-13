@@ -45,7 +45,15 @@ public class Cassette extends Consumable {
             System.out.println("❌ You can only save the game in Caravan, Laboratory, or Library.");
         }
     }
+    @Override
+    public boolean equals(Object o) {
+        return this == o;
+    }
 
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
     /**
      * A menu, which occurs if the player is located in a save location, allowing him the choice to save, or cancel his action
      * @param player Specifies, which player is using the Cassette

@@ -8,7 +8,15 @@ public class Batteries extends Consumable {
     public Batteries() {
         super("Batteries", "Used to recharge the flashlight.");
     }
+    @Override
+    public boolean equals(Object o) {
+        return this == o;
+    }
 
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
     /**
      * Override method use, specifies what's supposed to happen upon using the item Batteries(Player's Flashlight, if owned, will get fully recharged and the Batteries item will be used)
      * @param player Specifies which player wants to use the Batteries

@@ -165,23 +165,28 @@ public class RoomRenderer {
 
     private void renderItems(GraphicsContext gc) {
         if (gameRoom == null) return;
+
+        // Track positions to avoid overlap
+        Map<Point2D, Integer> positionCounts = new HashMap<>();
+
         for (Item item : gameRoom.getItems()) {
             Point2D pos = gameRoom.getItemPosition(item);
             if (pos != null) {
+                // Calculate position offset
+                int count = positionCounts.getOrDefault(pos, 0);
+                double offsetX = count * 5; // 5 pixels offset per item
+                double offsetY = count * 5;
+
                 Image image = loadItemImage(item);
                 if (image != null) {
-                    // Calculate position and size
-                    double x = pos.getX() * getTileWidth() + 8; // Center in tile
-                    double y = pos.getY() * getTileHeight() + 8;
-                    double size = Math.min(getTileWidth(), getTileHeight()) * 0.5; // 50% of tile size
+                    double x = pos.getX() * getTileWidth() + 8 + offsetX;
+                    double y = pos.getY() * getTileHeight() + 8 + offsetY;
+                    double size = Math.min(getTileWidth(), getTileHeight()) * 0.5;
 
-                    // Preserve image quality
-                    gc.setImageSmoothing(false);
-                    gc.drawImage(image,
-                            x, y,         // Position
-                            size, size    // Scaled dimensions
-                    );
+                    gc.drawImage(image, x, y, size, size);
                 }
+
+                positionCounts.put(pos, count + 1);
             }
         }
     }

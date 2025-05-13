@@ -9,4 +9,13 @@ public class PistolAmmo extends Ammo {
     public PistolAmmo(int amount) {
         super("Pistol ammo", "Ammunition used for the weapon Pistol", amount);
     }
+    @Override
+    public boolean equals(Object o) {
+        return this == o;
+    }
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
 }

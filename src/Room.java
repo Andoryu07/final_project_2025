@@ -186,13 +186,7 @@ public class Room implements Serializable {
         return neighbors;
     }
 
-    /**
-     * Getter for list 'items'
-     * @return value of 'items' list
-     */
-    public List<Item> getItems() {
-        return items;
-    }
+
 
     /**
      * To string
@@ -224,10 +218,9 @@ public class Room implements Serializable {
      * @param item item to add into the room
      */
     public void addItem(Item item, double x, double y) {
-        if (!items.contains(item)) {
-            items.add(item);
-            itemPositions.put(item, new Point2D(x, y));
-        }
+        items.add(item);
+        itemPositions.put(item, new Point2D(x, y));
+
     }
     /**
      * Method to add a search spot into the room
@@ -302,6 +295,14 @@ public class Room implements Serializable {
     }
     public Point2D getItemPosition(Item item) {
         return itemPositions.get(item);
+    }
+
+    /**
+     * Getter for list 'items'
+     * @return value of 'items' list
+     */
+    public List<Item> getItems() {
+        return new ArrayList<>(items); // Return copy of list
     }
 
     public Map<Item, Point2D> getItemPositions() {
