@@ -3,9 +3,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +56,7 @@ public class RoomManager {
             rooms.put(roomName, renderer);
             // Get or create the game room
             Room gameRoom = getOrCreateGameRoom(roomName);
+            renderer.setGameRoom(gameRoom);
             gameGUI.getWorld().loadSearchSpotsFromTMJ(gameRoom, tmjData);
             // Set current room if this is the first room
             if (currentRoom == null) {

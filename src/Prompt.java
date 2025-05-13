@@ -11,7 +11,7 @@ public class Prompt {
     private final double height = 60;
 
     public void show(String message, String targetRoom) {
-        this.message = "Enter " + targetRoom.replace("_", " ");
+        this.message = message;
         this.targetRoom = targetRoom;
         this.active = true;
     }

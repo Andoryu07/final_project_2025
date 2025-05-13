@@ -2,8 +2,6 @@ import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -17,8 +15,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -42,6 +38,7 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
     private final Popup actionPopup = new Popup();
     private Item currentHoverItem;
     private final GameGUI gameGUI;
+
     public InventoryGUI(Player player, GameGUI gameGUI) {
         this.gameGUI = gameGUI;
         this.player = player;
@@ -129,6 +126,7 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
             grid.add(slot, i % cols, i / cols);
         }
     }
+
     @Override
     public void inventoryUpdated() {
         Platform.runLater(() -> {
@@ -151,6 +149,7 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         st.setCycleCount(2);
         st.play();
     }
+
     private void addItemToSlot(StackPane slot, Item item) {
         ImageView iv = loadItemImage(item);
         if (iv != null) {
@@ -168,6 +167,7 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
             slot.getChildren().add(iv);
         }
     }
+
     private void showTooltip(Item item, double x, double y) {
         currentHoverItem = item;
         VBox tooltip = (VBox) tooltipPopup.getContent().get(0);
@@ -201,8 +201,8 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         // Create buttons
         Button actionBtn = createActionButton(item);
         Button infoBtn = createInfoButton(item);
-
-        actionBox.getChildren().addAll(actionBtn, infoBtn);
+        Button dropBtn = createDropButton(item);
+        actionBox.getChildren().addAll(actionBtn, infoBtn, dropBtn);
         actionPopup.show(getScene().getWindow());
         actionPopup.setX(ownerStage.getX() + screenX + 15);
         actionPopup.setY(ownerStage.getY() + screenY + 15);
@@ -211,6 +211,32 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
                 actionPopup.hide();
             }
         });
+    }
+
+    private void handleDropItem(Item item) {
+        World world = gameGUI.getWorld();
+        if (world != null) {
+            Room currentRoom = world.getCurrentRoom();
+            if (currentRoom != null) {
+                double x = player.getX();
+                double y = player.getY();
+                System.out.println("[DROP] Dropping " + item.getName() +
+                        " at " + x + "," + y + " in " + currentRoom.getName());
+                currentRoom.addItem(item, x, y);
+                player.getInventory().removeItem(item);
+                System.out.println("[DROP] Room items after drop: " + currentRoom.getItems());
+            }
+        }
+    }
+
+    private Button createDropButton(Item item) {
+        Button btn = new Button("Drop");
+        btn.getStyleClass().add("inventory-button");
+        btn.setOnAction(e -> {
+            handleDropItem(item);
+            actionPopup.hide();
+        });
+        return btn;
     }
 
     private Button createActionButton(Item item) {
@@ -247,6 +273,7 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
             toggle();
         }
     }
+
     private void handleItemAction(Item item) {
         if (item instanceof Weapon) {
             player.equipWeapon((Weapon) item);
@@ -258,6 +285,7 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         }
         updateDisplay();
     }
+
     public void toggle() {
         boolean newVisibility = !isInventoryVisible();
         setInventoryVisible(newVisibility);
@@ -270,7 +298,6 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
             gameGUI.getPlayer().setMovementEnabled(false);
             gameGUI.gameLoop.stop();
         } else {
-            // When closing inventory
             hideAllPopups();
             setMouseTransparent(true);
             setVisible(false);
@@ -281,13 +308,6 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
             }
         }
         updateDisplay();
-    }
-
-    public void forceClose() {
-        if (isInventoryVisible()) {
-            toggle();
-        }
-        hideAllPopups();
     }
     private void updateInventorySize() {
         int capacity = player.getInventory().getCapacity();
@@ -350,6 +370,7 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
     public boolean isInventoryVisible() {
         return inventoryVisible.get();
     }
+
     public void hideAllPopups() {
         Platform.runLater(() -> {
             if (tooltipPopup != null) tooltipPopup.hide();

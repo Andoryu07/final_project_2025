@@ -1,3 +1,5 @@
+import javafx.geometry.Point2D;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -85,7 +87,7 @@ public class Room implements Serializable {
         return roomLock == null || !roomLock.isLocked() ||
                 roomLock.attemptUnlock(player, scanner);
     }
-
+    private Map<Item, Point2D> itemPositions = new HashMap<>();
     /**
      * Method used to determine, whether you can search a spot in the room
      * @param spotName name of the search spot player wants to search
@@ -209,25 +211,24 @@ public class Room implements Serializable {
      * Removes item from the room
      * @param item item to remove from the room
      */
-    public void removeItem(Item item) {
-        if (items.remove(item)) {
-            System.out.println("Item " + item.getName() + " has been removed from the room: " + name);
+    public boolean removeItem(Item item) {
+        boolean removed = items.remove(item);
+        if (removed) {
+            itemPositions.remove(item);
         }
+        return removed;
     }
 
     /**
      * Method to add an item into the room
      * @param item item to add into the room
      */
-    public void addItem(Item item) {
+    public void addItem(Item item, double x, double y) {
         if (!items.contains(item)) {
             items.add(item);
-            System.out.println("Item " + item.getName() + " has been added to the room: " + name);
-        } else {
-            System.out.println("The item " + item.getName() + " is already in the room.");
+            itemPositions.put(item, new Point2D(x, y));
         }
     }
-
     /**
      * Method to add a search spot into the room
      * @param spot which spot to add into the room
@@ -299,7 +300,11 @@ public class Room implements Serializable {
     public void clearSearchSpots() {
         searchSpots.clear();
     }
+    public Point2D getItemPosition(Item item) {
+        return itemPositions.get(item);
+    }
 
+    public Map<Item, Point2D> getItemPositions() {
+        return itemPositions;
+    }
 }
-
-

@@ -51,6 +51,7 @@ public class Player extends Character implements Serializable {
     private final double STAMINA_RECHARGE_DELAY = 1.0;// 1 second delay before recharge starts
     private final double SPRINT_SPEED_MULTIPLIER = 2.0;
     private boolean isHiding = false;
+    private GameGUI gameGUI;
     public void updateWalkCycle(boolean isMoving) {
         if (isMoving) {
             walkCyclePosition += WALK_CYCLE_SPEED;
@@ -73,7 +74,7 @@ public class Player extends Character implements Serializable {
      */
     public Player(String name, int health, World world, String startingRoomName) {
         super(name, health, world,startingRoomName);
-        this.inventory = new Inventory(20);
+        this.inventory = new Inventory(10);
 
     }
 
@@ -258,9 +259,9 @@ public class Player extends Character implements Serializable {
      */
     public void setCurrentRoom(Room room) {
         this.currentRoomName = room.getName();
-        if (world != null) {
-            world.setCurrentRoom(room);
-        }
+    }
+    public void setCurrentRoomName(String roomName) {
+        this.currentRoomName = roomName;
     }
     public void setCurrentRoom(String roomName) {
         this.currentRoomName = roomName;
@@ -393,6 +394,14 @@ public class Player extends Character implements Serializable {
     public void setHiding(boolean hiding) {
         isHiding = hiding;
         setMovementEnabled(!hiding);
+    }
+    public GameGUI getGameGUI() {
+        return gameGUI;
+    }
+
+
+    public void setGameGUI(GameGUI gui) {
+        this.gameGUI = gui;
     }
 
 }

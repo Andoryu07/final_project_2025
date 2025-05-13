@@ -1,3 +1,4 @@
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -18,11 +19,18 @@ public class RoomRenderer {
     private List<Rectangle2D> doorLockCollisions = new ArrayList<>();
     private boolean gardenLockActive = true;
     private boolean doorLockActive = true;
+    private Room gameRoom;
+
     public void loadRoom(JSONObject tmjData) throws Exception {
         mapLoader = new TiledMapLoader();
         mapLoader.loadMap(tmjData);
         loadTilesets();
         loadCollisionObjects();
+
+    }
+
+    public void setGameRoom(Room gameRoom) {
+        this.gameRoom = gameRoom;
     }
 
     private void loadCollisionObjects() {
@@ -48,6 +56,7 @@ public class RoomRenderer {
             loadCollisionsFromLayer(doorLockLayer, doorLockCollisions);
         }
     }
+
     private void loadCollisionsFromLayer(JSONObject layer, List<Rectangle2D> targetList) {
         double layerOffsetX = layer.optDouble("offsetx", 0);
         double layerOffsetY = layer.optDouble("offsety", 0);
@@ -117,6 +126,8 @@ public class RoomRenderer {
         renderLayer(gc, "Furniture4");
         renderLayer(gc, "Stairs2");
         renderLayer(gc, "Stairs");
+        renderItems(gc);
+
 
     }
 
@@ -152,6 +163,39 @@ public class RoomRenderer {
         }
     }
 
+    private void renderItems(GraphicsContext gc) {
+        if (gameRoom == null) return;
+        for (Item item : gameRoom.getItems()) {
+            Point2D pos = gameRoom.getItemPosition(item);
+            if (pos != null) {
+                Image image = loadItemImage(item);
+                if (image != null) {
+                    // Calculate position and size
+                    double x = pos.getX() * getTileWidth() + 8; // Center in tile
+                    double y = pos.getY() * getTileHeight() + 8;
+                    double size = Math.min(getTileWidth(), getTileHeight()) * 0.5; // 50% of tile size
+
+                    // Preserve image quality
+                    gc.setImageSmoothing(false);
+                    gc.drawImage(image,
+                            x, y,         // Position
+                            size, size    // Scaled dimensions
+                    );
+                }
+            }
+        }
+    }
+
+    private Image loadItemImage(Item item) {
+        String path = "/sprites/items/" + item.getName().toUpperCase().replace(" ", "_") + ".png";
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            return is != null ? new Image(is) : null;
+        } catch (Exception e) {
+            System.err.println("Error loading item image: " + e.getMessage());
+            return null;
+        }
+    }
+
     public int getWidthInPixels() {
         return mapLoader.getWidth() * mapLoader.getTileWidth();
     }
@@ -167,6 +211,7 @@ public class RoomRenderer {
     public int getTileHeight() {
         return mapLoader.getTileHeight();
     }
+
     public void setGardenLockActive(boolean active) {
         this.gardenLockActive = active;
     }
@@ -174,6 +219,7 @@ public class RoomRenderer {
     public void setDoorLockActive(boolean active) {
         this.doorLockActive = active;
     }
+
     public List<Rectangle2D> getCollisions() {
         List<Rectangle2D> allCollisions = new ArrayList<>(collisionRects);
         if (gardenLockActive) {

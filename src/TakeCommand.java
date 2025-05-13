@@ -13,12 +13,14 @@ public class TakeCommand implements Command {
 
     /**
      * Constructor
+     *
      * @param player Who is using the command
-     * @param item Which item is the user/player trying to pick up/take
+     * @param item  Which item is the user/player trying to pick up/take
      */
     public TakeCommand(Player player, Item item) {
         this.player = player;
         this.item = item;
+
     }
 
     /**
@@ -26,8 +28,18 @@ public class TakeCommand implements Command {
      */
     @Override
     public void execute() {
-        player.pickUpItem(item);
+        World world = player.getWorld();
+        if (world != null) {
+            Room currentRoom = world.getCurrentRoom();
+            if (currentRoom != null) {
+                // Directly check if the room contains this item instance
+                if (currentRoom.getItems().contains(item)) {
+                    if (player.getInventory().addItem(item)) {
+                        currentRoom.removeItem(item);
+                        System.out.println("Picked up: " + item.getName());
+                    }
+                }
+            }
+        }
     }
-
-
 }

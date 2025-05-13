@@ -27,7 +27,6 @@ public class GearLock implements Serializable {
      * Used to reference the room, in which you can operate the mechanism
      */
     private final Room entryRoom;
-
     /**
      * Constructor
      *
@@ -84,7 +83,6 @@ public class GearLock implements Serializable {
         }
         return true;
     }
-
     /**
      * Method used to unlock the door mechanism, used after all gear pieces are inserted, unlocking the lockedRoom(Laboratory in this case)
      */

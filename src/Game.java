@@ -23,18 +23,19 @@ public class Game {
      * CommandFactory instance
      */
     private CommandFactory commandFactory;
-
     /**
      * Constructor, contains the initialization of locks, gear locks, enemies, player,etc.
      */
-    public Game() {
-        this.world = new World(null,this);
+    public Game(World world) {
+        this.world = world;
+        this.player = world.getPlayer();
         this.scanner = new Scanner(System.in);
+        this.commandFactory = new CommandFactory(world, player, scanner);
         world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
-        this.player = new Player("Ethan", 100, world,world.getRooms().get(0).getName());
-        world.setPlayer(player);  // Set the player in the world
-        player.setWorld(world);
-        commandFactory = new CommandFactory(world, player, scanner);
+//        world.setPlayer(player);
+
+//        player.setWorld(world);
+
         world.initializeLocks();
         world.initializeGearLock();
         world.initializeEnemies();
@@ -220,7 +221,6 @@ public class Game {
             return true;
         }
     }
-
     public void setWorld(World world) {
         this.world = world;
     }

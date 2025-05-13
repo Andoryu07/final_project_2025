@@ -37,8 +37,9 @@ public class World implements Serializable {
     /**
      * Game instance
      */
-    private final Game game;
+    private Game game;
     private Map<Integer, Map<String, List<Item>>> searchSpotItems;
+    private GameGUI gameGUI;
 
     /**
      * Method used to load the rooms from the file
@@ -53,14 +54,14 @@ public class World implements Serializable {
 
     /**
      * Constructor, initializes Laboratory room
-     *
      * @param player Player
-     * @param game   Game
      */
-    public World(Player player, Game game) {
+    public World(Player player) {
         this.player = player;
-        this.game = game;
-        laboratory = new Room("Laboratory", true);
+        if (player != null) {
+            player.setWorld(this);
+        }
+        this.laboratory = new Room("Laboratory", true);
         this.searchSpotItems = new HashMap<>();
     }
 
@@ -262,12 +263,7 @@ public class World implements Serializable {
                             items.removeIf(item -> item == null || item.getName().equalsIgnoreCase("Empty"));
                             SearchSpot spot = new SearchSpot(name, items, x, y, width, height);
                             room.addSearchSpot(spot);
-                            // Debug output
-                            System.out.println("Found items: " + items.stream()
-                                    .map(Item::getName)
-                                    .collect(Collectors.joining(", ")));
-                            System.out.printf("Loaded search spot: %s at (%.1f, %.1f) size (%.1f, %.1f)%n",
-                                    name, x, y, width, height);
+
                         }
                     }
                 }
@@ -277,7 +273,14 @@ public class World implements Serializable {
             e.printStackTrace();
         }
     }
-
+    public void refreshCurrentRoom() {
+        if (currentRoom != null) {
+            // Force reload of room data
+            Room previous = currentRoom;
+            currentRoom = null;
+            setCurrentRoom(previous);
+        }
+    }
     /**
      * Creates the items included in a file
      *
@@ -544,7 +547,7 @@ public class World implements Serializable {
     public void setCurrentRoom(Room room) {
         this.currentRoom = room;
         if (player != null) {
-            player.setCurrentRoom(room);
+            player.setCurrentRoomName(room.getName());
         }
     }
 
@@ -662,5 +665,16 @@ public class World implements Serializable {
                 .orElse(-1) + 1;
         rooms.put(nextIndex, room);
     }
+
+    public GameGUI getGameGUI() {
+        return gameGUI;
+    }
+    public void setGame(Game game) {
+        this.game = game;
+    }
+    public void setGameGUI(GameGUI gameGUI) {
+        this.gameGUI = gameGUI;
+    }
+
 }
 

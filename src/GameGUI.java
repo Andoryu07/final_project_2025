@@ -3,6 +3,7 @@ import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
@@ -53,6 +54,9 @@ public class GameGUI extends Application {
     public boolean consoleVisible = false;
     private StackPane consoleContainer;
     private Scene scene;
+    private Item currentNearbyItem;
+    private Prompt itemPickupPrompt = new Prompt();
+
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -65,9 +69,11 @@ public class GameGUI extends Application {
             primaryStage.setWidth(1280);
             primaryStage.setHeight(720);
             player = new Player("Player", 100, null, "Enter_Hall");
-            game = new Game();
-            world = new World(player, game);
-            game.setWorld(world);
+            world = new World(player);
+            player.setWorld(world);
+            player.setGameGUI(this);
+            game = new Game(world);
+            world.setGame(game);
             world.loadRoomLayout("src/fileImports/game_layout.txt");
             world.loadSearchSpots("src/fileImports/search_spots.txt");
             inventoryGUI = new InventoryGUI(player, this);
@@ -116,7 +122,7 @@ public class GameGUI extends Application {
         rootPane.setStyle("-fx-background-color: black;");
         rootPane.getChildren().add(canvas);
 
-         scene = new Scene(rootPane, Color.BLACK);
+        scene = new Scene(rootPane, Color.BLACK);
         setupConsole(scene);
         scene.getStylesheets().add(getClass().getResource("/inventory.css").toExternalForm());
         primaryStage.setScene(scene);
@@ -175,7 +181,6 @@ public class GameGUI extends Application {
             KeyCode code = e.getCode();
             pressedKeys.remove(code);
             if (isMovementKey(code)) {
-                // Immediately stop movement in this direction
                 if (code == KeyCode.W || code == KeyCode.UP ||
                         code == KeyCode.S || code == KeyCode.DOWN) {
                     player.setSpeed(player.getSpeedX(), 0);
@@ -184,8 +189,6 @@ public class GameGUI extends Application {
                 }
             }
         });
-
-        // Fullscreen toggle
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.F11) {
                 primaryStage.setFullScreen(!primaryStage.isFullScreen());
@@ -201,28 +204,11 @@ public class GameGUI extends Application {
                 }
             }
         });
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.F) {
-                if (roomManager.tryConfirmPrompt()) {
-                    e.consume();
-                }
-            }
-        });
         scene.setOnScroll(e -> {
             if (!activeSearchSpots.isEmpty()) {
                 double delta = e.getDeltaY();
                 selectedSpotIndex = (int) (selectedSpotIndex - Math.signum(delta)) % activeSearchSpots.size();
                 if (selectedSpotIndex < 0) selectedSpotIndex = activeSearchSpots.size() - 1;
-            }
-        });
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.F && !activeSearchSpots.isEmpty()) {
-                SearchSpot spot = activeSearchSpots.get(selectedSpotIndex);
-                if (!spot.isSearched()) {
-                    List<Item> items = spot.getItems();
-                    // Add items to inventory
-                    items.forEach(player.getInventory()::addItem);
-                }
             }
         });
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
@@ -261,12 +247,25 @@ public class GameGUI extends Application {
         });
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.F) {
-                if (roomManager.tryConfirmPrompt()) {
-                    e.consume();
-                } else if (hidingSpotManager.tryHide()) {
+                boolean actionTaken = false;
+                if (currentNearbyItem != null && itemPickupPrompt.isActive()) {
+                    System.out.println("actionTaken");
+                    new TakeCommand(player, currentNearbyItem).execute();
+                    currentNearbyItem = null;
+                    itemPickupPrompt.hide();
+                    actionTaken = true;
+                }
+                if (!actionTaken) {
+                    actionTaken = hidingSpotManager.tryHide();
+                }
+                if (!actionTaken) {
+                    actionTaken = roomManager.tryConfirmPrompt();
+                }
+                if (actionTaken) {
                     e.consume();
                 }
             }
+
         });
         primaryStage.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
@@ -282,6 +281,7 @@ public class GameGUI extends Application {
                 e.consume();
             }
         });
+
     }
 
     private void setupConsole(Scene scene) {
@@ -346,11 +346,6 @@ public class GameGUI extends Application {
         }
     }
 
-
-    public void clearConsole() {
-        console.clear();
-    }
-
     private void updateCanvasSize() {
         if (roomManager.getCurrentRoom() == null) return;
 
@@ -386,6 +381,7 @@ public class GameGUI extends Application {
 
     private void update() {
         // Clear any keys pressed during transitions/prompts
+        checkNearbyItems();
         keysToRemove.forEach(pressedKeys::remove);
         keysToRemove.clear();
         if (world == null || world.getCurrentRoom() == null) {
@@ -435,6 +431,49 @@ public class GameGUI extends Application {
         }
     }
 
+    private void checkNearbyItems() {
+        Room currentRoom = world.getCurrentRoom();
+        currentNearbyItem = null;
+        if (currentRoom != null) {
+            List<Item> roomItems = new ArrayList<>(currentRoom.getItems());
+            for (Item item : roomItems) {
+                Point2D pos = currentRoom.getItemPosition(item);
+                if (pos != null && isPlayerNear(pos.getX(), pos.getY())) {
+                    currentNearbyItem = item;
+                    break;
+                }
+            }
+        }
+        if (currentNearbyItem != null) {
+            showPickupPrompt(currentNearbyItem.getName());
+        } else {
+            hidePickupPrompt();
+        }
+    }
+
+    private boolean isPlayerNear(double itemX, double itemY) {
+        RoomRenderer room = roomManager.getCurrentRoom();
+        if (room == null) return false;
+
+        // Convert to pixel coordinates
+        double playerX = player.getX() * room.getTileWidth();
+        double playerY = player.getY() * room.getTileHeight();
+        double itemPixelX = itemX * room.getTileWidth();
+        double itemPixelY = itemY * room.getTileHeight();
+
+
+        return Math.hypot(playerX - itemPixelX, playerY - itemPixelY) < 32;
+    }
+
+    private void showPickupPrompt(String itemName) {
+        itemPickupPrompt.show("Pick up " + itemName, "");
+    }
+
+    private void hidePickupPrompt() {
+        itemPickupPrompt.hide();
+    }
+
+
     private boolean isPlayerOverlapping(SearchSpot spot, double playerX, double playerY) {
         RoomRenderer room = roomManager.getCurrentRoom();
         if (room == null) return false;
@@ -449,9 +488,6 @@ public class GameGUI extends Application {
         double spotWidth = spot.getWidth();
         double spotHeight = spot.getHeight();
 
-        // Debug positions
-        System.out.printf("Player at (%.1f, %.1f), Spot %s at (%.1f, %.1f)%n",
-                px, py, spot.getName(), spotX, spotY);
 
         return px + 10 >= spotX && px - 10 <= spotX + spotWidth &&
                 py + 10 >= spotY && py - 10 <= spotY + spotHeight;
@@ -615,6 +651,7 @@ public class GameGUI extends Application {
         gc.restore();
         hidingSpotManager.render(gc, canvas.getWidth(), canvas.getHeight());
         roomManager.renderPrompt(gc, canvas.getWidth(), canvas.getHeight());
+        itemPickupPrompt.render(gc, canvas.getWidth(), canvas.getHeight());
         if (player.getCurrentStamina() < player.getMaxStamina() || player.isSprinting()) {
             renderStaminaBar(gc);
         }
@@ -680,7 +717,6 @@ public class GameGUI extends Application {
         if (System.currentTimeMillis() < itemNotificationEndTime) {
             renderItemNotification(gc);
         }
-//        gc.restore();
 
     }
 
@@ -795,8 +831,11 @@ public class GameGUI extends Application {
         return scene;
     }
 
+    public Game getGame() {
+        return game;
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
-
 }
