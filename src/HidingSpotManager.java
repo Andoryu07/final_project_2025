@@ -124,6 +124,9 @@ public class HidingSpotManager {
     }
 
     public void render(GraphicsContext gc, double screenWidth, double screenHeight) {
+        if (isHiding) {
+            return;
+        }
         if (!showHidePrompt && !showExitPrompt) return;
 
         double width = 300;

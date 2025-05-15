@@ -231,6 +231,9 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
 
     private Button createDropButton(Item item) {
         Button btn = new Button("Drop");
+        if (item instanceof Knife) {
+            btn.setDisable(true);
+        }
         btn.getStyleClass().add("inventory-button");
         btn.setOnAction(e -> {
             handleDropItem(item);
@@ -240,7 +243,14 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
     }
 
     private Button createActionButton(Item item) {
-        Button btn = new Button(item instanceof Weapon ? "Equip" : "Use");
+        Button btn = new Button();
+        if (item instanceof Weapon) {
+            btn.setText(player.getEquippedWeapon() == item ? "Unequip" : "Equip");
+        } else {
+            btn.setText("Use");
+            boolean isUsable = item instanceof Consumable || item instanceof KeyItem;
+            btn.setDisable(!isUsable);
+        }
         btn.getStyleClass().add("inventory-button");
         btn.setOnAction(e -> {
             handleItemAction(item);
@@ -276,8 +286,13 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
 
     private void handleItemAction(Item item) {
         if (item instanceof Weapon) {
-            player.equipWeapon((Weapon) item);
-        } else {
+            Weapon weapon = (Weapon) item;
+            if (player.getEquippedWeapon() == weapon) {
+                player.equipWeapon(null);
+            } else {
+                player.equipWeapon(weapon);
+            }
+        } else if (item instanceof Consumable || item instanceof KeyItem) {
             item.use(player);
             if (item instanceof Consumable) {
                 player.getInventory().removeItem(item);
@@ -309,6 +324,7 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         }
         updateDisplay();
     }
+
     private void updateInventorySize() {
         int capacity = player.getInventory().getCapacity();
         int cols = (int) Math.ceil(Math.sqrt(capacity));

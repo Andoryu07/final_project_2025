@@ -57,7 +57,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":10,
          "id":4,
-         "name":"Furniture2",
+         "name":"Furniture",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
@@ -78,7 +78,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":10,
          "id":3,
-         "name":"Furniture",
+         "name":"Furniture2",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
@@ -201,15 +201,15 @@
          "name":"SearchSpots",
          "objects":[
                 {
-                 "height":31.9166666666667,
+                 "height":31.9167,
                  "id":22,
                  "name":"Ground",
                  "rotation":0,
                  "type":"SearchSpot",
                  "visible":true,
                  "width":32,
-                 "x":64.0833333333333,
-                 "y":223.791666666667
+                 "x":64.0833,
+                 "y":223.792
                 }],
          "opacity":1,
          "type":"objectgroup",

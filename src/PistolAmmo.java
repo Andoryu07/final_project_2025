@@ -1,6 +1,3 @@
-/**
- * Class used to implement the item PistolAmmo
- */
 public class PistolAmmo extends Ammo {
     /**
      * Constructor, contains super from ammo

@@ -19,4 +19,5 @@ public class ShotgunShells extends Ammo {
         return System.identityHashCode(this);
     }
 
+
 }

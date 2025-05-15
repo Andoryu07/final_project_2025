@@ -74,7 +74,7 @@ public class Player extends Character implements Serializable {
      */
     public Player(String name, int health, World world, String startingRoomName) {
         super(name, health, world,startingRoomName);
-        this.inventory = new Inventory(1);
+        this.inventory = new Inventory(10);
 
     }
 
@@ -83,17 +83,12 @@ public class Player extends Character implements Serializable {
      * @param weapon Weapon the player wants to equip
      */
     public void equipWeapon(Weapon weapon) {
+        if (equippedWeapon != null) {
+            equippedWeapon.onUnequip(this);
+        }
         this.equippedWeapon = weapon;
         if (weapon != null) {
-            System.out.println("Equipped " + weapon.getName());
-            if (weapon.isInfiniteUse()) {
-                System.out.println("This weapon has unlimited uses");
-            } else {
-                System.out.printf("Ammo: %d/%d%n",
-                        weapon.getCurrentAmmo(), weapon.getMaxAmmo());
-            }
-        } else {
-            System.out.println("No weapon equipped");
+            weapon.onEquip(this);
         }
     }
 

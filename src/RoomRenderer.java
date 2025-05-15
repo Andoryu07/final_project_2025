@@ -44,17 +44,17 @@ public class RoomRenderer {
             loadCollisionsFromLayer(collisionLayer, collisionRects);
         }
 
-        // Garden lock collisions
-        JSONObject gardenLockLayer = mapLoader.getObjectGroup("GARDEN_LOCK");
-        if (gardenLockLayer != null) {
-            loadCollisionsFromLayer(gardenLockLayer, gardenLockCollisions);
-        }
-
-        // Door lock collisions
-        JSONObject doorLockLayer = mapLoader.getObjectGroup("DOOR_LOCK_COLLISION");
-        if (doorLockLayer != null) {
-            loadCollisionsFromLayer(doorLockLayer, doorLockCollisions);
-        }
+//        // Garden lock collisions
+//        JSONObject gardenLockLayer = mapLoader.getObjectGroup("GARDEN_LOCK");
+//        if (gardenLockLayer != null) {
+//            loadCollisionsFromLayer(gardenLockLayer, gardenLockCollisions);
+//        }
+//
+//        // Door lock collisions
+//        JSONObject doorLockLayer = mapLoader.getObjectGroup("DOOR_LOCK_COLLISION");
+//        if (doorLockLayer != null) {
+//            loadCollisionsFromLayer(doorLockLayer, doorLockCollisions);
+//        }
     }
 
     private void loadCollisionsFromLayer(JSONObject layer, List<Rectangle2D> targetList) {
@@ -111,11 +111,10 @@ public class RoomRenderer {
         gc.setImageSmoothing(false);
         renderLayer(gc, "Floor");
         renderLayer(gc, "Floor2");
-        renderLayer(gc, "Tree");
-        renderLayer(gc, "Repair_Tool item");
         renderLayer(gc, "Carpets");
         renderLayer(gc, "Walls");
         renderLayer(gc, "Walls2");
+        renderLayer(gc, "Repair_Tool item");
         renderLayer(gc, "WallSafe");
         renderLayer(gc, "FUSEBOX");
         renderLayer(gc, "GEARLOCKDOOR");
@@ -126,6 +125,7 @@ public class RoomRenderer {
         renderLayer(gc, "Furniture4");
         renderLayer(gc, "Stairs2");
         renderLayer(gc, "Stairs");
+        renderLayer(gc, "Tree");
         renderItems(gc);
 
 

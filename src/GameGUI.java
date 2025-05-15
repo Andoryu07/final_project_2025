@@ -338,16 +338,18 @@ public class GameGUI extends Application {
         });
 
     }
+
     private Item createNewItemInstance(Item original) {
         if (original instanceof Bandage) return new Bandage();
         if (original instanceof PistolAmmo) return new PistolAmmo(((PistolAmmo) original).getAmount());
         if (original instanceof HealingSerum) return new HealingSerum();
         if (original instanceof ShotgunShells) return new ShotgunShells(((ShotgunShells) original).getAmount());
         if (original instanceof Batteries) return new Batteries();
-        if (original instanceof Cassette) return new Cassette(this.getWorld());
+        if (original instanceof Cassette) return new Cassette();
         // Add other item types as needed
         return original; // fallback for non-cloneable items
     }
+
     private void setupConsole(Scene scene) {
         console.setWrapText(true);
         console.setEditable(false);
@@ -444,7 +446,11 @@ public class GameGUI extends Application {
     }
 
     private void update() {
-        // Clear any keys pressed during transitions/prompts
+        if (hidingSpotManager.isHiding()) {
+            activeSearchSpots.clear();
+            currentNearbyItem = null;
+            return;
+        }
         checkNearbyItems();
         keysToRemove.forEach(pressedKeys::remove);
         keysToRemove.clear();
@@ -496,6 +502,10 @@ public class GameGUI extends Application {
     }
 
     private void checkNearbyItems() {
+        if (hidingSpotManager.isHiding()) {
+            hidePickupPrompt();
+            return;
+        }
         Room currentRoom = world.getCurrentRoom();
         currentNearbyItem = null;
         if (currentRoom != null) {
@@ -851,40 +861,6 @@ public class GameGUI extends Application {
 
     public World getWorld() {
         return world;
-    }
-
-    private void showItemFoundEffect(Item item) {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.save();
-
-        double centerX = canvas.getWidth() / 2;
-        double centerY = canvas.getHeight() / 2;
-
-        // Background
-        gc.setFill(Color.rgb(0, 0, 0, 0.7));
-        gc.fillRect(centerX - 150, centerY - 50, 300, 100);
-
-        // Border
-        gc.setStroke(Color.GOLD);
-        gc.setLineWidth(2);
-        gc.strokeRect(centerX - 150, centerY - 50, 300, 100);
-
-        // Text
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        gc.fillText("Found: " + item.getName(), centerX - 120, centerY - 10);
-
-        gc.restore();
-
-        // Fade out after 2 seconds
-        new Thread(() -> {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Platform.runLater(() -> render());
-        }).start();
     }
 
     public Player getPlayer() {

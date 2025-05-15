@@ -27,10 +27,11 @@ public abstract class Weapon extends Item implements Serializable {
 
     /**
      * Constructor, uses super from Item
-     * @param name name of the weapon
+     *
+     * @param name        name of the weapon
      * @param description description of the weapon
-     * @param damage How much damage the weapon makes
-     * @param maxAmmo  Max ammo/Mag size
+     * @param damage      How much damage the weapon makes
+     * @param maxAmmo     Max ammo/Mag size
      */
     public Weapon(String name, String description, int damage, int maxAmmo) {
         super(name, description);
@@ -42,6 +43,7 @@ public abstract class Weapon extends Item implements Serializable {
 
     /**
      * Decides whether the current weapon has ammo or not
+     *
      * @return true/false based on whether the current weapon has ammo or not
      */
     public boolean hasAmmo() {
@@ -50,6 +52,7 @@ public abstract class Weapon extends Item implements Serializable {
 
     /**
      * Getter for 'damage'
+     *
      * @return value of 'damage'
      */
     public int getDamage() {
@@ -58,6 +61,7 @@ public abstract class Weapon extends Item implements Serializable {
 
     /**
      * Method used to reload the weapon
+     *
      * @param ammoAmount how much ammo to reload
      */
     public void reload(int ammoAmount) {
@@ -66,6 +70,7 @@ public abstract class Weapon extends Item implements Serializable {
 
     /**
      * Getter for 'maxAmmo'
+     *
      * @return value of 'maxAmmo'
      */
     public int getMaxAmmo() {
@@ -74,6 +79,7 @@ public abstract class Weapon extends Item implements Serializable {
 
     /**
      * Getter for 'currentAmmo'
+     *
      * @return value of 'currentAmmo'
      */
     public int getCurrentAmmo() {
@@ -82,6 +88,7 @@ public abstract class Weapon extends Item implements Serializable {
 
     /**
      * Method to implement the use of a said weapon
+     *
      * @param player Who is using the weapon
      */
     public void use(Player player) {
@@ -90,8 +97,17 @@ public abstract class Weapon extends Item implements Serializable {
         }
     }
 
+    public void onEquip(Player player) {
+        System.out.println("Equipped " + getName());
+    }
+
+    public void onUnequip(Player player) {
+        System.out.println("Unequipped " + getName());
+    }
+
     /**
      * Getter for 'infiniteUse'
+     *
      * @return value of infiniteUse
      */
     public boolean isInfiniteUse() {

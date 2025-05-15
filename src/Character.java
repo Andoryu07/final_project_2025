@@ -93,8 +93,8 @@ public abstract class Character implements Serializable {
      */
     public Room getCurrentRoom() {
         if (world != null) {
-            return world.getCurrentRoom(); // For player
+            return world.findRoomByName(currentRoomName);
         }
-        return world.findRoomByName(currentRoomName); // For enemies
+         return null;
     }
 }

@@ -304,7 +304,7 @@ public class World implements Serializable {
             case "HEALING_SERUM":
                 return new HealingSerum();
             case "CASSETTE":
-                return new Cassette(this);
+                return new Cassette();
             case "GEAR_PIECE_1":
                 return new GearPiece("GEAR_PIECE_1");
             case "GEAR_PIECE_2":
