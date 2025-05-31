@@ -1,0 +1,47 @@
+.root {
+    -fx-background-color: transparent;
+}
+
+.menu-button {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color:
+            linear-gradient(to bottom, #2a2a2a, #1a1a1a),
+            radial-gradient(center 50% 0%, radius 100%, rgba(255,255,255,0.2), transparent);
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 8;
+    -fx-padding: 12 30 12 30;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+    -fx-cursor: hand;
+    -fx-border-color: #444444;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.menu-button:hover {
+    -fx-background-color:
+            linear-gradient(to bottom, #3a3a3a, #2a2a2a),
+            radial-gradient(center 50% 0%, radius 100%, rgba(255,255,255,0.3), transparent);
+    -fx-text-fill: #ffcc00;
+    -fx-effect: dropshadow(three-pass-box, rgba(255,204,0,0.5), 15, 0, 0, 0);
+}
+
+.menu-button:pressed {
+    -fx-background-color:
+            linear-gradient(to bottom, #1a1a1a, #0a0a0a),
+            radial-gradient(center 50% 0%, radius 100%, rgba(255,255,255,0.1), transparent);
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 0, 0);
+}
+
+.menu-button:disabled {
+    -fx-opacity: 0.7;
+    -fx-text-fill: #aaaaaa;
+}
+.save-entry {
+    -fx-font-size: 16px;
+    -fx-alignment: center-left;
+    -fx-content-display: top;
+    -fx-text-alignment: left;
+    -fx-padding: 10 20 10 20;
+}

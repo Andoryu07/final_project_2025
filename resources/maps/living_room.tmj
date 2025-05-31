@@ -186,15 +186,15 @@
          "name":"HidingSpotPrompt",
          "objects":[
                 {
-                 "height":6.54545454545453,
+                 "height":6.54545,
                  "id":29,
                  "name":"Hide under the couch",
                  "rotation":0,
                  "type":"HidingSpot",
                  "visible":true,
-                 "width":62.1818181818182,
+                 "width":62.1818,
                  "x":71,
-                 "y":70.9090909090909
+                 "y":70.9091
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -358,6 +358,7 @@
          "y":0
         }, 
         {
+         "class":"Lock",
          "draworder":"topdown",
          "id":6,
          "name":"GARDEN_LOCK",
@@ -369,8 +370,8 @@
                  "rotation":0,
                  "type":"Collisions",
                  "visible":true,
-                 "width":27.0909,
-                 "x":261,
+                 "width":6.0909,
+                 "x":282,
                  "y":32.0909
                 }],
          "opacity":1,

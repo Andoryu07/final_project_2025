@@ -51,7 +51,7 @@ public class Room implements Serializable {
      * Map containing locks on search spots
      */
     private Map<String,Lock> searchSpotLocks = new HashMap<>();
-
+    private List<Point2D> cassettePlayerPositions = new ArrayList<>();
     /**
      * Setter for gearLock
      * @param gearLock sets the value of gearLock
@@ -307,5 +307,12 @@ public class Room implements Serializable {
 
     public Map<Item, Point2D> getItemPositions() {
         return itemPositions;
+    }
+    public void addCassettePlayerPosition(double x, double y) {
+        cassettePlayerPositions.add(new Point2D(x, y));
+    }
+
+    public List<Point2D> getCassettePlayerPositions() {
+        return cassettePlayerPositions;
     }
 }

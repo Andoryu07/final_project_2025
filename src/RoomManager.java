@@ -58,6 +58,7 @@ public class RoomManager {
             Room gameRoom = getOrCreateGameRoom(roomName);
             renderer.setGameRoom(gameRoom);
             gameGUI.getWorld().loadSearchSpotsFromTMJ(gameRoom, tmjData);
+            loadCassettePlayers(gameRoom, tmjData);
             // Set current room if this is the first room
             if (currentRoom == null) {
                 currentRoom = renderer;
@@ -100,7 +101,7 @@ public class RoomManager {
         }
     }
 
-    public void transitionToRoom(String roomName) {
+    public void transitionToRoom(String roomName, boolean useSavedPosition, double savedX, double savedY) {
         player.setMovementEnabled(false); // Add this
         player.setTransitioning(true);
         try {
@@ -109,6 +110,12 @@ public class RoomManager {
                 player.setTransitioning(true);
 
             });
+            if (currentRoom == null) {
+                // Handle initial room setup
+                loadRoom(roomName.toLowerCase());
+                positionPlayerAtSpawn();
+                return;
+            }
             String normalizedName = normalizeRoomName(roomName);
             if (!rooms.containsKey(normalizedName)) {
                 loadRoom(normalizedName);
@@ -119,7 +126,11 @@ public class RoomManager {
                 currentRoomName = normalizedName;
                 Room gameRoom = gameGUI.getWorld().getRoomByName(normalizedName);
                 gameGUI.getWorld().setCurrentRoom(gameRoom);
-                positionPlayerAtEntrance(previousRoomName);
+                if (useSavedPosition) {
+                    player.setPosition(savedX, savedY);
+                } else {
+                    positionPlayerAtEntrance(previousRoomName);
+                }
                 if (onRoomChanged != null) {
                     onRoomChanged.run();
                 }
@@ -313,9 +324,33 @@ public class RoomManager {
         }
         return false;
     }
-
+    private void loadCassettePlayers(Room gameRoom, JSONObject tmjData) {
+        if (tmjData.has("layers")) {
+            JSONArray layers = tmjData.getJSONArray("layers");
+            for (int i = 0; i < layers.length(); i++) {
+                JSONObject layer = layers.getJSONObject(i);
+                if ("CassettePlayer".equals(layer.optString("name", ""))) {
+                    if (layer.has("objects")) {
+                        JSONArray objects = layer.getJSONArray("objects");
+                        for (int j = 0; j < objects.length(); j++) {
+                            JSONObject obj = objects.getJSONObject(j);
+                            gameRoom.addCassettePlayerPosition(
+                                    obj.getDouble("x"),
+                                    obj.getDouble("y")
+                            );
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
     private void showTransitionPrompt(String targetRoom) {
         prompt.show("Enter " + targetRoom.replace("_", " "), targetRoom);
+    }
+
+    public void setCurrentRoom(RoomRenderer currentRoom) {
+        this.currentRoom = currentRoom;
     }
 
     public RoomRenderer getCurrentRoom() {

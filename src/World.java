@@ -677,4 +677,3 @@ public class World implements Serializable {
     }
 
 }
-

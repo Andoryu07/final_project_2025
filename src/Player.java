@@ -372,6 +372,10 @@ public class Player extends Character implements Serializable {
         return isSprinting;
     }
 
+    public void setEquippedWeapon(Weapon equippedWeapon) {
+        this.equippedWeapon = equippedWeapon;
+    }
+
     public void setSprinting(boolean sprinting) {
         this.isSprinting = sprinting;
         if (sprinting) {
@@ -394,6 +398,9 @@ public class Player extends Character implements Serializable {
         return gameGUI;
     }
 
+    public void setCurrentStamina(double currentStamina) {
+        this.currentStamina = currentStamina;
+    }
 
     public void setGameGUI(GameGUI gui) {
         this.gameGUI = gui;

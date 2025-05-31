@@ -32,20 +32,16 @@ public class Game {
         this.scanner = new Scanner(System.in);
         this.commandFactory = new CommandFactory(world, player, scanner);
         world.loadFromFile("src/FileImports/game_layout.txt", "src/FileImports/search_spots.txt");
-//        world.setPlayer(player);
-
-//        player.setWorld(world);
-
         world.initializeLocks();
         world.initializeGearLock();
         world.initializeEnemies();
         // Check for saved games
-        File saveDir = new File("saves/");
-        if (saveDir.exists() && saveDir.listFiles((dir, name) -> name.startsWith("save_")).length > 0) {
-            showLoadMenu();
-        } else {
-            initializeNewGame();
-        }
+//        File saveDir = new File("saves/");
+//        if (saveDir.exists() && saveDir.listFiles((dir, name) -> name.startsWith("save_")).length > 0) {
+//            showLoadMenu();
+//        } else {
+//            initializeNewGame();
+//        }
     }
 
     /**

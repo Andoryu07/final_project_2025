@@ -1175,20 +1175,44 @@
          "y":0
         }, 
         {
+         "class":"Lock",
          "draworder":"topdown",
          "id":14,
          "name":"DOOR_LOCK_COLLISION",
          "objects":[
                 {
-                 "height":24.5,
+                 "height":7.75,
                  "id":73,
                  "name":"Collision",
                  "rotation":0,
                  "type":"Collisions",
                  "visible":true,
-                 "width":54.625,
-                 "x":68.5,
-                 "y":320.125
+                 "width":62.625,
+                 "x":64.5,
+                 "y":343.125
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "class":"Lock",
+         "draworder":"topdown",
+         "id":16,
+         "name":"FUSEBOX_REPAIR_PROMPT",
+         "objects":[
+                {
+                 "height":24.5,
+                 "id":88,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":25.75,
+                 "x":163.25,
+                 "y":281.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1196,8 +1220,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":16,
- "nextobjectid":88,
+ "nextlayerid":17,
+ "nextobjectid":89,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

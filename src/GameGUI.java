@@ -25,10 +25,10 @@ import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GameGUI extends Application {
@@ -57,7 +57,13 @@ public class GameGUI extends Application {
     private Scene scene;
     private Item currentNearbyItem;
     private Prompt itemPickupPrompt = new Prompt();
-
+    private boolean nearCassettePlayer = false;
+    private Prompt cassettePrompt = new Prompt();
+    private GameStateGUI loadedState;
+    private File saveFileToLoad;
+    public void loadGame(File saveFile) {
+        this.saveFileToLoad = saveFile;
+    }
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -82,14 +88,21 @@ public class GameGUI extends Application {
             roomManager = new RoomManager(player, this);
             hidingSpotManager = new HidingSpotManager(player, roomManager);
             loadRooms(roomManager);
+            if (saveFileToLoad != null) {
+                loadGameState(saveFileToLoad);
+            }
+            if (loadedState != null) {
+                roomManager.transitionToRoom(loadedState.getCurrentRoomName(),true,loadedState.getPlayerX(),loadedState.getPlayerY());
+                player.setPosition(loadedState.getPlayerX(), loadedState.getPlayerY());
+            }
             roomManager.setOnRoomChanged(() -> {
-                primaryStage.setTitle("Your Game - " + roomManager.getCurrentRoomName());
+                primaryStage.setTitle("The Game - " + roomManager.getCurrentRoomName());
                 updateCanvasSize();
                 render();
             });
 
             startGameLoop();
-            primaryStage.setTitle("Your Game - " + roomManager.getCurrentRoomName());
+            primaryStage.setTitle("The Game - " + roomManager.getCurrentRoomName());
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,6 +112,9 @@ public class GameGUI extends Application {
 
     private void loadRooms(RoomManager roomManager) {
         try {
+            if (loadedState != null) {
+                roomManager.loadRoom(loadedState.getCurrentRoomName().toLowerCase());
+            }
             roomManager.loadRoom("enter_hall");
             roomManager.loadRoom("library");
             roomManager.loadRoom("living_room");
@@ -212,32 +228,6 @@ public class GameGUI extends Application {
                 if (selectedSpotIndex < 0) selectedSpotIndex = activeSearchSpots.size() - 1;
             }
         });
-//        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-//            if (e.getCode() == KeyCode.E && !activeSearchSpots.isEmpty()) {
-//                SearchSpot spot = activeSearchSpots.get(selectedSpotIndex);
-//                if (!spot.isSearched()) {
-//                    List<Item> items = spot.getItems();
-//                    recentFoundItems.clear();
-//                    recentFoundItems.addAll(items);
-//
-//                    items.forEach(item -> {
-//                        if (player.getInventory().addItem(item)) {
-//                            System.out.println("Added item: " + item.getName());
-//                        }
-//                    });
-//
-//                    if (!recentFoundItems.isEmpty()) {
-//                        itemNotificationEndTime = System.currentTimeMillis() + 3000;
-//                    }
-//
-//                    spot.setSearched(true);
-//                    if (!activeSearchSpots.isEmpty()) {
-//                        selectedSpotIndex = Math.min(selectedSpotIndex, activeSearchSpots.size() - 1);
-//                    }
-//                    e.consume();
-//                }
-//            }
-//        });
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.E && !activeSearchSpots.isEmpty()) {
                 SearchSpot spot = activeSearchSpots.get(selectedSpotIndex);
@@ -302,6 +292,11 @@ public class GameGUI extends Application {
         });
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.F) {
+                if (nearCassettePlayer) {
+                    openSaveMenu();
+//                    handleCassettePlayer();
+                    e.consume();
+                }
                 boolean actionTaken = false;
                 if (currentNearbyItem != null && itemPickupPrompt.isActive()) {
                     System.out.println("actionTaken");
@@ -481,6 +476,7 @@ public class GameGUI extends Application {
             }
         }
         boolean isMoving = pressedKeys.stream().anyMatch(this::isMovementKey);
+        checkCassettePlayer();
         player.updateWalkCycle(isMoving);
         player.updatePosition();
         hidingSpotManager.loadHidingSpots();
@@ -723,6 +719,7 @@ public class GameGUI extends Application {
             gc.fillOval(playerX - 10, playerY - 10, 20, 20);
         }
         gc.restore();
+        cassettePrompt.render(gc, canvas.getWidth(), canvas.getHeight());
         hidingSpotManager.render(gc, canvas.getWidth(), canvas.getHeight());
         roomManager.renderPrompt(gc, canvas.getWidth(), canvas.getHeight());
         itemPickupPrompt.render(gc, canvas.getWidth(), canvas.getHeight());
@@ -850,7 +847,7 @@ public class GameGUI extends Application {
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.4);
         fadeOut.setOnFinished(e -> {
-            roomManager.transitionToRoom(targetRoom);
+            roomManager.transitionToRoom(targetRoom,false,player.getX(),player.getY());
             FadeTransition fadeIn = new FadeTransition(Duration.millis(TRANSITION_DURATION), canvas);
             fadeIn.setFromValue(0.4);
             fadeIn.setToValue(1.0);
@@ -858,7 +855,123 @@ public class GameGUI extends Application {
         });
         fadeOut.play();
     }
+    private void checkCassettePlayer() {
+        if (hidingSpotManager.isHiding()) {
+            cassettePrompt.hide();
+            nearCassettePlayer = false;
+            return;
+        }
 
+        Room currentRoom = world.getCurrentRoom();
+        nearCassettePlayer = false;
+
+        JSONObject cassetteLayer = roomManager.getCurrentRoom().getObjectGroup("CassettePlayer");
+        if (cassetteLayer != null) {
+            JSONArray objects = cassetteLayer.getJSONArray("objects");
+            for (int i = 0; i < objects.length(); i++) {
+                JSONObject obj = objects.getJSONObject(i);
+                double objX = obj.getDouble("x");
+                double objY = obj.getDouble("y");
+                // Convert player position to pixels
+                double playerX = player.getX() * roomManager.getCurrentRoom().getTileWidth();
+                double playerY = player.getY() * roomManager.getCurrentRoom().getTileHeight();
+                // Use actual player size for detection
+                double distance = Math.hypot(playerX - objX, playerY - objY);
+                double detectionRadius = 50; // pixels
+
+                if (distance < detectionRadius) {
+                    nearCassettePlayer = true;
+                    break;
+                }
+            }
+        }
+        if (nearCassettePlayer) {
+            cassettePrompt.show("Save progress using a Cassette", "");
+        } else {
+            cassettePrompt.hide();
+        }
+    }
+    public void openSaveMenu() {
+        // Check if player has cassette
+        boolean hasCassette = player.getInventory().getItems().stream()
+                .anyMatch(item -> item instanceof Cassette);
+
+        if (!hasCassette) {
+            addConsoleMessage("You need a Cassette to save your game!");
+            // Auto-show console if hidden
+            if (!consoleVisible) {
+                toggleConsole();
+            }
+            return;
+        }
+
+        // Open save menu
+        SaveMenuGUI saveMenu = new SaveMenuGUI(this);
+        rootPane.getChildren().add(saveMenu);
+
+        // Pause game
+        scene.setCursor(Cursor.DEFAULT);
+        player.setMovementEnabled(false);
+        gameLoop.stop();
+    }
+    private void loadGameState(File saveFile) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFile))) {
+            GameStateGUI state = (GameStateGUI) in.readObject();
+            applyGameState(state);
+        } catch (Exception e) {
+            System.err.println("Failed to load game: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    private void applyGameState(GameStateGUI state) {
+        // Apply loaded state to game
+        player.setHealth(state.getPlayerHealth());
+        player.setCurrentStamina(state.getPlayerStamina());
+        player.setPosition(state.getPlayerX(), state.getPlayerY());
+        player.setCurrentRoomName(state.getCurrentRoomName());
+
+        // Clear existing inventory and add saved items
+        player.getInventory().clear();
+        for (Item item : state.getInventory()) {
+            player.getInventory().addItem(item);
+        }
+
+        // Equip weapon
+        player.equipWeapon(state.getEquippedWeapon());
+
+        // Apply world state
+        world.setStalkerDistance(state.getStalkerDistance());
+        world.restoreLockStates(state.getLockStates());
+
+        // Apply searched spots
+        Map<String, List<String>> searchedSpots = state.getSearchedSpots();
+        for (Room room : world.getRooms().values()) {
+            if (searchedSpots.containsKey(room.getName())) {
+                for (SearchSpot spot : room.getSearchSpots()) {
+                    if (searchedSpots.get(room.getName()).contains(spot.getName())) {
+                        spot.setSearched(true);
+                    }
+                }
+            }
+        }
+
+        // Apply dropped items
+        Map<String, List<ItemPosition>> droppedItems = state.getDroppedItems();
+        for (Room room : world.getRooms().values()) {
+            if (droppedItems.containsKey(room.getName())) {
+                for (ItemPosition itemPos : droppedItems.get(room.getName())) {
+                    room.addItem(itemPos.getItem(), itemPos.getX(), itemPos.getY());
+                }
+            }
+        }
+
+        roomManager.transitionToRoom(
+                state.getCurrentRoomName(),
+                true,
+                state.getPlayerX(),
+                state.getPlayerY()
+        );
+    }
     public World getWorld() {
         return world;
     }
@@ -873,6 +986,14 @@ public class GameGUI extends Application {
 
     public Game getGame() {
         return game;
+    }
+
+    public StackPane getRootPane() {
+        return rootPane;
+    }
+
+    public InventoryGUI getInventoryGUI() {
+        return inventoryGUI;
     }
 
     public static void main(String[] args) {

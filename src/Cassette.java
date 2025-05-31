@@ -34,18 +34,7 @@ public class Cassette extends KeyItem {
 
     @Override
     public void use(Player player) {
-        World world = player.getWorld();  // Get world from player
-        if (world == null) {
-            System.out.println("World reference missing!");
-            return;
-        }
-
-        Room currentRoom = world.findRoomByName(player.getCurrentRoomName());
-        if (currentRoom == null || !SAVE_LOCATIONS.contains(currentRoom.getName())) {
-            System.out.println("❌ You can only save the game in Caravan, Laboratory, or Library.");
-            return;
-        }
-        showSaveMenu(player, world);
+        System.out.println("Use cassette through save menu instead");
     }
     @Override
     public boolean equals(Object o) {

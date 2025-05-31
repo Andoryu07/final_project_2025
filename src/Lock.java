@@ -68,40 +68,40 @@ public class Lock implements Serializable {
 
     /**
      * Method used for attempting to unlock the door, applying changes if successful
-      * @param player Who's attempting to unlock the lock
+     * @param player Who's attempting to unlock the lock
      * @param scanner Scanner
      * @return boolean value true/false, based on whether the lock had been unlocked or not
      */
-public boolean attemptUnlock(Player player, Scanner scanner) {
-    System.out.println(lockedMessage);
+    public boolean attemptUnlock(Player player, Scanner scanner) {
+        System.out.println(lockedMessage);
 
-    if (!player.hasItem(requiredItem)) {
-        System.out.println("Required item: " + requiredItem);
-        return false;
-    }
-
-    System.out.println("1. Use " + requiredItem);
-    System.out.println("2. Back away");
-    System.out.print(">> ");
-
-    while (true) {
-        String choice = scanner.nextLine().trim();
-        if (choice.equals("1")) {
-            isLocked = false;
-            System.out.println(unlockPrompt);
-            // Consume the item if needed
-            if (consumesItem) {
-                player.removeItem(requiredItem);
-                System.out.println("(The " + requiredItem + " has been used up)");
-            }
-            return true;
-        } else if (choice.equals("2")) {
-            System.out.println("You decide not to proceed.");
+        if (!player.hasItem(requiredItem)) {
+            System.out.println("Required item: " + requiredItem);
             return false;
         }
-        System.out.print("Invalid choice. Enter 1 or 2: ");
+
+        System.out.println("1. Use " + requiredItem);
+        System.out.println("2. Back away");
+        System.out.print(">> ");
+
+        while (true) {
+            String choice = scanner.nextLine().trim();
+            if (choice.equals("1")) {
+                isLocked = false;
+                System.out.println(unlockPrompt);
+                // Consume the item if needed
+                if (consumesItem) {
+                    player.removeItem(requiredItem);
+                    System.out.println("(The " + requiredItem + " has been used up)");
+                }
+                return true;
+            } else if (choice.equals("2")) {
+                System.out.println("You decide not to proceed.");
+                return false;
+            }
+            System.out.print("Invalid choice. Enter 1 or 2: ");
+        }
     }
-}
 
     /**
      * Getter for 'lockedMessage'
