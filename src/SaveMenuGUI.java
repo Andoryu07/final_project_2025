@@ -71,7 +71,7 @@ public class SaveMenuGUI extends StackPane {
                 nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
 
                 // Add save metadata if available
-                Label metaLabel = new Label(getSaveMetadata(saveFile));
+                Label metaLabel = new Label(SaveHelper.getSaveMetadata(saveFile));
                 metaLabel.setStyle("-fx-text-fill: #aaa; -fx-font-size: 12;");
 
                 infoBox.getChildren().addAll(nameLabel, metaLabel);

@@ -1,10 +1,7 @@
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -14,6 +11,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -102,19 +101,29 @@ public class LoadMenuGUI {
 
     private static class SaveEntry extends Button {
         public SaveEntry(File saveFile) {
-            super(saveFile.getName());
+            super(); // Call the Button constructor
             getStyleClass().add("menu-button");
             setStyle("-fx-background-color: rgba(50, 50, 70, 0.8);");
             setMinWidth(350);
             setAlignment(Pos.CENTER_LEFT);
 
-            // Add save metadata
-            try {
-                // This would actually load the save metadata
-                setText(String.format("%s\nHealth: 100%% | Room: Laboratory", saveFile.getName()));
-            } catch (Exception e) {
-                setText(saveFile.getName());
-            }
+            // Create a container for the text
+            VBox textContainer = new VBox(5);
+            textContainer.setAlignment(Pos.CENTER_LEFT);
+
+            // Filename label
+            Label nameLabel = new Label(saveFile.getName());
+            nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+
+            // Metadata label
+            Label metaLabel = new Label(SaveHelper.getSaveMetadata(saveFile));
+            metaLabel.setStyle("-fx-text-fill: #aaa; -fx-font-size: 12;");
+
+            textContainer.getChildren().addAll(nameLabel, metaLabel);
+
+            // Set the graphic instead of text
+            setGraphic(textContainer);
+            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         }
     }
 }

@@ -118,3 +118,34 @@
     -fx-text-fill: #aaa;
     -fx-font-style: italic;
 }
+.pause-menu {
+    -fx-background-color: rgba(30, 30, 40, 0.95);
+    -fx-background-radius: 10;
+    -fx-border-color: #6a5acd;
+    -fx-border-width: 3;
+    -fx-border-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);
+}
+
+.pause-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e0ff;
+    -fx-effect: dropshadow(one-pass-box, #3a2ca0, 2, 0.5, 0, 1);
+}
+
+.pause-button {
+    -fx-font-size: 18px;
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to bottom, #5a4fcf, #3a2ca0);
+    -fx-background-radius: 5;
+    -fx-padding: 10 25;
+    -fx-min-width: 200;
+    -fx-cursor: hand;
+}
+
+.pause-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #6a5acd, #4a3cc0);
+    -fx-effect: dropshadow(three-pass-box, rgba(106,90,205,0.5), 10, 0, 0, 0);
+}

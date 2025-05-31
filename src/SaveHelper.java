@@ -53,7 +53,16 @@ public class SaveHelper {
         }
         return searchedSpots;
     }
-
+    public static String getSaveMetadata(File saveFile) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFile))) {
+            GameStateGUI state = (GameStateGUI) in.readObject();
+            return String.format("Health: %d | Room: %s",
+                    state.getPlayerHealth(),
+                    state.getCurrentRoomName());
+        } catch (Exception e) {
+            return "Unknown save data";
+        }
+    }
     private static Map<String, List<ItemPosition>> getDroppedItems(World world) {
         Map<String, List<ItemPosition>> droppedItems = new HashMap<>();
         for (Room room : world.getRooms().values()) {

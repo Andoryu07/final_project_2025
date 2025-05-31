@@ -11,11 +11,14 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -61,6 +64,11 @@ public class GameGUI extends Application {
     private Prompt cassettePrompt = new Prompt();
     private GameStateGUI loadedState;
     private File saveFileToLoad;
+    private Prompt stalkerClawPrompt = new Prompt();
+    private boolean nearStalkerClaw = false;
+    private boolean isPaused = false;
+    private StackPane pauseButtonContainer;
+    private ImageView pauseButton;
     public void loadGame(File saveFile) {
         this.saveFileToLoad = saveFile;
     }
@@ -138,7 +146,17 @@ public class GameGUI extends Application {
         rootPane = new StackPane();
         rootPane.setStyle("-fx-background-color: black;");
         rootPane.getChildren().add(canvas);
-
+        Image pauseImage = new Image("/ui/pause_button.png");
+        pauseButton = new ImageView(pauseImage);
+        // Keep original image size
+        pauseButton.setPreserveRatio(true);
+        pauseButton.setFitWidth(175);
+        pauseButton.setFitHeight(88);
+        pauseButton.setCursor(Cursor.HAND);
+        StackPane.setAlignment(pauseButton, Pos.TOP_LEFT);
+        StackPane.setMargin(pauseButton, new Insets(10));
+        pauseButton.setOnMouseClicked(e -> showPauseMenu(primaryStage));
+        rootPane.getChildren().add(pauseButton);
         scene = new Scene(rootPane, Color.BLACK);
         setupConsole(scene);
         scene.getStylesheets().add(getClass().getResource("/inventory.css").toExternalForm());
@@ -163,6 +181,22 @@ public class GameGUI extends Application {
                 player.setMovementEnabled(true);
                 gameLoop.start();
                 e.consume();
+            }
+        });
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ALT) {
+                scene.setCursor(Cursor.DEFAULT);
+            }
+
+            if (event.getCode() == KeyCode.ESCAPE && !inventoryGUI.isInventoryVisible() && !consoleVisible) {
+                showPauseMenu(primaryStage);
+                event.consume();
+            }
+        });
+
+        scene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
+            if (event.getCode() == KeyCode.ALT && !isPaused) {
+                scene.setCursor(Cursor.NONE);
             }
         });
         // Enhanced input handling
@@ -294,7 +328,10 @@ public class GameGUI extends Application {
             if (e.getCode() == KeyCode.F) {
                 if (nearCassettePlayer) {
                     openSaveMenu();
-//                    handleCassettePlayer();
+                    e.consume();
+                }
+                if (nearStalkerClaw && stalkerClawPrompt.isActive()) {
+                    triggerEndingSequence(primaryStage);
                     e.consume();
                 }
                 boolean actionTaken = false;
@@ -477,6 +514,7 @@ public class GameGUI extends Application {
         }
         boolean isMoving = pressedKeys.stream().anyMatch(this::isMovementKey);
         checkCassettePlayer();
+        checkEndingObject();
         player.updateWalkCycle(isMoving);
         player.updatePosition();
         hidingSpotManager.loadHidingSpots();
@@ -719,6 +757,7 @@ public class GameGUI extends Application {
             gc.fillOval(playerX - 10, playerY - 10, 20, 20);
         }
         gc.restore();
+        stalkerClawPrompt.render(gc, canvas.getWidth(), canvas.getHeight());
         cassettePrompt.render(gc, canvas.getWidth(), canvas.getHeight());
         hidingSpotManager.render(gc, canvas.getWidth(), canvas.getHeight());
         roomManager.renderPrompt(gc, canvas.getWidth(), canvas.getHeight());
@@ -971,6 +1010,183 @@ public class GameGUI extends Application {
                 state.getPlayerX(),
                 state.getPlayerY()
         );
+    }
+    private void checkEndingObject() {
+        if (hidingSpotManager.isHiding()) {
+            stalkerClawPrompt.hide();
+            nearStalkerClaw = false;
+            return;
+        }
+
+        RoomRenderer room = roomManager.getCurrentRoom();
+        if (room == null || !"enter_hall".equals(roomManager.getCurrentRoomName())) {
+            stalkerClawPrompt.hide();
+            nearStalkerClaw = false;
+            return;
+        }
+
+        JSONObject endingLayer = room.getObjectGroup("USE_STALKER_CLAW");
+        if (endingLayer == null) {
+            stalkerClawPrompt.hide();
+            nearStalkerClaw = false;
+            return;
+        }
+
+        JSONArray objects = endingLayer.getJSONArray("objects");
+        nearStalkerClaw = false;
+        for (int i = 0; i < objects.length(); i++) {
+            JSONObject obj = objects.getJSONObject(i);
+            double objX = obj.getDouble("x");
+            double objY = obj.getDouble("y");
+            double objWidth = obj.getDouble("width");
+            double objHeight = obj.getDouble("height");
+
+            // Use rectangle check instead of point distance
+            if (isPlayerInRectangle(objX, objY, objWidth, objHeight)) {
+                nearStalkerClaw = true;
+                break;
+            }
+        }
+
+        for (int i = 0; i < objects.length(); i++) {
+            JSONObject obj = objects.getJSONObject(i);
+            if (isPlayerNear(obj.getDouble("x"), obj.getDouble("y"))) {
+                nearStalkerClaw = true;
+                break;
+            }
+        }
+
+        if (nearStalkerClaw && player.getInventory().findItem("Stalker's Claw") != null) {
+            stalkerClawPrompt.show("Insert Stalker Claw", "");
+        } else {
+            stalkerClawPrompt.hide();
+        }
+    }
+    private boolean isPlayerInRectangle(double rectX, double rectY, double rectWidth, double rectHeight) {
+        RoomRenderer room = roomManager.getCurrentRoom();
+        if (room == null) return false;
+
+        double playerX = player.getX() * room.getTileWidth();
+        double playerY = player.getY() * room.getTileHeight();
+        double playerSize = 20; // Player circle diameter
+
+        // Calculate player bounds
+        double playerLeft = playerX - playerSize / 2;
+        double playerRight = playerX + playerSize / 2;
+        double playerTop = playerY - playerSize / 2;
+        double playerBottom = playerY + playerSize / 2;
+
+        // Calculate rectangle bounds
+        double rectRight = rectX + rectWidth;
+        double rectBottom = rectY + rectHeight;
+
+        // Check for overlap
+        boolean xOverlap = playerRight > rectX && playerLeft < rectRight;
+        boolean yOverlap = playerBottom > rectY && playerTop < rectBottom;
+
+        return xOverlap && yOverlap;
+    }
+    private void triggerEndingSequence(Stage primaryStage) {
+        gameLoop.stop();
+        StackPane endPane = new StackPane();
+        endPane.setStyle("-fx-background-color: black;");
+        endPane.setOpacity(0);
+        rootPane.getChildren().add(endPane);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(2), endPane);
+        fadeIn.setToValue(1.0);
+        fadeIn.setOnFinished(e -> showEndScreen(primaryStage));
+        fadeIn.play();
+    }
+
+    private void showEndScreen(Stage primaryStage) {
+        scene.setCursor(Cursor.DEFAULT);
+        VBox endMenu = new VBox(20);
+        endMenu.setAlignment(Pos.CENTER);
+
+        Label endLabel = new Label("THE END");
+        endLabel.setFont(Font.font(80));
+        endLabel.setTextFill(Color.WHITE);
+
+        Button mainMenuBtn = new Button("Main Menu");
+        mainMenuBtn.getStyleClass().add("pause-button");
+        mainMenuBtn.setOnAction(e -> {
+            primaryStage.close();
+            new MainMenu().start(new Stage());
+        });
+
+        Button exitBtn = new Button("Exit Game");
+        exitBtn.getStyleClass().add("pause-button");
+        exitBtn.setOnAction(e -> Platform.exit());
+
+        endMenu.getChildren().addAll(endLabel, mainMenuBtn, exitBtn);
+
+        StackPane endScreen = new StackPane(endMenu);
+        endScreen.setStyle("-fx-background-color: black;");
+
+        rootPane.getChildren().clear();
+        rootPane.getChildren().add(endScreen);
+    }
+    private void showPauseMenu(Stage primaryStage) {
+        if (isPaused) return;
+
+        Pane overlay = new Pane();
+        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+        overlay.setPrefSize(scene.getWidth(), scene.getHeight());
+
+        VBox menu = new VBox(20);
+        menu.setAlignment(Pos.CENTER);
+        menu.getStyleClass().add("pause-menu");
+
+        Label title = new Label("PAUSE MENU");
+        title.getStyleClass().add("pause-title");
+
+        Button continueBtn = new Button("Continue");
+        continueBtn.getStyleClass().add("pause-button");
+        continueBtn.setOnAction(e -> hidePauseMenu(overlay));
+
+        Button loadBtn = new Button("Load");
+        loadBtn.getStyleClass().add("pause-button");
+        loadBtn.setOnAction(e -> {
+            LoadMenuGUI.show(primaryStage, this::handleSaveSelected);
+        });
+
+        Button mainMenuBtn = new Button("Main Menu");
+        mainMenuBtn.getStyleClass().add("pause-button");
+        mainMenuBtn.setOnAction(e -> {
+            primaryStage.close();
+            new MainMenu().start(new Stage());
+        });
+
+        Button exitBtn = new Button("Exit");
+        exitBtn.getStyleClass().add("pause-button");
+        exitBtn.setOnAction(e -> Platform.exit());
+
+        menu.getChildren().addAll(title, continueBtn, loadBtn, mainMenuBtn, exitBtn);
+
+        StackPane menuContainer = new StackPane(menu);
+        menuContainer.setAlignment(Pos.CENTER);
+        overlay.getChildren().add(menuContainer);
+
+        rootPane.getChildren().add(overlay);
+        isPaused = true;
+        scene.setCursor(Cursor.DEFAULT);
+        gameLoop.stop();
+    }
+
+    private void hidePauseMenu(Pane overlay) {
+        rootPane.getChildren().remove(overlay);
+        isPaused = false;
+        if (!consoleVisible) {
+            scene.setCursor(Cursor.NONE);
+        }
+        gameLoop.start();
+    }
+    private void handleSaveSelected(File saveFile) {
+        if (saveFile != null) {
+            loadGameState(saveFile);
+            hidePauseMenu(null);
+        }
     }
     public World getWorld() {
         return world;

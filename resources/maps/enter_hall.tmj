@@ -124,15 +124,15 @@
          "name":"SearchSpots",
          "objects":[
                 {
-                 "height":18.0316205533597,
+                 "height":18.0316,
                  "id":24,
                  "name":"Key_Table",
                  "rotation":0,
                  "type":"SearchSpot",
                  "visible":true,
-                 "width":23.9130434782608,
-                 "x":131.086956521739,
-                 "y":47.6205533596838
+                 "width":23.913,
+                 "x":131.087,
+                 "y":47.6206
                 }, 
                 {
                  "height":18.0316,
@@ -142,8 +142,30 @@
                  "type":"SearchSpot",
                  "visible":true,
                  "width":23.913,
-                 "x":131.0435,
-                 "y":47.5296545454546
+                 "x":131.043,
+                 "y":47.5297
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":7,
+         "name":"USE_STALKER_CLAW",
+         "objects":[
+                {
+                 "height":31.6666666666667,
+                 "id":26,
+                 "name":"USE_STALKER_CLAW",
+                 "rotation":0,
+                 "type":"USE_STALKER_CLAW",
+                 "visible":true,
+                 "width":12,
+                 "x":26,
+                 "y":63.6666666666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -339,8 +361,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":26,
+ "nextlayerid":8,
+ "nextobjectid":27,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
