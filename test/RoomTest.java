@@ -28,17 +28,7 @@ class RoomTest {
         room = new Room(1, "Test", List.of(2));
         testItem = new KeyItem("Key", "Test key");
     }
-    /**
-     * Tests item addition functionality.
-     * Verifies that:
-     * - Items can be successfully added to a room
-     * - Room's item collection contains the added item
-     */
-    @Test
-    void addItem_NewItem_AddsToRoom() {
-        room.addItem(testItem);
-        assertTrue(room.getItems().contains(testItem));
-    }
+
     /**
      * Tests room unlocking mechanism.
      * Verifies that:

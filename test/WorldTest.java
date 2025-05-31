@@ -31,7 +31,7 @@ class WorldTest {
         mockPlayer = mock(Player.class);
         mockInventory = mock(Inventory.class);
         mockGame = mock(Game.class);
-        world = new World(mockPlayer,mockGame);
+        world = new World(mockPlayer);
 
         // Setup basic rooms
         Room room0 = new Room(0, "Enter_Hall", List.of(1, 2));
@@ -94,7 +94,7 @@ class WorldTest {
     @Test
     void insertGearPiece_InCellarWithValidGear_UpdatesGearLock() {
         // Setup
-        World testWorld = new World(mockPlayer,mockGame);
+        World testWorld = new World(mockPlayer);
 
         // Create and add required rooms
         Room CellarRoom = new Room(10, "Cellar", List.of());
