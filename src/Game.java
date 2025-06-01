@@ -35,13 +35,6 @@ public class Game {
         world.initializeLocks();
         world.initializeGearLock();
         world.initializeEnemies();
-        // Check for saved games
-//        File saveDir = new File("saves/");
-//        if (saveDir.exists() && saveDir.listFiles((dir, name) -> name.startsWith("save_")).length > 0) {
-//            showLoadMenu();
-//        } else {
-//            initializeNewGame();
-//        }
     }
 
     /**
@@ -173,7 +166,7 @@ public class Game {
                 if (room != null) {
                     for (SearchSpot spot : room.getSearchSpots()) {
                         if (entry.getValue().contains(spot.getName())) {
-                            spot.markAsSearched();//Marks the spot as searched
+                            spot.markAsSearched();
                         }
                     }
                 }

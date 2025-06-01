@@ -8,11 +8,19 @@ public class Batteries extends Consumable {
     public Batteries() {
         super("Batteries", "Used to recharge the flashlight.");
     }
+    /**
+     * Check if it's the exact same object
+     * @param o what are we comparing the bandage item to
+     * @return true/false - does it equal?
+     */
     @Override
     public boolean equals(Object o) {
         return this == o;
     }
-
+    /**
+     * HashCode
+     * @return Unique hash code per instance
+     */
     @Override
     public int hashCode() {
         return System.identityHashCode(this);

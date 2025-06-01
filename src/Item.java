@@ -50,6 +50,11 @@ public abstract class Item implements Serializable {
      */
     public abstract void use(Player player);
 
+    /**
+     * Check if it's the exact same object
+     * @param o what are we comparing the bandage item to
+     * @return true/false - does it equal?
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -57,7 +62,10 @@ public abstract class Item implements Serializable {
         Item item = (Item) o;
         return Objects.equals(name, item.name);
     }
-
+    /**
+     * HashCode
+     * @return Hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(name);

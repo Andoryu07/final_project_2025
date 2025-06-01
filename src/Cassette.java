@@ -31,16 +31,23 @@ public class Cassette extends KeyItem {
      * Override method, used to specify, what happens upon using the Cassette(If the player is located in one of the save locations, he will get a menu, if not, he will be warned about his misuse of the item)
      * @param player Specifies, which player attempted to use the item
      */
-
     @Override
     public void use(Player player) {
         System.out.println("Use cassette through save menu instead");
     }
+    /**
+     * Check if it's the exact same object
+     * @param o what are we comparing the bandage item to
+     * @return true/false - does it equal?
+     */
     @Override
     public boolean equals(Object o) {
         return this == o;
     }
-
+    /**
+     * HashCode
+     * @return Unique hash code per instance
+     */
     @Override
     public int hashCode() {
         return System.identityHashCode(this);

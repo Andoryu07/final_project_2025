@@ -36,22 +36,75 @@ public class Player extends Character implements Serializable {
      * String of the current room name
      */
     private String currentRoomName;
+    /**
+     * Player's move speed in the x direction
+     */
     private double speedX = 0;
+    /**
+     * Player's move speed in the y direction
+     */
     private double speedY = 0;
+    /**
+     * Can the player currently move?
+     */
     private boolean movementEnabled = true;
+    /**
+     * Is the player currently in the process of a transition?
+     */
     private boolean isTransitioning = false;
+    /**
+     * position of the walk cycle's position
+     */
     private double walkCyclePosition = 0;
+    /**
+     * how fast the player walks
+     */
     private final double WALK_CYCLE_SPEED = 0.1;
+    /**
+     * Player's max stamina
+     */
     private double maxStamina = 100.0;
+    /**
+     * Player's current stamina
+     */
     private double currentStamina = 100.0;
+    /**
+     * Is the player currently sprinting?
+     */
     private boolean isSprinting = false;
+    /**
+     * Time since last sprinting sequence
+     */
     private long lastSprintTime = 0;
+    /**
+     * Drain rate of player's stamina bar
+     */
     private final double STAMINA_DRAIN_RATE = 20.0; // 20% per second (5s to drain fully)
+    /**
+     * Recharge rate of player's stamina bar
+     */
     private final double STAMINA_RECHARGE_RATE = 10.0; // 10% per second (10s to recharge fully)
+    /**
+     * Delay before the player's stamina bar begins to recharge
+     */
     private final double STAMINA_RECHARGE_DELAY = 1.0;// 1 second delay before recharge starts
+    /**
+     * How many more times is the player faster when sprinting, compared to walking
+     */
     private final double SPRINT_SPEED_MULTIPLIER = 2.0;
+    /**
+     * Is the player currently hiding
+     */
     private boolean isHiding = false;
+    /**
+     * GameGUI instance
+     */
     private GameGUI gameGUI;
+
+    /**
+     * Method used to update the player's walk cycle
+     * @param isMoving is the player currently moving?
+     */
     public void updateWalkCycle(boolean isMoving) {
         if (isMoving) {
             walkCyclePosition += WALK_CYCLE_SPEED;
@@ -63,6 +116,10 @@ public class Player extends Character implements Serializable {
         }
     }
 
+    /**
+     * Getter for 'walkCyclePosition'
+     * @return value of 'walkCyclePosition'
+     */
     public double getWalkCyclePosition() {
         return walkCyclePosition;
     }
@@ -255,21 +312,43 @@ public class Player extends Character implements Serializable {
     public void setCurrentRoom(Room room) {
         this.currentRoomName = room.getName();
     }
+
+    /**
+     * Setter for 'currentRoomName'
+     * @param roomName what to set the value of 'currentRoomName' to
+     */
     public void setCurrentRoomName(String roomName) {
         this.currentRoomName = roomName;
     }
+
+    /**
+     * Setter for 'currentRoomName'
+     * @param roomName what to set the value of 'currentRoomName' to
+     */
     public void setCurrentRoom(String roomName) {
         this.currentRoomName = roomName;
     }
 
+    /**
+     * Getter for 'currentRoomName'
+     * @return value of 'currentRoomName'
+     */
     public String getCurrentRoomName() {
         return currentRoomName;
     }
 
+    /**
+     * Setter for 'y'
+     * @param y what to set the value of 'y' to
+     */
     public void setY(double y) {
         this.y = y;
     }
 
+    /**
+     * Setter for 'x'
+     * @param x what to set the value of 'x' to
+     */
     public void setX(double x) {
         this.x = x;
     }
@@ -289,15 +368,28 @@ public class Player extends Character implements Serializable {
     public double getY() {
         return y;
     }
+
+    /**
+     * Method used to set both the speed in x and y direction
+     * @param speedX what to set 'speedX' to
+     * @param speedY what to set 'speedY' to
+     */
     public void setSpeed(double speedX, double speedY) {
         this.speedX = speedX;
         this.speedY = speedY;
     }
 
+    /**
+     * Getter for 'speedX'
+     * @return value of 'speedX'
+     */
     public double getSpeedX() {
         return speedX;
     }
-
+    /**
+     * Getter for 'speedY'
+     * @return value of 'speedY'
+     */
     public double getSpeedY() {
         return speedY;
     }
@@ -312,6 +404,10 @@ public class Player extends Character implements Serializable {
         this.y = y;
     }
 
+    /**
+     * Setter for 'isTransitioning'
+     * @param transitioning what to set the value of 'isTransitioning' to
+     */
     public void setTransitioning(boolean transitioning) {
         this.isTransitioning = transitioning;
         if (transitioning) {
@@ -319,6 +415,12 @@ public class Player extends Character implements Serializable {
             this.speedY = 0;
         }
     }
+
+    /**
+     * Method used to update the player's stamina
+     * @param deltaTimeSeconds how long the player is sprinting for
+     * @param isMoving is the player moving?
+     */
     public void updateStamina(double deltaTimeSeconds, boolean isMoving) {
         if (isSprinting && movementEnabled && isMoving) {
             // Only drain stamina when actually moving while sprinting
@@ -341,41 +443,72 @@ public class Player extends Character implements Serializable {
             }
         }
     }
+
+    /**
+     * Method used to update the player's position
+     */
     public void updatePosition() {
         if (!isTransitioning) {
             this.x += speedX;
             this.y += speedY;
         }
     }
+
+    /**
+     * Setter for 'movementEnabled'
+     * @param enabled what to set the value of 'movementEnabled' to
+     */
     public void setMovementEnabled(boolean enabled) {
         this.movementEnabled = enabled;
         if (!enabled) {
             setSpeed(0, 0);
         }
     }
+
+    /**
+     * Getter for 'isTransitioning'
+     * @return value of 'isTransitioning'
+     */
     public boolean isTransitioning() {
         return isTransitioning;
     }
 
+    /**
+     * Getter for 'movementEnabled'
+     * @return value of 'movementEnabled'
+     */
     public boolean isMovementEnabled() {
         return movementEnabled;
     }
+
+    /**
+     * Getter for 'currentStamina'
+     * @return value of 'currentStamina'
+     */
     public double getCurrentStamina() {
         return currentStamina;
     }
 
+    /**
+     * Getter for 'maxStamina'
+     * @return value of 'maxStamina'
+     */
     public double getMaxStamina() {
         return maxStamina;
     }
 
+    /**
+     * Getter for 'isSprinting'
+     * @return value of 'isSprinting'
+     */
     public boolean isSprinting() {
         return isSprinting;
     }
 
-    public void setEquippedWeapon(Weapon equippedWeapon) {
-        this.equippedWeapon = equippedWeapon;
-    }
-
+    /**
+     * Setter for 'isSprinting'
+     * @param sprinting what to set the value of 'isSprinting' to
+     */
     public void setSprinting(boolean sprinting) {
         this.isSprinting = sprinting;
         if (sprinting) {
@@ -383,25 +516,26 @@ public class Player extends Character implements Serializable {
         }
     }
 
+    /**
+     * Getter for 'SPRINT_SPEED_MULTIPLIER'
+     * @return value of 'SPRINT_SPEED_MULTIPLIER'
+     */
     public double getSPRINT_SPEED_MULTIPLIER() {
         return SPRINT_SPEED_MULTIPLIER;
     }
-    public boolean isHiding() {
-        return isHiding;
-    }
 
-    public void setHiding(boolean hiding) {
-        isHiding = hiding;
-        setMovementEnabled(!hiding);
-    }
-    public GameGUI getGameGUI() {
-        return gameGUI;
-    }
-
+    /**
+     * Setter for 'currentStamina'
+     * @param currentStamina what to set the value of 'currentStamina'
+     */
     public void setCurrentStamina(double currentStamina) {
         this.currentStamina = currentStamina;
     }
 
+    /**
+     * Setter for 'gameGUI'
+     * @param gui what to set the value of 'gameGUI' to
+     */
     public void setGameGUI(GameGUI gui) {
         this.gameGUI = gui;
     }

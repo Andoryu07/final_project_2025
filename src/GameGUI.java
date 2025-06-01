@@ -27,51 +27,161 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Class used to set, create, design and configure major part of the game's features and their behavior
+ */
 public class GameGUI extends Application {
+    /**
+     * Sets max walk speed of the player
+     */
     private final double MAX_WALK_SPEED = 0.008;
+    /**
+     * RoomManager instance
+     */
     private RoomManager roomManager;
+    /**
+     * Player instance
+     */
     private Player player;
+    /**
+     * Canvas
+     */
     private Canvas canvas;
+    /**
+     * Hashset used to store the keys pressed by the player
+     */
     private Set<KeyCode> pressedKeys = new HashSet<>();
+    /**
+     * HashSet used to store key inputs which are supposed to be 'ignored'
+     */
     private Set<KeyCode> keysToRemove = new HashSet<>();
+    /**
+     * Main game loop used to run the game
+     */
     public AnimationTimer gameLoop;
+    /**
+     * How long a fading transition is supposed to be
+     */
     private final int TRANSITION_DURATION = 100;
+    /**
+     * Checks whether the player is holding SHIFT key or not
+     */
     private boolean shiftPressed = false;
+    /**
+     * Last update time, used for stamina tracking
+     */
     private long lastUpdateTime = System.nanoTime();
+    /**
+     * InventoryGUI instance
+     */
     private InventoryGUI inventoryGUI;
+    /**
+     * StackPane instance, root pane
+     */
     private StackPane rootPane;
+    /**
+     * List of active search spots(that can be currently searched)
+     */
     private List<SearchSpot> activeSearchSpots = new ArrayList<>();
+    /**
+     * Index of the search spot selected in the search menu
+     */
     private int selectedSpotIndex = 0;
+    /**
+     * World instance
+     */
     private World world;
+    /**
+     * Game instance
+     */
     private Game game;
+    /**
+     * List used to track recently found items by the player
+     */
     private List<Item> recentFoundItems = new ArrayList<>();
+    /**
+     * How long until a notification is supposed to disappear
+     */
     private long itemNotificationEndTime = 0;
+    /**
+     * HidingSpotManager instance
+     */
     private HidingSpotManager hidingSpotManager;
+    /**
+     * Little in-game console, used to let the player know about certain things
+     */
     private final TextArea console = new TextArea();
+    /**
+     * is the console currently on screen?
+     */
     public boolean consoleVisible = false;
+    /**
+     * Container for the console
+     */
     private StackPane consoleContainer;
+    /**
+     * Main scene
+     */
     private Scene scene;
+    /**
+     * What item is the player close to currently
+     */
     private Item currentNearbyItem;
+    /**
+     * Prompt for picking up an item
+     */
     private Prompt itemPickupPrompt = new Prompt();
+    /**
+     * Is the player near a cassette player location?
+     */
     private boolean nearCassettePlayer = false;
+    /**
+     * Prompt for interacting with the cassette player
+     */
     private Prompt cassettePrompt = new Prompt();
+    /**
+     * GameStateGUI with the saved information
+     */
     private GameStateGUI loadedState;
+    /**
+     * Which file is supposed to be load
+     */
     private File saveFileToLoad;
+    /**
+     * Prompt for interacting with the main door
+     */
     private Prompt stalkerClawPrompt = new Prompt();
+    /**
+     * Is the player in the stalkerClawPrompt activation range
+     */
     private boolean nearStalkerClaw = false;
+    /**
+     * Is the game paused or not
+     */
     private boolean isPaused = false;
-    private StackPane pauseButtonContainer;
+    /**
+     * Pause button
+     */
     private ImageView pauseButton;
+
+    /**
+     * Method used to set, which file is supposed to load
+     * @param saveFile which file is supposed to be loaded
+     */
     public void loadGame(File saveFile) {
         this.saveFileToLoad = saveFile;
     }
+
+    /**
+     * Method used to initialize the world, player and other attributes, and starting the game loop
+     * @param primaryStage which stage is the game going to occur in
+     */
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -118,6 +228,10 @@ public class GameGUI extends Application {
         }
     }
 
+    /**
+     * Method used to load all the individual room from RoomManager based on their names
+     * @param roomManager Which RoomManager instance to load the rooms from
+     */
     private void loadRooms(RoomManager roomManager) {
         try {
             if (loadedState != null) {
@@ -142,6 +256,10 @@ public class GameGUI extends Application {
         }
     }
 
+    /**
+     * Method used to set up the main stage(primaryStage),set all the EventHandlers, etc.
+     * @param primaryStage Which stage to put the changes into
+     */
     private void setupStage(Stage primaryStage) {
         rootPane = new StackPane();
         rootPane.setStyle("-fx-background-color: black;");
@@ -169,7 +287,7 @@ public class GameGUI extends Application {
                     player.setMovementEnabled(false);
                     gameLoop.stop();
                 } else {
-                    // Resume game
+
                     scene.setCursor(Cursor.NONE);
                     player.setMovementEnabled(true);
                     gameLoop.start();
@@ -187,7 +305,6 @@ public class GameGUI extends Application {
             if (event.getCode() == KeyCode.ALT) {
                 scene.setCursor(Cursor.DEFAULT);
             }
-
             if (event.getCode() == KeyCode.ESCAPE && !inventoryGUI.isInventoryVisible() && !consoleVisible) {
                 showPauseMenu(primaryStage);
                 event.consume();
@@ -199,11 +316,11 @@ public class GameGUI extends Application {
                 scene.setCursor(Cursor.NONE);
             }
         });
-        // Enhanced input handling
+
         scene.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             KeyCode code = e.getCode();
             if (player.isTransitioning() || roomManager.isShowingPrompt()) {
-                e.consume(); // Block input during transitions/prompts
+                e.consume();
                 if (isMovementKey(code)) {
                     pressedKeys.remove(code);
                 }
@@ -371,6 +488,11 @@ public class GameGUI extends Application {
 
     }
 
+    /**
+     * Method used to create a new instance of a certain item, to prevent cloning of items
+     * @param original which item are we creating a new instance of
+     * @return the new instance of the original item, return the original in case of the item not being clone-able
+     */
     private Item createNewItemInstance(Item original) {
         if (original instanceof Bandage) return new Bandage();
         if (original instanceof PistolAmmo) return new PistolAmmo(((PistolAmmo) original).getAmount());
@@ -378,10 +500,14 @@ public class GameGUI extends Application {
         if (original instanceof ShotgunShells) return new ShotgunShells(((ShotgunShells) original).getAmount());
         if (original instanceof Batteries) return new Batteries();
         if (original instanceof Cassette) return new Cassette();
-        // Add other item types as needed
+
         return original; // fallback for non-cloneable items
     }
 
+    /**
+     * Method used to create and set up the visuals of the in-game console
+     * @param scene which scene are we adding this into
+     */
     private void setupConsole(Scene scene) {
         console.setWrapText(true);
         console.setEditable(false);
@@ -405,6 +531,10 @@ public class GameGUI extends Application {
         rootPane.getChildren().add(consoleContainer);
     }
 
+    /**
+     * Method used to add a message into the console
+     * @param message which message to add
+     */
     public void addConsoleMessage(String message) {
         Platform.runLater(() -> {
             console.appendText(message + "\n");
@@ -412,7 +542,11 @@ public class GameGUI extends Application {
         });
     }
 
-    // Helper method to check if a key is a movement key
+    /**
+     * Helper method to check if a key pressed is a movement key
+     * @param code which key are we checking
+     * @return does the 'code' match any of the movement key?
+     */
     private boolean isMovementKey(KeyCode code) {
         return code == KeyCode.W || code == KeyCode.UP ||
                 code == KeyCode.S || code == KeyCode.DOWN ||
@@ -420,6 +554,9 @@ public class GameGUI extends Application {
                 code == KeyCode.D || code == KeyCode.RIGHT;
     }
 
+    /**
+     * Method used to toggle the console's visibility
+     */
     public void toggleConsole() {
         consoleVisible = !consoleVisible;
         Scene scene = rootPane.getScene();
@@ -427,7 +564,6 @@ public class GameGUI extends Application {
         consoleContainer.setVisible(consoleVisible);
         // Close inventory if opening console
         if (consoleVisible) {
-            // Close inventory properly if it's open
             if (inventoryGUI.isInventoryVisible()) {
                 inventoryGUI.toggle();
             }
@@ -444,28 +580,27 @@ public class GameGUI extends Application {
         }
     }
 
+    /**
+     * Method used to update the canvas' size
+     */
     private void updateCanvasSize() {
         if (roomManager.getCurrentRoom() == null) return;
-
         RoomRenderer room = roomManager.getCurrentRoom();
-
         double scaleX = canvas.getScene().getWidth() / room.getWidthInPixels();
         double scaleY = canvas.getScene().getHeight() / room.getHeightInPixels();
         double scale = Math.min(scaleX, scaleY);
-
         double renderWidth = room.getWidthInPixels() * Math.floor(scale);
         double renderHeight = room.getHeightInPixels() * Math.floor(scale);
-
         canvas.setWidth(renderWidth);
         canvas.setHeight(renderHeight);
-
-        // Center the canvas
         canvas.setLayoutX((canvas.getScene().getWidth() - renderWidth) / 2);
         canvas.setLayoutY((canvas.getScene().getHeight() - renderHeight) / 2);
-
         roomManager.setRenderScale(Math.floor(scale));
     }
 
+    /**
+     * Method used to start the main game loop
+     */
     private void startGameLoop() {
         gameLoop = new AnimationTimer() {
             @Override
@@ -477,6 +612,9 @@ public class GameGUI extends Application {
         gameLoop.start();
     }
 
+    /**
+     * Method used to regularly update the game's attributes, based on player's current location and situation
+     */
     private void update() {
         if (hidingSpotManager.isHiding()) {
             activeSearchSpots.clear();
@@ -500,7 +638,6 @@ public class GameGUI extends Application {
                 }
             }
         }
-        // Ensure selected index is valid
         if (!activeSearchSpots.isEmpty()) {
             selectedSpotIndex = Math.min(selectedSpotIndex, activeSearchSpots.size() - 1);
         } else {
@@ -535,6 +672,9 @@ public class GameGUI extends Application {
         }
     }
 
+    /**
+     * Method used to check whether the player is in a proximity to a dropped item
+     */
     private void checkNearbyItems() {
         if (hidingSpotManager.isHiding()) {
             hidePickupPrompt();
@@ -559,73 +699,86 @@ public class GameGUI extends Application {
         }
     }
 
+    /**
+     * Method used to check whether player's location is within a certain px range to a coordination
+     * @param itemX x coordinate of the object we're checking
+     * @param itemY y coordinate of the object we're checking
+     * @return is the player's location within the px range of the object?
+     */
     private boolean isPlayerNear(double itemX, double itemY) {
         RoomRenderer room = roomManager.getCurrentRoom();
         if (room == null) return false;
-
         // Convert to pixel coordinates
         double playerX = player.getX() * room.getTileWidth();
         double playerY = player.getY() * room.getTileHeight();
         double itemPixelX = itemX * room.getTileWidth();
         double itemPixelY = itemY * room.getTileHeight();
-
-
         return Math.hypot(playerX - itemPixelX, playerY - itemPixelY) < 32;
     }
 
+    /**
+     * Method used to show the pickup prompt(used for items)
+     * @param itemName name of the item this prompt currently applies for
+     */
     private void showPickupPrompt(String itemName) {
         itemPickupPrompt.show("Pick up " + itemName, "");
     }
 
+    /**
+     * Method used to hide the item pickup prompt
+     */
     private void hidePickupPrompt() {
         itemPickupPrompt.hide();
     }
 
-
+    /**
+     * Method used to check whether the player is overlapping with a search spot's coordinates
+     * @param spot spot we're checking
+     * @param playerX player's x coordinate
+     * @param playerY player's y coordinate
+     * @return is the player overlapping with a search spot's coordinates?
+     */
     private boolean isPlayerOverlapping(SearchSpot spot, double playerX, double playerY) {
         RoomRenderer room = roomManager.getCurrentRoom();
         if (room == null) return false;
-
         // Convert player position to pixels
         double px = playerX * room.getTileWidth();
         double py = playerY * room.getTileHeight();
-
         // Search spot coordinates are already in pixels from Tiled
         double spotX = spot.getX();
         double spotY = spot.getY();
         double spotWidth = spot.getWidth();
         double spotHeight = spot.getHeight();
-
-
         return px + 10 >= spotX && px - 10 <= spotX + spotWidth &&
                 py + 10 >= spotY && py - 10 <= spotY + spotHeight;
     }
 
+    /**
+     * Method used to ensure that the player doesn't go out of the bounds of the room he's currently in
+     */
     private void constrainPlayerToRoom() {
         if (roomManager.getCurrentRoom() == null) return;
-
         RoomRenderer room = roomManager.getCurrentRoom();
         double roomWidth = room.getWidthInPixels() / room.getTileWidth();
         double roomHeight = room.getHeightInPixels() / room.getTileHeight();
-
         // Player dimensions in tile units
         double playerWidth = 0.6;
         double playerHeight = 0.6;
-
         double minX = playerWidth / 2;
         double maxX = roomWidth - playerWidth / 2;
         double minY = playerHeight / 2;
         double maxY = roomHeight - playerHeight / 2;
-
         double newX = Math.max(minX, Math.min(maxX, player.getX()));
         double newY = Math.max(minY, Math.min(maxY, player.getY()));
-
         if (newX != player.getX() || newY != player.getY()) {
             player.setPosition(newX, newY);
             player.setSpeed(0, 0);
         }
     }
 
+    /**
+     * Method used to handle the player's movement, calculating the speed of his movement
+     */
     private void handlePlayerMovement() {
         if (player.isTransitioning() || !player.isMovementEnabled()) return;
         // Calculate base speed (walking or sprinting)
@@ -634,7 +787,6 @@ public class GameGUI extends Application {
         // Reset speeds first
         double targetSpeedX = 0;
         double targetSpeedY = 0;
-
         // Handle movement input
         boolean movingUp = pressedKeys.contains(KeyCode.W) || pressedKeys.contains(KeyCode.UP);
         boolean movingDown = pressedKeys.contains(KeyCode.S) || pressedKeys.contains(KeyCode.DOWN);
@@ -658,7 +810,6 @@ public class GameGUI extends Application {
                 targetSpeedX = 0;
             }
         }
-
         if (targetSpeedY != 0) {
             double testY = player.getY() + targetSpeedY;
             if (!checkCollision(player.getX(), testY)) {
@@ -671,22 +822,23 @@ public class GameGUI extends Application {
         player.setSpeed(targetSpeedX, targetSpeedY);
     }
 
+    /**
+     * Method used to render the visuals of the stamina bar
+     * @param gc GraphicsContext instance
+     */
     private void renderStaminaBar(GraphicsContext gc) {
         double staminaPercentage = player.getCurrentStamina() / player.getMaxStamina();
         double barWidth = 200;
         double barHeight = 10;
         double x = 20;
         double y = 20;
-
         // Background
         gc.setFill(Color.rgb(50, 50, 50, 0.7));
         gc.fillRect(x, y, barWidth, barHeight);
-
         // Foreground (stamina level)
         Color staminaColor = player.isSprinting() ? Color.LIMEGREEN : Color.DARKGREEN;
         gc.setFill(staminaColor);
         gc.fillRect(x, y, barWidth * staminaPercentage, barHeight);
-
         // Border
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(1);
@@ -697,25 +849,31 @@ public class GameGUI extends Application {
         gc.fillText("Stamina: " + (int) player.getCurrentStamina() + "%", x, y - 5);
     }
 
+    /**
+     * Method used to check if player's position is close to any collision objects
+     * @param tileX x coordinate of the tile
+     * @param tileY y coordinate of the tile
+     * @return is player's position close to any collision objects?
+     */
     private boolean checkCollision(double tileX, double tileY) {
         if (hidingSpotManager.isHiding()) {
             return false; // No collisions while hiding
         }
         RoomRenderer room = roomManager.getCurrentRoom();
         if (room == null) return false;
-
         double playerX = tileX * room.getTileWidth();
         double playerY = tileY * room.getTileHeight();
-
         // Tight collision box (12x12 pixels centered on player)
         Rectangle2D playerHitbox = new Rectangle2D(
                 playerX - 6, playerY - 6, 12, 12
         );
-        // Simply check for intersection without any bounce effect
         return room.getCollisions().stream()
                 .anyMatch(rect -> rect.intersects(playerHitbox));
     }
 
+    /**
+     * Method used to 'ignore' any movement keys inputs, removing them from the pressedKeys list
+     */
     public void clearMovementInputs() {
         pressedKeys.removeIf(code ->
                 code == KeyCode.W || code == KeyCode.A || code == KeyCode.S || code == KeyCode.D ||
@@ -724,6 +882,9 @@ public class GameGUI extends Application {
         keysToRemove.clear();
     }
 
+    /**
+     * Method used to render all the visuals, making sure the objects are correctly layered and behave as intended
+     */
     private void render() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.save();
@@ -744,7 +905,6 @@ public class GameGUI extends Application {
                 );
             }
             room.render(gc);
-            renderExitAreas(gc, room);
         }
         if (!hidingSpotManager.isHiding()) {
             RoomRenderer room = roomManager.getCurrentRoom();
@@ -769,56 +929,45 @@ public class GameGUI extends Application {
             RoomRenderer room = roomManager.getCurrentRoom();
             double playerScreenX = (player.getX() * room.getTileWidth()) * roomManager.getRenderScale();
             double playerScreenY = (player.getY() * room.getTileHeight()) * roomManager.getRenderScale();
-
             // Position menu relative to player but constrained to screen
             double menuX = playerScreenX + 30;
             double menuY = playerScreenY - 50;
             menuX = Math.min(menuX, canvas.getWidth() - 250); // Keep on screen
             menuY = Math.max(menuY, 20); // Keep on screen
-
             // Menu background with rounded corners
             gc.setFill(Color.rgb(30, 30, 40, 0.85));
             gc.fillRoundRect(menuX, menuY, 230, 40 + 35 * activeSearchSpots.size(), 15, 15);
-
             // Border
             gc.setStroke(Color.rgb(100, 150, 255));
             gc.setLineWidth(2);
             gc.strokeRoundRect(menuX, menuY, 230, 40 + 35 * activeSearchSpots.size(), 15, 15);
-
             // Title
             gc.setFill(Color.WHITE);
             gc.setFont(Font.font("Arial", FontWeight.BOLD, 18));
             gc.fillText("Searchable Objects", menuX + 15, menuY + 25);
-
             // Separator line
             gc.setStroke(Color.rgb(100, 150, 255, 0.5));
             gc.setLineWidth(1);
             gc.strokeLine(menuX + 10, menuY + 35, menuX + 220, menuY + 35);
-
             // Items
             gc.setFont(Font.font("Arial", 16));
             for (int i = 0; i < activeSearchSpots.size(); i++) {
                 SearchSpot spot = activeSearchSpots.get(i);
-
                 // Highlight selected item
                 if (i == selectedSpotIndex) {
                     gc.setFill(Color.rgb(100, 150, 255, 0.3));
                     gc.fillRoundRect(menuX + 10, menuY + 40 + i * 35, 210, 30, 5, 5);
-
                     gc.setStroke(Color.rgb(100, 150, 255));
                     gc.setLineWidth(1.5);
                     gc.strokeRoundRect(menuX + 10, menuY + 40 + i * 35, 210, 30, 5, 5);
                 }
-
                 // Item text
                 gc.setFill(i == selectedSpotIndex ? Color.rgb(200, 230, 255) : Color.WHITE);
                 gc.fillText(spot.getName(), menuX + 20, menuY + 60 + i * 35);
-
                 // Search status indicator
                 gc.setFill(spot.isSearched() ? Color.RED : Color.GREEN);
                 gc.fillOval(menuX + 190, menuY + 47 + i * 35, 8, 8);
             }
-
             // Instruction text
             gc.setFill(Color.rgb(200, 200, 200));
             gc.setFont(Font.font("Arial", FontPosture.ITALIC, 12));
@@ -830,56 +979,37 @@ public class GameGUI extends Application {
 
     }
 
-
+    /**
+     * Method used to render the appearance of the item pickup notification
+     * @param gc GraphicsContext instance
+     */
     private void renderItemNotification(GraphicsContext gc) {
         if (recentFoundItems.isEmpty()) return;
-
         double width = 300;
         double height = 50 + 20 * recentFoundItems.size();
         double x = (canvas.getWidth() - width) / 2;
         double y = canvas.getHeight() - height - 20; // Bottom of screen
-
         // Background
         gc.setFill(Color.rgb(0, 0, 0, 0.85));
         gc.fillRoundRect(x, y, width, height, 10, 10);
-
         // Border
         gc.setStroke(Color.GOLDENROD);
         gc.setLineWidth(2);
         gc.strokeRoundRect(x, y, width, height, 10, 10);
-
         // Text
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 16));
         gc.fillText("Items Found:", x + 10, y + 25);
-
         for (int i = 0; i < recentFoundItems.size(); i++) {
             gc.fillText("- " + recentFoundItems.get(i).getName(),
                     x + 20, y + 45 + i * 20);
         }
     }
 
-    private void renderExitAreas(GraphicsContext gc, RoomRenderer room) {
-        JSONObject objects = room.getObjectGroup("GameObjects");
-        if (objects != null) {
-            JSONArray exits = objects.getJSONArray("objects");
-            gc.setStroke(Color.RED);
-            gc.setLineWidth(2);
-
-            for (int i = 0; i < exits.length(); i++) {
-                JSONObject exit = exits.getJSONObject(i);
-                if (exit.getString("name").startsWith("EXIT TO")) {
-                    gc.strokeRect(
-                            exit.getDouble("x"),
-                            exit.getDouble("y"),
-                            exit.getDouble("width"),
-                            exit.getDouble("height")
-                    );
-                }
-            }
-        }
-    }
-
+    /**
+     * Method used to perform the transition between individual rooms, using a fade transition
+     * @param targetRoom which room is the player transitioning to
+     */
     public void performTransition(String targetRoom) {
         clearMovementInputs();
         FadeTransition fadeOut = new FadeTransition(Duration.millis(TRANSITION_DURATION), canvas);
@@ -894,16 +1024,17 @@ public class GameGUI extends Application {
         });
         fadeOut.play();
     }
+
+    /**
+     * Method used to check whether the player is near a cassette player location
+     */
     private void checkCassettePlayer() {
         if (hidingSpotManager.isHiding()) {
             cassettePrompt.hide();
             nearCassettePlayer = false;
             return;
         }
-
-        Room currentRoom = world.getCurrentRoom();
         nearCassettePlayer = false;
-
         JSONObject cassetteLayer = roomManager.getCurrentRoom().getObjectGroup("CassettePlayer");
         if (cassetteLayer != null) {
             JSONArray objects = cassetteLayer.getJSONArray("objects");
@@ -930,11 +1061,13 @@ public class GameGUI extends Application {
             cassettePrompt.hide();
         }
     }
+    /**
+     * Method used to show the save menu when interacting with the cassette player
+     */
     public void openSaveMenu() {
-        // Check if player has cassette
+        // Check if player has Cassette
         boolean hasCassette = player.getInventory().getItems().stream()
                 .anyMatch(item -> item instanceof Cassette);
-
         if (!hasCassette) {
             addConsoleMessage("You need a Cassette to save your game!");
             // Auto-show console if hidden
@@ -943,16 +1076,19 @@ public class GameGUI extends Application {
             }
             return;
         }
-
         // Open save menu
         SaveMenuGUI saveMenu = new SaveMenuGUI(this);
         rootPane.getChildren().add(saveMenu);
-
         // Pause game
         scene.setCursor(Cursor.DEFAULT);
         player.setMovementEnabled(false);
         gameLoop.stop();
     }
+
+    /**
+     * Method used to load the game from a specific file
+     * @param saveFile which file are we loading from
+     */
     private void loadGameState(File saveFile) {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFile))) {
             GameStateGUI state = (GameStateGUI) in.readObject();
@@ -962,26 +1098,27 @@ public class GameGUI extends Application {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Method used to set the in-game attributes to the one of the GameStateGUI
+     * @param state which game state are taking the attributes from
+     */
     private void applyGameState(GameStateGUI state) {
         // Apply loaded state to game
         player.setHealth(state.getPlayerHealth());
         player.setCurrentStamina(state.getPlayerStamina());
         player.setPosition(state.getPlayerX(), state.getPlayerY());
         player.setCurrentRoomName(state.getCurrentRoomName());
-
         // Clear existing inventory and add saved items
         player.getInventory().clear();
         for (Item item : state.getInventory()) {
             player.getInventory().addItem(item);
         }
-
         // Equip weapon
         player.equipWeapon(state.getEquippedWeapon());
-
         // Apply world state
         world.setStalkerDistance(state.getStalkerDistance());
         world.restoreLockStates(state.getLockStates());
-
         // Apply searched spots
         Map<String, List<String>> searchedSpots = state.getSearchedSpots();
         for (Room room : world.getRooms().values()) {
@@ -993,7 +1130,6 @@ public class GameGUI extends Application {
                 }
             }
         }
-
         // Apply dropped items
         Map<String, List<ItemPosition>> droppedItems = state.getDroppedItems();
         for (Room room : world.getRooms().values()) {
@@ -1003,7 +1139,6 @@ public class GameGUI extends Application {
                 }
             }
         }
-
         roomManager.transitionToRoom(
                 state.getCurrentRoomName(),
                 true,
@@ -1011,27 +1146,28 @@ public class GameGUI extends Application {
                 state.getPlayerY()
         );
     }
+
+    /**
+     * Method used to check whether the player is in proximity of the stalker claw prompts
+     */
     private void checkEndingObject() {
         if (hidingSpotManager.isHiding()) {
             stalkerClawPrompt.hide();
             nearStalkerClaw = false;
             return;
         }
-
         RoomRenderer room = roomManager.getCurrentRoom();
         if (room == null || !"enter_hall".equals(roomManager.getCurrentRoomName())) {
             stalkerClawPrompt.hide();
             nearStalkerClaw = false;
             return;
         }
-
         JSONObject endingLayer = room.getObjectGroup("USE_STALKER_CLAW");
         if (endingLayer == null) {
             stalkerClawPrompt.hide();
             nearStalkerClaw = false;
             return;
         }
-
         JSONArray objects = endingLayer.getJSONArray("objects");
         nearStalkerClaw = false;
         for (int i = 0; i < objects.length(); i++) {
@@ -1040,14 +1176,11 @@ public class GameGUI extends Application {
             double objY = obj.getDouble("y");
             double objWidth = obj.getDouble("width");
             double objHeight = obj.getDouble("height");
-
-            // Use rectangle check instead of point distance
             if (isPlayerInRectangle(objX, objY, objWidth, objHeight)) {
                 nearStalkerClaw = true;
                 break;
             }
         }
-
         for (int i = 0; i < objects.length(); i++) {
             JSONObject obj = objects.getJSONObject(i);
             if (isPlayerNear(obj.getDouble("x"), obj.getDouble("y"))) {
@@ -1055,37 +1188,45 @@ public class GameGUI extends Application {
                 break;
             }
         }
-
         if (nearStalkerClaw && player.getInventory().findItem("Stalker's Claw") != null) {
             stalkerClawPrompt.show("Insert Stalker Claw", "");
         } else {
             stalkerClawPrompt.hide();
         }
     }
+
+    /**
+     * Method used to check if the player is located in a certain rectangle
+     * @param rectX x coordinate of the rectangle
+     * @param rectY y coordinate of the rectangle
+     * @param rectWidth width of the rectangle
+     * @param rectHeight height of the rectangle
+     * @return is the player located in a certain rectangle?
+     */
     private boolean isPlayerInRectangle(double rectX, double rectY, double rectWidth, double rectHeight) {
         RoomRenderer room = roomManager.getCurrentRoom();
         if (room == null) return false;
-
         double playerX = player.getX() * room.getTileWidth();
         double playerY = player.getY() * room.getTileHeight();
-        double playerSize = 20; // Player circle diameter
-
+        double playerSize = 20; // Player circle
         // Calculate player bounds
         double playerLeft = playerX - playerSize / 2;
         double playerRight = playerX + playerSize / 2;
         double playerTop = playerY - playerSize / 2;
         double playerBottom = playerY + playerSize / 2;
-
         // Calculate rectangle bounds
         double rectRight = rectX + rectWidth;
         double rectBottom = rectY + rectHeight;
-
         // Check for overlap
         boolean xOverlap = playerRight > rectX && playerLeft < rectRight;
         boolean yOverlap = playerBottom > rectY && playerTop < rectBottom;
-
         return xOverlap && yOverlap;
     }
+
+    /**
+     * Method used to trigger the 'GAME END' sequence, activated by inserting the stalker claw item at the prompt area
+     * @param primaryStage which stage to play the sequence in
+     */
     private void triggerEndingSequence(Stage primaryStage) {
         gameLoop.stop();
         StackPane endPane = new StackPane();
@@ -1099,81 +1240,78 @@ public class GameGUI extends Application {
         fadeIn.play();
     }
 
+    /**
+     * Method used to create and show the end screen
+     * @param primaryStage which stage to show the end screen on
+     */
     private void showEndScreen(Stage primaryStage) {
         scene.setCursor(Cursor.DEFAULT);
         VBox endMenu = new VBox(20);
         endMenu.setAlignment(Pos.CENTER);
-
         Label endLabel = new Label("THE END");
         endLabel.setFont(Font.font(80));
         endLabel.setTextFill(Color.WHITE);
-
         Button mainMenuBtn = new Button("Main Menu");
         mainMenuBtn.getStyleClass().add("pause-button");
         mainMenuBtn.setOnAction(e -> {
             primaryStage.close();
             new MainMenu().start(new Stage());
         });
-
         Button exitBtn = new Button("Exit Game");
         exitBtn.getStyleClass().add("pause-button");
         exitBtn.setOnAction(e -> Platform.exit());
-
         endMenu.getChildren().addAll(endLabel, mainMenuBtn, exitBtn);
-
         StackPane endScreen = new StackPane(endMenu);
         endScreen.setStyle("-fx-background-color: black;");
-
         rootPane.getChildren().clear();
         rootPane.getChildren().add(endScreen);
     }
+
+    /**
+     * Method used to create and show the pause menu
+     * @param primaryStage which stage to show the pause menu in
+     */
     private void showPauseMenu(Stage primaryStage) {
         if (isPaused) return;
-
         Pane overlay = new Pane();
         overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
         overlay.setPrefSize(scene.getWidth(), scene.getHeight());
-
         VBox menu = new VBox(20);
         menu.setAlignment(Pos.CENTER);
         menu.getStyleClass().add("pause-menu");
-
         Label title = new Label("PAUSE MENU");
         title.getStyleClass().add("pause-title");
-
         Button continueBtn = new Button("Continue");
         continueBtn.getStyleClass().add("pause-button");
         continueBtn.setOnAction(e -> hidePauseMenu(overlay));
-
         Button loadBtn = new Button("Load");
         loadBtn.getStyleClass().add("pause-button");
         loadBtn.setOnAction(e -> {
             LoadMenuGUI.show(primaryStage, this::handleSaveSelected);
         });
-
         Button mainMenuBtn = new Button("Main Menu");
         mainMenuBtn.getStyleClass().add("pause-button");
         mainMenuBtn.setOnAction(e -> {
             primaryStage.close();
             new MainMenu().start(new Stage());
         });
-
         Button exitBtn = new Button("Exit");
         exitBtn.getStyleClass().add("pause-button");
         exitBtn.setOnAction(e -> Platform.exit());
-
         menu.getChildren().addAll(title, continueBtn, loadBtn, mainMenuBtn, exitBtn);
-
         StackPane menuContainer = new StackPane(menu);
         menuContainer.setAlignment(Pos.CENTER);
         overlay.getChildren().add(menuContainer);
-
         rootPane.getChildren().add(overlay);
         isPaused = true;
         scene.setCursor(Cursor.DEFAULT);
         gameLoop.stop();
     }
 
+    /**
+     * Method used to hide the pause menu
+     * @param overlay which pane to hide
+     */
     private void hidePauseMenu(Pane overlay) {
         rootPane.getChildren().remove(overlay);
         isPaused = false;
@@ -1182,36 +1320,70 @@ public class GameGUI extends Application {
         }
         gameLoop.start();
     }
+
+    /**
+     * Method used to load the selected state, from the pause menu
+     * @param saveFile which save file to load
+     */
     private void handleSaveSelected(File saveFile) {
         if (saveFile != null) {
             loadGameState(saveFile);
             hidePauseMenu(null);
         }
     }
+
+    /**
+     * Getter for world
+     * @return value of 'world'
+     */
     public World getWorld() {
         return world;
     }
 
+    /**
+     * Getter for 'player'
+     * @return value of 'player'
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * Getter for 'scene'
+     * @return value of 'scene'
+     */
     public Scene getScene() {
         return scene;
     }
 
+    /**
+     * Getter for 'game'
+     * @return value of 'game'
+     */
     public Game getGame() {
         return game;
     }
 
+    /**
+     * getter for 'rootPane'
+     * @return value of 'rootPane'
+     */
     public StackPane getRootPane() {
         return rootPane;
     }
 
+    /**
+     * getter for 'inventoryGUI'
+     * @return value of 'inventoryGUI'
+     */
     public InventoryGUI getInventoryGUI() {
         return inventoryGUI;
     }
 
+    /**
+     * main method used to run the game
+     * @param args args
+     */
     public static void main(String[] args) {
         launch(args);
     }

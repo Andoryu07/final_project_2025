@@ -9,14 +9,24 @@ public class Bandage extends HealingItem {
     public Bandage() {
         super("Bandage", "Regenerates a small amount of HP", 20);
     }
+
+    /**
+     * Check if it's the exact same object
+     * @param o what are we comparing the bandage item to
+     * @return true/false - does it equal?
+     */
     @Override
     public boolean equals(Object o) {
-        return this == o; // Check if it's the exact same object
+        return this == o;
     }
 
+    /**
+     * HashCode
+     * @return Unique hash code per instance
+     */
     @Override
     public int hashCode() {
-        return System.identityHashCode(this); // Unique hash code per instance
+        return System.identityHashCode(this);
     }
 
 }

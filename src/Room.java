@@ -51,6 +51,9 @@ public class Room implements Serializable {
      * Map containing locks on search spots
      */
     private Map<String,Lock> searchSpotLocks = new HashMap<>();
+    /**
+     * List containing the cassette players' positions
+     */
     private List<Point2D> cassettePlayerPositions = new ArrayList<>();
     /**
      * Setter for gearLock
@@ -87,6 +90,10 @@ public class Room implements Serializable {
         return roomLock == null || !roomLock.isLocked() ||
                 roomLock.attemptUnlock(player, scanner);
     }
+
+    /**
+     * Map used to store the dropped item's positions
+     */
     private Map<Item, Point2D> itemPositions = new HashMap<>();
     /**
      * Method used to determine, whether you can search a spot in the room
@@ -305,14 +312,21 @@ public class Room implements Serializable {
         return new ArrayList<>(items); // Return copy of list
     }
 
+    /**
+     * Getter for 'itemPositions'
+     * @return value of 'itemPositions'
+     */
     public Map<Item, Point2D> getItemPositions() {
         return itemPositions;
     }
+
+    /**
+     * Method used to add a cassette player position
+     * @param x x coordinate of the Cassette player
+     * @param y y coordinate of the Cassette player
+     */
     public void addCassettePlayerPosition(double x, double y) {
         cassettePlayerPositions.add(new Point2D(x, y));
     }
 
-    public List<Point2D> getCassettePlayerPositions() {
-        return cassettePlayerPositions;
-    }
 }

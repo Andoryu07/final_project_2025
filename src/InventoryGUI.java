@@ -23,22 +23,72 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Class used to create, implement, visualize and set the inventory's behavior
+ */
 public class InventoryGUI extends StackPane implements Inventory.InventoryObserver {
+    /**
+     * Size of the individual item slot
+     */
     private static final int SLOT_SIZE = 100;
+    /**
+     * Padding for individual slots
+     */
     private static final int PADDING = 40;
+    /**
+     * Size of the gap between individual slots
+     */
     private static final int GAP_SIZE = 20;
+    /**
+     * Background color of the inventory
+     */
     private static final Color BACKGROUND_COLOR = Color.rgb(0, 0, 0, 0.85);
+    /**
+     * Color of the slot
+     */
     private static final Color SLOT_COLOR = Color.rgb(100, 100, 100, 0.5);
+    /**
+     * Color of the slot's border
+     */
     private static final Color SLOT_BORDER = Color.rgb(200, 200, 200, 0.7);
+    /**
+     * Player instance
+     */
     private final Player player;
+    /**
+     * Grid used for the inventory
+     */
     private final GridPane grid;
+    /**
+     * Rectangle of the inventory
+     */
     private final Rectangle bg;
+    /**
+     * boolean property for the inventory visibility
+     */
     private final BooleanProperty inventoryVisible = new SimpleBooleanProperty(false);
+    /**
+     * Tooltip popup
+     */
     private final Popup tooltipPopup = new Popup();
+    /**
+     * Action popup
+     */
     private final Popup actionPopup = new Popup();
+    /**
+     * Which item's slot is the cursor currently located on
+     */
     private Item currentHoverItem;
+    /**
+     * GameGUI instance
+     */
     private final GameGUI gameGUI;
 
+    /**
+     * Constructor
+     * @param player player instance
+     * @param gameGUI GameGUI instance
+     */
     public InventoryGUI(Player player, GameGUI gameGUI) {
         this.gameGUI = gameGUI;
         this.player = player;
@@ -64,7 +114,6 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         bg.setEffect(new DropShadow(10, Color.BLACK));
         gridContainer.getChildren().addAll(bg, grid);
         mainContent.getChildren().add(gridContainer);
-        // Toltip setup
         VBox tooltipContent = new VBox(5);
         tooltipContent.getStyleClass().add("tooltip-box");
         Label tooltipName = new Label();
@@ -112,11 +161,13 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         });
     }
 
+    /**
+     * Method used to update the inventory's display
+     */
     private void updateDisplay() {
         grid.getChildren().clear();
         int capacity = player.getInventory().getCapacity();
         int cols = (int) Math.ceil(Math.sqrt(capacity));
-
         for (int i = 0; i < capacity; i++) {
             StackPane slot = createSlot();
             if (i < player.getInventory().getItems().size()) {
@@ -127,6 +178,9 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         }
     }
 
+    /**
+     * Method used to update the inventory
+     */
     @Override
     public void inventoryUpdated() {
         Platform.runLater(() -> {
@@ -138,8 +192,10 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         });
     }
 
+    /**
+     * Method used to create an animation for the inventory changes
+     */
     private void animateInventoryUpdate() {
-        // Add visual feedback for inventory changes
         ScaleTransition st = new ScaleTransition(Duration.millis(100), grid);
         st.setFromX(1.0);
         st.setFromY(1.0);
@@ -150,14 +206,16 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         st.play();
     }
 
+    /**
+     * Method used to add an item into the inventory slot, including its image
+     * @param slot which slot to put the item into
+     * @param item which item is supposed to be put into the slot
+     */
     private void addItemToSlot(StackPane slot, Item item) {
         ImageView iv = loadItemImage(item);
         if (iv != null) {
-            // Hover handling
             slot.setOnMouseEntered(e -> showTooltip(item, e.getScreenX(), e.getScreenY()));
             slot.setOnMouseExited(e -> hideTooltip());
-
-            // Click handling
             slot.setOnMouseClicked(e -> {
                 if (e.getButton() == MouseButton.PRIMARY) {
                     showActionMenu(item, e.getScreenX(), e.getScreenY());
@@ -168,6 +226,12 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         }
     }
 
+    /**
+     * Method used to get the tooltip(hover effect) of the individual slots
+     * @param item which item is in the hovered over slot
+     * @param x x coordinate of the cursor
+     * @param y y coordinate of the cursor
+     */
     private void showTooltip(Item item, double x, double y) {
         currentHoverItem = item;
         VBox tooltip = (VBox) tooltipPopup.getContent().get(0);
@@ -177,18 +241,30 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         updateTooltipPosition(x + 15, y + 15);
     }
 
-
+    /**
+     * Method used to update the tooltip's position
+     * @param x what to set the tooltip's x coordinate to
+     * @param y what to set the tooltip's y coordinate to
+     */
     private void updateTooltipPosition(double x, double y) {
         tooltipPopup.setX(x);
         tooltipPopup.setY(y);
     }
 
+    /**
+     * Method used to hide the tooltip
+     */
     private void hideTooltip() {
         currentHoverItem = null;
         tooltipPopup.hide();
     }
 
-
+    /**
+     * Method used to show the action menu(clicking on an item slot)
+     * @param item which item slot did the player click on
+     * @param screenX x coordinate on the screen
+     * @param screenY y coordinate on the screen
+     */
     private void showActionMenu(Item item, double screenX, double screenY) {
         Stage ownerStage = (Stage) getScene().getWindow();
         actionPopup.show(ownerStage);
@@ -213,6 +289,10 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         });
     }
 
+    /**
+     * Method used to dropping an item, removing it from the inventory, etc.
+     * @param item which item is the player attempting to drop
+     */
     private void handleDropItem(Item item) {
         World world = gameGUI.getWorld();
         if (world != null) {
@@ -229,6 +309,11 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         }
     }
 
+    /**
+     * Method used to create and style the Drop button
+     * @param item which item to create the button for
+     * @return the Drop button created
+     */
     private Button createDropButton(Item item) {
         Button btn = new Button("Drop");
         if (item instanceof Knife) {
@@ -242,6 +327,11 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         return btn;
     }
 
+    /**
+     * Method used to create and style the Equip button
+     * @param item which item to create the button for
+     * @return the Equip button created
+     */
     private Button createActionButton(Item item) {
         Button btn = new Button();
         if (item instanceof Weapon) {
@@ -258,7 +348,11 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         });
         return btn;
     }
-
+    /**
+     * Method used to create and style the Info button
+     * @param item which item to create the button for
+     * @return the Info button created
+     */
     private Button createInfoButton(Item item) {
         Button btn = new Button("Info");
         btn.getStyleClass().add("inventory-button");
@@ -266,13 +360,16 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         return btn;
     }
 
+    /**
+     * Method used to show the item's description
+     * @param item which item's description to show
+     */
     private void showItemDescription(Item item) {
         String info = String.format("[%s]\n%s\n\n%s",
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
                 item.getName(),
                 item.getDescription()
         );
-
         gameGUI.addConsoleMessage(info);
         hideAllPopups();
         // Auto-show console if hidden
@@ -284,6 +381,10 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         }
     }
 
+    /**
+     * Method used to 'use' the item (Equip/Use button)
+     * @param item which item is the player attempting to use
+     */
     private void handleItemAction(Item item) {
         if (item instanceof Weapon) {
             Weapon weapon = (Weapon) item;
@@ -301,6 +402,9 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         updateDisplay();
     }
 
+    /**
+     * Method used to toggle the inventory's visibility
+     */
     public void toggle() {
         boolean newVisibility = !isInventoryVisible();
         setInventoryVisible(newVisibility);
@@ -325,6 +429,9 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         updateDisplay();
     }
 
+    /**
+     * Method used to update the inventory's grid size based on the inventory's capacity
+     */
     private void updateInventorySize() {
         int capacity = player.getInventory().getCapacity();
         int cols = (int) Math.ceil(Math.sqrt(capacity));
@@ -340,6 +447,10 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         bg.setHeight(Math.min(contentHeight, maxHeight));
     }
 
+    /**
+     * Method used to create the slots
+     * @return the slot created
+     */
     private StackPane createSlot() {
         StackPane slot = new StackPane();
         slot.setPrefSize(SLOT_SIZE, SLOT_SIZE);
@@ -355,6 +466,11 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         return slot;
     }
 
+    /**
+     * Method used to load the item's image from a file
+     * @param item which item's image are we attempting to load
+     * @return the image of the item
+     */
     private ImageView loadItemImage(Item item) {
         try {
             String path = "/sprites/items/" +
@@ -383,10 +499,17 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         }
     }
 
+    /**
+     * Method used to determine whether the inventory is visible
+     * @return is the inventory visible?
+     */
     public boolean isInventoryVisible() {
         return inventoryVisible.get();
     }
 
+    /**
+     * Method used to hide all the popups concerning the inventory
+     */
     public void hideAllPopups() {
         Platform.runLater(() -> {
             if (tooltipPopup != null) tooltipPopup.hide();
@@ -394,6 +517,10 @@ public class InventoryGUI extends StackPane implements Inventory.InventoryObserv
         });
     }
 
+    /**
+     * Setter for inventoryVisible
+     * @param value what to set the value of 'inventoryVisible' to
+     */
     private void setInventoryVisible(boolean value) {
         inventoryVisible.set(value);
     }

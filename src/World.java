@@ -38,12 +38,17 @@ public class World implements Serializable {
      * Game instance
      */
     private Game game;
+    /**
+     * Map used to store items from a search spot
+     */
     private Map<Integer, Map<String, List<Item>>> searchSpotItems;
+    /**
+     * GameGUI instance
+     */
     private GameGUI gameGUI;
 
     /**
      * Method used to load the rooms from the file
-     *
      * @param roomFilePath       file path of the file containing the room layouts
      * @param searchSpotFilePath file path of the file containing the search spot layouts
      */
@@ -231,11 +236,22 @@ public class World implements Serializable {
         }
     }
 
+    /**
+     * Getter for 'searchSpotItems'
+     * @param roomIndex index of the room
+     * @param spotName name of the search spot
+     * @return the search spot's items
+     */
     public List<Item> getSearchSpotItems(int roomIndex, String spotName) {
         return searchSpotItems.getOrDefault(roomIndex, new HashMap<>())
                 .getOrDefault(spotName, new ArrayList<>());
     }
 
+    /**
+     * Method used to load the search spots from tmj files
+     * @param room used to load search spots into correct rooms
+     * @param tmjData tmj data, used to access the SearchSpots object layer
+     */
     public void loadSearchSpotsFromTMJ(Room room, JSONObject tmjData) {
         try {
             JSONArray layers = tmjData.getJSONArray("layers");
@@ -273,14 +289,7 @@ public class World implements Serializable {
             e.printStackTrace();
         }
     }
-    public void refreshCurrentRoom() {
-        if (currentRoom != null) {
-            // Force reload of room data
-            Room previous = currentRoom;
-            currentRoom = null;
-            setCurrentRoom(previous);
-        }
-    }
+
     /**
      * Creates the items included in a file
      *
@@ -417,6 +426,10 @@ public class World implements Serializable {
         }
     }
 
+    /**
+     * Method used to load the room's layer from file
+     * @param filePath path of the file used
+     */
     public void loadRoomLayout(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -544,6 +557,10 @@ public class World implements Serializable {
         return currentRoom;
     }
 
+    /**
+     * Setter for 'currentRoom'
+     * @param room what to set the value of 'currentRoom' tom
+     */
     public void setCurrentRoom(Room room) {
         this.currentRoom = room;
         if (player != null) {
@@ -643,14 +660,19 @@ public class World implements Serializable {
         return rooms;
     }
 
-    public Room getRoomByIndex(int index) {
-        return rooms.get(index);
-    }
-
+    /**
+     * Getter for 'game'
+     * @return value of 'game'
+     */
     public Game getGame() {
         return game;
     }
 
+    /**
+     * Method used to access a room by its name
+     * @param name name of the room we want to access
+     * @return the room we're looking for, if it exists
+     */
     public Room getRoomByName(String name) {
         return rooms.values().stream()
                 .filter(r -> r.getName().equalsIgnoreCase(name))
@@ -658,6 +680,10 @@ public class World implements Serializable {
                 .orElse(null);
     }
 
+    /**
+     * Method used to add a room into the world
+     * @param room what room to add into the world
+     */
     public void addRoom(Room room) {
         // Find the next available index
         int nextIndex = rooms.keySet().stream()
@@ -666,14 +692,12 @@ public class World implements Serializable {
         rooms.put(nextIndex, room);
     }
 
-    public GameGUI getGameGUI() {
-        return gameGUI;
-    }
+    /**
+     * Setter for 'game'
+     * @param game what to set the value of 'game' to
+     */
     public void setGame(Game game) {
         this.game = game;
-    }
-    public void setGameGUI(GameGUI gameGUI) {
-        this.gameGUI = gameGUI;
     }
 
 }

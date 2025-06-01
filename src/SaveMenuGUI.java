@@ -11,75 +11,79 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+/**
+ * Class used to create, style and set the menu for saving the game
+ */
 public class SaveMenuGUI extends StackPane {
+    /**
+     * folder used to store the save files
+     */
     private static final String SAVE_FOLDER = "saves/";
+    /**
+     * GameGUI instance
+     */
     private final GameGUI gameGUI;
+    /**
+     * Container used to store the save files
+     */
     private final VBox saveListContainer;
-    private final List<Button> saveButtons = new ArrayList<>();
 
+    /**
+     * Method used to set and style the save menu's behavior and appearance
+     * @param gameGUI GameGUI instance
+     */
     public SaveMenuGUI(GameGUI gameGUI) {
         this.gameGUI = gameGUI;
         getStyleClass().add("save-menu");
-
         // Main container
         VBox mainContainer = new VBox(20);
         mainContainer.setAlignment(Pos.CENTER);
         mainContainer.setPadding(new Insets(20));
         mainContainer.setStyle("-fx-background-color: rgba(0, 0, 0, 0.9); -fx-border-color: #555; -fx-border-width: 2;");
-
         // Title
         Label title = new Label("SAVED GAMES");
         title.getStyleClass().add("save-title");
-
         // Save list container
         saveListContainer = new VBox(10);
         saveListContainer.setAlignment(Pos.CENTER);
         saveListContainer.setPrefWidth(400);
-
         // New save button
         Button newSaveButton = new Button("NEW SAVE");
         newSaveButton.getStyleClass().add("save-button");
         newSaveButton.setOnAction(e -> createNewSave());
-
         // Close button
         Button closeButton = new Button("CLOSE");
         closeButton.getStyleClass().add("save-button");
         closeButton.setOnAction(e -> closeMenu());
-
         mainContainer.getChildren().addAll(title, saveListContainer, newSaveButton, closeButton);
         getChildren().add(mainContainer);
-
         // Load existing saves
         refreshSaveList();
     }
 
+    /**
+     * Method used to refresh the list of saves
+     */
     private void refreshSaveList() {
         saveListContainer.getChildren().clear();
-
         File saveDir = new File(SAVE_FOLDER);
         File[] saveFiles = saveDir.listFiles((dir, name) -> name.endsWith(".dat"));
-
         if (saveFiles != null && saveFiles.length > 0) {
             for (File saveFile : saveFiles) {
                 HBox entry = new HBox(10);
                 entry.getStyleClass().add("save-entry");
                 entry.setAlignment(Pos.CENTER_LEFT);
                 entry.setPadding(new Insets(10));
-
                 VBox infoBox = new VBox(5);
                 Label nameLabel = new Label(saveFile.getName());
                 nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-
                 // Add save metadata if available
                 Label metaLabel = new Label(SaveHelper.getSaveMetadata(saveFile));
                 metaLabel.setStyle("-fx-text-fill: #aaa; -fx-font-size: 12;");
-
                 infoBox.getChildren().addAll(nameLabel, metaLabel);
-
                 Button saveButton = new Button("OVERWRITE");
                 saveButton.getStyleClass().add("save-button");
                 saveButton.setOnAction(e -> confirmOverwrite(saveFile));
-
                 entry.getChildren().addAll(infoBox, saveButton);
                 saveListContainer.getChildren().add(entry);
             }
@@ -90,16 +94,10 @@ public class SaveMenuGUI extends StackPane {
         }
     }
 
-    private String getSaveMetadata(File saveFile) {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFile))) {
-            GameStateGUI state = (GameStateGUI) in.readObject();
-            return String.format("Room: %s | Health: %d",
-                    state.getCurrentRoomName(), state.getPlayerHealth());
-        } catch (Exception e) {
-            return "Unknown save data";
-        }
-    }
-
+    /**
+     * Method used for implementing the behavior and appearance of the confirm overwrite menu
+     * @param saveFile which save file is about to be overwritten
+     */
     private void confirmOverwrite(File saveFile) {
         Pane overlay = new Pane();
         overlay.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
@@ -129,17 +127,23 @@ public class SaveMenuGUI extends StackPane {
         getChildren().add(overlay);
     }
 
+    /**
+     * Method used to create a new save
+     */
     private void createNewSave() {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
         File saveFile = new File(SAVE_FOLDER + "save_" + timestamp + ".dat");
         saveGame(saveFile);
     }
 
+    /**
+     * Method used to save the game into a save file
+     * @param saveFile which save file to save the info into
+     */
     private void saveGame(File saveFile) {
         try {
             Player player = gameGUI.getPlayer();
             Inventory inventory = player.getInventory();
-
             // Find first cassette in inventory
             Optional<Item> cassette = inventory.getItems().stream()
                     .filter(item -> item instanceof Cassette)
@@ -149,10 +153,8 @@ public class SaveMenuGUI extends StackPane {
                 gameGUI.addConsoleMessage("You need a Cassette to save your game!");
                 return;
             }
-
             GameStateGUI state = createGameState();
             try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(saveFile))) {
-                // Remove cassette
                 inventory.removeItem(cassette.get());
                 out.writeObject(state);
                 if (SaveHelper.saveGame(gameGUI.getPlayer(), gameGUI.getWorld())) {
@@ -161,8 +163,6 @@ public class SaveMenuGUI extends StackPane {
                 } else {
                     gameGUI.addConsoleMessage("Failed to save game!");
                 }
-
-
                 // Close save menu after successful save
                 closeMenu();
             }
@@ -172,11 +172,14 @@ public class SaveMenuGUI extends StackPane {
         refreshSaveList();
     }
 
+    /**
+     * Method used to create the game state to store data
+     * @return the game state with now saved attributes
+     */
     private GameStateGUI createGameState() {
         GameStateGUI state = new GameStateGUI();
         Player player = gameGUI.getPlayer();
         World world = gameGUI.getWorld();
-
         // Player state
         state.setPlayerHealth(player.getHealth());
         state.setPlayerStamina(player.getCurrentStamina());
@@ -184,16 +187,19 @@ public class SaveMenuGUI extends StackPane {
         state.setCurrentRoomName(player.getCurrentRoomName()); // Fixed to use player's room
         state.setInventory(new ArrayList<>(player.getInventory().getItems()));
         state.setEquippedWeapon(player.getEquippedWeapon());
-
         // World state
         state.setSearchedSpots(getSearchedSpots(world));
         state.setDroppedItems(getDroppedItems(world));
         state.setLockStates(world.getAllLockStates());
         state.setStalkerDistance(world.getStalkerDistance());
-
         return state;
     }
 
+    /**
+     * Method used to get all the already searched spots
+     * @param world which world are we getting the searched spots from
+     * @return the map of searched spots
+     */
     private Map<String, List<String>> getSearchedSpots(World world) {
         Map<String, List<String>> searchedSpots = new HashMap<>();
         for (Room room : world.getRooms().values()) {
@@ -208,6 +214,11 @@ public class SaveMenuGUI extends StackPane {
         return searchedSpots;
     }
 
+    /**
+     * Method used to get all the dropped items in game
+     * @param world which world are we getting the dropped items from
+     * @return the map of dropped items
+     */
     private Map<String, List<ItemPosition>> getDroppedItems(World world) {
         Map<String, List<ItemPosition>> droppedItems = new HashMap<>();
         for (Room room : world.getRooms().values()) {
@@ -221,6 +232,9 @@ public class SaveMenuGUI extends StackPane {
         return droppedItems;
     }
 
+    /**
+     * Method used to close the save menu
+     */
     private void closeMenu() {
         gameGUI.getRootPane().getChildren().remove(this);
         if (!gameGUI.consoleVisible && !gameGUI.getInventoryGUI().isInventoryVisible()) {

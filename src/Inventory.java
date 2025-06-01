@@ -1,7 +1,6 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Class used for the implementation of inventory
@@ -85,47 +84,44 @@ public class Inventory implements Serializable {
         items.remove(item);
         notifyObservers();
     }
-//    public boolean removeItem(Item item) {
-//        return items.remove(item);
-//    }
 
-    public int countItems(String itemName) {
-        return (int) items.stream()
-                .filter(item -> item.getName().equalsIgnoreCase(itemName))
-                .count();
-    }
-    public void removeItems(String itemName, int quantity) {
-        List<Item> toRemove = new ArrayList<>();
-        for (Item item : items) {
-            if (item.getName().equalsIgnoreCase(itemName)) {
-                toRemove.add(item);
-                quantity--;
-                if (quantity <= 0) break;
-            }
-        }
-        items.removeAll(toRemove);
-    }
+    /**
+     * Interface for inventory 'observers'
+     */
     interface InventoryObserver {
+        /**
+         * what should be observed
+         */
         void inventoryUpdated();
     }
 
     /**
      * Getter for the 'items' list
-     *
      * @return 'items' list
      */
     public List<Item> getItems() {
         return items;
     }
 
+    /**
+     * Method used to add an inventory observer
+     * @param observer which observer to add
+     */
     public void addObserver(InventoryObserver observer) {
         observers.add(observer);
     }
 
+    /**
+     * Method used to notify the observers
+     */
     private void notifyObservers() {
         for (InventoryObserver o : observers) o.inventoryUpdated();
     }
 
+    /**
+     * Setter for 'items'
+     * @param items what to set the value of 'items' to
+     */
     public void setItems(List<Item> items) {
         this.items = items;
     }
